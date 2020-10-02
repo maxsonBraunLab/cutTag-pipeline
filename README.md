@@ -42,6 +42,32 @@ The pipeline detects samples in the subdirectory data/raw with the following ass
 
  - Paired end reads
  - Read 1 and 2 are designated using "_R1", and "_R2"
+ - the epigenetic mark label is the second split of the sample name by _ delimeter. For example M6C3_4Me1_S12_R2.fastq.gz will have the {mark} wildcard set to 4me1. This effects the output files from the calculation of counts tables.
+
+Edit the DESEq2 configuration file: src/deseq2_metadata.csv
+
+ - should have two columns labeled "sample", and "condition"
+ - the sample column corresponds to the replicates of the given condition, and should be the same as the first split of the raw file: e.g. M6C3_4Me1_S12_R2.fastq.gz will have "sample" equal to M6C3.
+ - the condition should be the name for each sample condition, and doees not have to come from the file name.
+ 
+ The file src/deseq2_metadata is populated with the following example data:
+ 
+ ```
+sample,condition
+M6C1,GSKQUIZ
+M6C2,GSKQUIZ
+M6C3,GSKQUIZ
+M6D1,DMSO
+M6D2,DMSO
+M6D3,DMSO
+M6G1,GSK
+M6G2,GSK
+M6G3,GSK
+M6Q1,QUIZ
+M6Q2,QUIZ
+M6Q3,QUIZ
+ ```
+
 
 
 # Execution
