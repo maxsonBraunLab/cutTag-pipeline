@@ -253,7 +253,7 @@ rule multiqc:
 rule deseq2:
     input:
         counts="data/counts/{mark}_counts.tsv",
-        meta="src/deseq2_metadata.tsv" 
+        meta="src/deseq2_metadata.csv" 
     output:
         pcaPlot="data/deseq2/{mark}/{mark}-rld-pca.png",
         pcaPlotVsd="data/deseq2/{mark}/{mark}-vsd-pca.png",
