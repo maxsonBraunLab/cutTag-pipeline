@@ -114,7 +114,7 @@ rule bowtie2:
         "bowtie2 --local --very-sensitive-local "
         "--no-unal --no-mixed --threads {threads} "
         "--no-discordant --phred33 "
-        "-I 10 -X 700 -x {config[BOWTIE2][HG38]} "
+        "-I 10 -X 700 -x {config[GENOME]} "
         "-1 {input[0]} -2 {input[1]} 2>{log.err} | samtools view -@ {threads} -Sbh - > {output}"
 
 rule sort:
