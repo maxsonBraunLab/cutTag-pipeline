@@ -89,6 +89,7 @@ preseq - library complexity data for multiqc report
 
 Each mark should have the following output files:
 
+```
 "data/deseq2/{mark}/{mark}-rld-pca.png" - PCA of counts after reguarlized log transformation. 
 "data/deseq2/{mark}/{mark}-vsd-pca.png" - PCA of counts after variance stabilizing transformation.
 "data/deseq2/{mark}/{mark}-normcounts.csv" - normalized count for each sample in each consensus peak.
@@ -98,6 +99,7 @@ Each mark should have the following output files:
 "data/deseq2/{mark}/{mark}-vsd-dist.png" - the sample distance matrix after variance stabilizing transformation.
 "data/deseq2/{mark}/{mark}-rld-dist.png" - the sample distance matrix using regularized log transformation.
 "data/deseq2/{mark}/{mark}-dds.rds" - the R object with the results of running the DEseq() function.
+```
 
 For each contrast, the differentially expressed genes are written to a file ending in `-diffexp.tsv` as well as those with an adjusted p-value less than 0.05 with the extension `-sig05-diffexp.tsv`. A summary of the results usign an alpha of 0.05 is also written to a file with the extension `-sig05-diffexp-summary.txt`.
 
