@@ -6,7 +6,7 @@ Snakemake pipeline for Cut&amp;Tag analysis
 
 Clone this repository into your project directory:
 
-λ
+```
 #clone to your local called 'my-project'
 git clone git@github.com:maxsonBraunLab/cutAndQC.git my-project
 
@@ -16,8 +16,8 @@ mkdir -p data/raw
 
 # link your fastqs to here
 ln -s /path/to/fastq/files/* data/raw
+```
 
-—
 
 Rename all samples in data/raw to simplify sample information, for example:
 
