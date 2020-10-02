@@ -127,7 +127,7 @@ Each mark should have the following output files:
 "data/deseq2/{mark}/{mark}-dds.rds" - the R object with the results of running the DEseq() function.
 ```
 
-For each contrast, the differentially expressed genes are written to a file ending in `-diffexp.tsv` as well as those with an adjusted p-value less than 0.05 with the extension `-sig05-diffexp.tsv`. A summary of the results usign an alpha of 0.05 is also written to a file with the extension `-sig05-diffexp-summary.txt`.
+For each contrast, the differentially expressed genes are written to a file ending in `-diffexp.tsv` as well as those with an adjusted p-value less than 0.05 with the extension `-sig05-diffexp.tsv`. A summary of the results using an alpha of 0.05 is also written to a file with the extension `-sig05-diffexp-summary.txt`. Additionally two MA plots are written to the file ending in `plotMA.png` that have highlighted differential peaks with an adjusted p-value less than 0.1.
 
 See the following paper for further explanations of the above plots and data transforms:
 https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#exporting-results-to-csv-files
