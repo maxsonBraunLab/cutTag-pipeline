@@ -1,0 +1,5 @@
+preseq:
+    - y_axis: coverage
+    - genome_size: 3049315783
+    - x_axis: counts
+    - y_axis: coverage
