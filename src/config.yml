@@ -2,6 +2,9 @@ FASTQDIR:
     - "data/raw"
 FASTQEXT:
     - ".fastq.gz"
+#  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
+IGG:
+    - "IgG" 
 CSIZES:
     - "/home/groups/hoolock2/u0/genomes/ucsc/hg38/hg38.known.chrom.sizes"
 GENOME:
