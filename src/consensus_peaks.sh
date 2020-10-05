@@ -44,7 +44,7 @@ bedtools intersect -a ${mpks[0]} -b ${mpks[@]:1} -c | awk -v OFS='\t' '$7>1 {pri
 bedtools multicov -bams ${BAMDIR}/*${MARK}*.bam -bed data/counts/${MARK}_consensus.bed -D > ${OUTFILE}_tmp
 
 # label the counts table
-ls ${BAMDIR}/*${MARK}*.bam  | cut -d_ -f1 | xargs | tr ' ' '\t' | awk '{print "chrom\tstart\tend\tpeak\tscore\tstrand\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
+ls ${BAMDIR}/*${MARK}*.bam  | sed 's!.*/!!' | cut -d_ -f1 | xargs | tr ' ' '\t' | awk '{print "chrom\tstart\tend\tpeak\tscore\tstrand\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
 
 # remove tmp 
 rm ${OUTFILE}_tmp
