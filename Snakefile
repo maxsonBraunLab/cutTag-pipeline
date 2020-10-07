@@ -209,7 +209,7 @@ rule callpeaks:
     log:
         "data/logs/callpeaks_{sample}.log"
     params:
-        igg=lambda wildcards: glob.glob('data/markd/'+wildcards.sample.split('_')[0]+'_{config[IgG]}'+'*bam')
+        igg=lambda wildcards: glob.glob('data/markd/'+wildcards.sample.split('_')[0]+'_{config[IGG]}'+'*bam')
     shell:
         """
         ./src/callpeaks.py -b {input[0]} -o data/callpeaks/{wildcards.sample} -cs {config[CSIZES]} -cf {params.igg} > {log} 2>&1
