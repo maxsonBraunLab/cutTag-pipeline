@@ -1,7 +1,8 @@
 __default__:
-    memory: "20G"
-    threads: 2
+    mem: 2500
     partition: "exacloud"
-    time: 14400 
+    time: 14400
+    nodes: 1
+    cpus-per-task: 2
 bowtie2:
-    threads: 8
+    cpus-per-task: 8
