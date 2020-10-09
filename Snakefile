@@ -24,12 +24,15 @@ def get_igg(wildcards):
     Returns the igg file for the sample unless
     the sample is IgG then no control file is used.
     '''
-    sf=wildcards.sample.split('_')[0]
-    bam=glob.glob(f'data/markd/{sf}_{config["IGG"]}*bam')
-    iggsample=config['IGG'][0] in wildcards.sample
-    if not iggsample:
-        return f'-cf {bam}'
-    else:
+    if config['USEIGG']:
+        sf=wildcards.sample.split('_')[0]
+        bam=glob.glob(f'data/markd/{sf}_{config["IGG"]}*bam')
+        iggsample=config['IGG'][0] in wildcards.sample
+        if not iggsample:
+            return f'-cf {bam}'
+        else:
+            return ""
+    else: 
         return ""
 
 samps=detect_samples(fastq_dir)

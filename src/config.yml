@@ -2,6 +2,8 @@ FASTQDIR:
     - "data/raw"
 FASTQEXT:
     - ".fastq.gz"
+# should we use IGG for peak calling or not? 
+USEIGG: true
 #  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
 IGG:
     - "IgG" 
