@@ -19,6 +19,19 @@ def detect_samples(dir):
             samps[s].append(os.path.join(dir,f))
     return samps 
 
+def get_igg(wildcards):
+    '''
+    Returns the igg file for the sample unless
+    the sample is IgG then no control file is used.
+    '''
+    sf=wildcards.sample.split('_')[0]
+    bam=glob.glob(f'data/markd/{sf}_{config["IGG"]}*bam')
+    iggsample=config['IGG'][0] in wildcards.sample
+    if not iggsample:
+        return f'-cf {bam}'
+    else:
+        return ""
+
 samps=detect_samples(fastq_dir)
 print("Found samples:")
 for s in samps:
@@ -28,8 +41,8 @@ for s in samps:
 sampdict = detect_samples(fastq_dir)
 reads=[Path(Path(f).stem).stem for f in os.listdir(fastq_dir) if f.endswith(fastq_ext)]
 
-marks = list(set([s.split("_")[1] for s in samps]))
-print(marks)
+marks = [k for k in list(set([s.split("_")[1] for s in samps])) if k not in config['IGG'][0]]
+sample_noigg = [k for k in sampdict.keys() if config["IGG"][0] not in k]
 
 fastqScreenDict = {
 'database': {
@@ -52,11 +65,11 @@ rule all:
         expand("data/fastq_screen/{read}.fastq_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks),
         expand("data/aligned/{sample}.bam", sample=sampdict.keys()),
-        expand(["data/preseq/lcextrap_{sample}.txt",
-        "data/callpeaks/{sample}_peaks.bed",
+        expand(["data/callpeaks/{sample}_peaks.bed", 
+        "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
-        ], sample=sampdict.keys()),
+        ], sample=sample_noigg),
         "data/multiqc/multiqc_report.html",
         "src/callpeaks.py",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.png",
@@ -209,16 +222,16 @@ rule callpeaks:
     log:
         "data/logs/callpeaks_{sample}.log"
     params:
-        igg=lambda wildcards: glob.glob('data/markd/'+wildcards.sample.split('_')[0]+'_{config[IGG]}'+'*bam')
+        igg=get_igg
     shell:
         """
-        ./src/callpeaks.py -b {input[0]} -o data/callpeaks/{wildcards.sample} -cs {config[CSIZES]} -cf {params.igg} > {log} 2>&1
+        ./src/callpeaks.py -b {input[0]} -o data/callpeaks/{wildcards.sample} -cs {config[CSIZES]} {params.igg} > {log} 2>&1
         """
 
 # get consensus
 rule consensus:
     input:
-       expand("data/callpeaks/{sample}_peaks.bed", sample=sampdict.keys())
+       expand("data/callpeaks/{sample}_peaks.bed", sample=sample_noigg)
     output:
        "data/counts/{mark}_counts.tsv"
     conda:
@@ -242,7 +255,7 @@ rule frip:
 
 rule multiqc:
     input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sampdict.keys()), directory("data/")
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg), directory("data/")
     output:
         "data/multiqc/multiqc_report.html"
     conda:
