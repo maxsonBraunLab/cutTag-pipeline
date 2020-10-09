@@ -117,7 +117,7 @@ rule bowtie2:
     input:
         lambda wildcards: sampdict[wildcards.sample]
     output:
-        "data/aligned/{sample,[a-zA-Z0-9_]+}.bam"
+        "data/aligned/{sample}.bam"
     log:
         err="data/logs/bowtie2_{sample}.err"
     conda:
