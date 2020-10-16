@@ -30,7 +30,7 @@ LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz
 Is renamed to:
 M6Q3_RBP1_S93_R1.fastq.gz
 
-2. Make the sample sheet
+2. Make the sample sheet and deseq2 metadata.
 
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
@@ -38,7 +38,7 @@ Activate an environment containing snakemake, and then run the script `make_samp
 $./src/make_sample_sheet.py data/raw
 ```
 
-This will make a samplesheet for the experiment called samplesheet.tsv with contents that might look like the following example:
+This will make a samplesheet for the experiment called samplesheet.tsv in the root of the directory as well as the file `src/deseq2_metadata.csv`, the contents of the samplesheet will be structured like the following example:
 
 ```
 sample	R1	R2	mark	condition	igg
@@ -93,31 +93,28 @@ The pipeline detects samples in the subdirectory data/raw with the following ass
  - Read 1 and 2 are designated using "_R1", and "_R2"
  - the epigenetic mark label is the second split of the sample name by _ delimeter. For example M6C3_4Me1_S12_R2.fastq.gz will have the {mark} wildcard set to 4me1. This effects the output files from the calculation of counts tables.
 
-Edit the DESEq2 configuration file: src/deseq2_metadata.csv
+Make sure deseq2_metadata.csv looks right. The file is created when you run `make_sample_sheet.py` and should have the following properties:
 
  - should have two columns labeled "sample", and "condition"
  - the sample column corresponds to the replicates of the given condition, and should be the same as the first split of the raw file: e.g. M6C3_4Me1_S12_R2.fastq.gz will have "sample" equal to M6C3.
- - the condition should be the name for each sample condition, and doees not have to come from the file name.
+ - the condition should be the name for each sample condition, and doees not have to come from the file name, it could be changed to whatever you would like to have displayed in the deseq2 plots.
  
  The file src/deseq2_metadata is populated with the following example data:
  
- ```
 sample,condition
-M6C1,GSKQUIZ
-M6C2,GSKQUIZ
-M6C3,GSKQUIZ
-M6D1,DMSO
-M6D2,DMSO
-M6D3,DMSO
-M6G1,GSK
-M6G2,GSK
-M6G3,GSK
-M6Q1,QUIZ
-M6Q2,QUIZ
-M6Q3,QUIZ
- ```
-
-
+HoxE1_IgG_S130,HoxE
+HoxE1_Rbp1_S121,HoxE
+HoxE2_Rbp1_S122,HoxE
+HoxE3_Rbp1_S123,HoxE
+HoxM1_IgG_S132,HoxM
+HoxM1_Rbp1_S127,HoxM
+HoxM2_Rbp1_S128,HoxM
+HoxM3_Rbp1_S129,HoxM
+HoxW1_IgG_S131,HoxW
+HoxW1_Rbp1_S124,HoxW
+HoxW2_Rbp1_S125,HoxW
+HoxW3_Rbp1_S126,HoxW
+```
 
 # Execution
 
