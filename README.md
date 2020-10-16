@@ -101,6 +101,7 @@ Make sure deseq2_metadata.csv looks right. The file is created when you run `mak
  
  The file src/deseq2_metadata is populated with the following example data:
  
+```
 sample,condition
 HoxE1_IgG_S130,HoxE
 HoxE1_Rbp1_S121,HoxE
