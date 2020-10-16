@@ -30,8 +30,57 @@ LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz
 Is renamed to:
 M6Q3_RBP1_S93_R1.fastq.gz
 
+2. Make the sample sheet
 
-2. Edit configuration files 
+Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
+
+```
+$./src/make_sample_sheet.py data/raw
+```
+
+This will make a samplesheet for the experiment called samplesheet.tsv with contents that might look like the following example:
+
+```
+sample	R1	R2	mark	condition	igg
+HoxE1_IgG_S130	data/raw/HoxE1_IgG_S130_R1.fastq.gz	data/raw/HoxE1_IgG_S130_R2.fastq.gz	IgG	HoxE	HoxE1_IgG_S130
+HoxE1_Rbp1_S121	data/raw/HoxE1_Rbp1_S121_R1.fastq.gz	data/raw/HoxE1_Rbp1_S121_R2.fastq.gz	Rbp1	HoxE	HoxE1_Rbp1_S121
+HoxE2_Rbp1_S122	data/raw/HoxE2_Rbp1_S122_R1.fastq.gz	data/raw/HoxE2_Rbp1_S122_R2.fastq.gz	Rbp1	HoxE	HoxE2_Rbp1_S122
+HoxE3_Rbp1_S123	data/raw/HoxE3_Rbp1_S123_R1.fastq.gz	data/raw/HoxE3_Rbp1_S123_R2.fastq.gz	Rbp1	HoxE	HoxE3_Rbp1_S123
+HoxM1_IgG_S132	data/raw/HoxM1_IgG_S132_R1.fastq.gz	data/raw/HoxM1_IgG_S132_R2.fastq.gz	IgG	HoxM	HoxM1_IgG_S132
+HoxM1_Rbp1_S127	data/raw/HoxM1_Rbp1_S127_R1.fastq.gz	data/raw/HoxM1_Rbp1_S127_R2.fastq.gz	Rbp1	HoxM	HoxM1_Rbp1_S127
+HoxM2_Rbp1_S128	data/raw/HoxM2_Rbp1_S128_R1.fastq.gz	data/raw/HoxM2_Rbp1_S128_R2.fastq.gz	Rbp1	HoxM	HoxM2_Rbp1_S128
+HoxM3_Rbp1_S129	data/raw/HoxM3_Rbp1_S129_R1.fastq.gz	data/raw/HoxM3_Rbp1_S129_R2.fastq.gz	Rbp1	HoxM	HoxM3_Rbp1_S129
+HoxW1_IgG_S131	data/raw/HoxW1_IgG_S131_R1.fastq.gz	data/raw/HoxW1_IgG_S131_R2.fastq.gz	IgG	HoxW	HoxW1_IgG_S131
+HoxW1_Rbp1_S124	data/raw/HoxW1_Rbp1_S124_R1.fastq.gz	data/raw/HoxW1_Rbp1_S124_R2.fastq.gz	Rbp1	HoxW	HoxW1_Rbp1_S124
+HoxW2_Rbp1_S125	data/raw/HoxW2_Rbp1_S125_R1.fastq.gz	data/raw/HoxW2_Rbp1_S125_R2.fastq.gz	Rbp1	HoxW	HoxW2_Rbp1_S125
+HoxW3_Rbp1_S126	data/raw/HoxW3_Rbp1_S126_R1.fastq.gz	data/raw/HoxW3_Rbp1_S126_R2.fastq.gz	Rbp1	HoxW	HoxW3_Rbp1_S126
+```
+
+The script splits the file name on the '_' and uses the first split for the condition, and the second split for the mark. The 'igg' column is the same as the 'sample' column and should be manually replaced with the sample name of the IGG or control you would like to use for that sample. If the sample is and IgG it can be the same as it's name, and won't affect peak calling. 
+
+So a fixed version of the table above would look like this:
+
+
+```
+sample	R1	R2	mark	condition	igg
+HoxE1_IgG_S130	data/raw/HoxE1_IgG_S130_R1.fastq.gz	data/raw/HoxE1_IgG_S130_R2.fastq.gz	IgG	HoxE	HoxE1_IgG_S130
+HoxE1_Rbp1_S121	data/raw/HoxE1_Rbp1_S121_R1.fastq.gz	data/raw/HoxE1_Rbp1_S121_R2.fastq.gz	Rbp1	HoxE	HoxE1_IgG_S130
+HoxE2_Rbp1_S122	data/raw/HoxE2_Rbp1_S122_R1.fastq.gz	data/raw/HoxE2_Rbp1_S122_R2.fastq.gz	Rbp1	HoxE	HoxE1_IgG_S130
+HoxE3_Rbp1_S123	data/raw/HoxE3_Rbp1_S123_R1.fastq.gz	data/raw/HoxE3_Rbp1_S123_R2.fastq.gz	Rbp1	HoxE    HoxE1_IgG_S130	
+HoxM1_IgG_S132	data/raw/HoxM1_IgG_S132_R1.fastq.gz	data/raw/HoxM1_IgG_S132_R2.fastq.gz	IgG	HoxM	HoxM1_IgG_S132
+HoxM1_Rbp1_S127	data/raw/HoxM1_Rbp1_S127_R1.fastq.gz	data/raw/HoxM1_Rbp1_S127_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
+HoxM2_Rbp1_S128	data/raw/HoxM2_Rbp1_S128_R1.fastq.gz	data/raw/HoxM2_Rbp1_S128_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
+HoxM3_Rbp1_S129	data/raw/HoxM3_Rbp1_S129_R1.fastq.gz	data/raw/HoxM3_Rbp1_S129_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
+HoxW1_IgG_S131	data/raw/HoxW1_IgG_S131_R1.fastq.gz	data/raw/HoxW1_IgG_S131_R2.fastq.gz	IgG	HoxW	HoxW1_IgG_S131
+HoxW1_Rbp1_S124	data/raw/HoxW1_Rbp1_S124_R1.fastq.gz	data/raw/HoxW1_Rbp1_S124_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
+HoxW2_Rbp1_S125	data/raw/HoxW2_Rbp1_S125_R1.fastq.gz	data/raw/HoxW2_Rbp1_S125_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
+HoxW3_Rbp1_S126	data/raw/HoxW3_Rbp1_S126_R1.fastq.gz	data/raw/HoxW3_Rbp1_S126_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
+```
+
+For this example there was only one IgG per condition, so the sample name corresponding to that IGG was used for each sample in the condition. In the case that each sample had it's own control file, each entry would correspond to the IgG for that sample. If only one IgG was used in the whole experiment, then it's sample name could be used for each row. If you are not using IgG set config['USEIGG'] to false, and don't modify the samplesheet.
+
+
+3. Edit configuration files 
 
 Edit runtime configuration in the file src/config.yml:
 
