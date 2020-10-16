@@ -3,49 +3,26 @@ import glob
 import os 
 from pathlib import Path,PurePath,PurePosixPath
 from collections import defaultdict
+import pandas as pd
+from snakemake.utils import validate, min_version
+##### set minimum snakemake version #####
+min_version("5.1.2")
 
+include: "src/common.py"
 configfile: "src/config.yml"
-fastq_dir=config["FASTQDIR"][0]
-fastq_ext=config["FASTQEXT"][0]
 
-# map samples to fastqs
-def detect_samples(dir):
-    '''Decect samples from fastq directory'''
-    samps=defaultdict(list)
-    files = os.listdir(dir)
-    for f in files:
-        if f.endswith(fastq_ext):
-            s=f.rsplit("_R", 1)[0]
-            samps[s].append(os.path.join(dir,f))
-    return samps 
+st = pd.read_table('samplesheet.tsv').set_index('sample',drop=False)
+validate(st, schema="schemas/samples.schema.yml")
 
-def get_igg(wildcards):
-    '''
-    Returns the igg file for the sample unless
-    the sample is IgG then no control file is used.
-    '''
-    if config['USEIGG']:
-        sf=wildcards.sample.split('_')[0]
-        bam=glob.glob(f'data/markd/{sf}_{config["IGG"]}*bam')
-        iggsample=config['IGG'][0] in wildcards.sample
-        if not iggsample:
-            return f'-cf {bam}'
-        else:
-            return ""
-    else: 
-        return ""
+samps = get_samples()
+reads= get_reads()
+marks=get_marks()
+print(samps)
+print(reads)
+print(marks)
 
-samps=detect_samples(fastq_dir)
-print("Found samples:")
-for s in samps:
-    print(f"{s}: {samps[s]}")
-
-# samples and reads 
-sampdict = detect_samples(fastq_dir)
-reads=[Path(Path(f).stem).stem for f in os.listdir(fastq_dir) if f.endswith(fastq_ext)]
-
-marks = [k for k in list(set([s.split("_")[1] for s in samps])) if k not in config['IGG'][0]]
-sample_noigg = [k for k in sampdict.keys() if config["IGG"][0] not in k]
+marks = get_marks()
+sample_noigg = [k for k in samps if config["IGG"] not in k]
 
 fastqScreenDict = {
 'database': {
@@ -67,7 +44,7 @@ rule all:
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}.fastq_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks),
-        expand("data/aligned/{sample}.bam", sample=sampdict.keys()),
+        expand("data/aligned/{sample}.bam", sample=samps),
         expand(["data/callpeaks/{sample}_peaks.bed", 
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
@@ -118,7 +95,7 @@ rule fastq_screen:
 # align samples to genome
 rule bowtie2:
     input:
-        lambda wildcards: sampdict[wildcards.sample]
+        get_bowtie2_input
     output:
         "data/aligned/{sample}.bam"
     log:
@@ -258,7 +235,7 @@ rule frip:
 
 rule multiqc:
     input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg), directory("data/")
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg)
     output:
         "data/multiqc/multiqc_report.html"
     conda:

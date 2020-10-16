@@ -1,0 +1,31 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: sample sheeet schema
+properties:
+  sample:
+    type: string
+    description: unique sample name / identifier
+  R1:
+    type: string
+    description: path to the the read1 fastq file 
+  R2:
+    type: string
+    description: path to the the read2 fastq file 
+  mark:
+    type: string
+    description: epigenetic mark used
+  condition:
+    type: string
+    description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
+  igg:
+    type: string
+    description: igg file to use, initially set to same as filename, must change to represent igg sample
+
+required:
+  - sample
+  - R1
+  - R2
+  - mark
+  - condition
+  - igg
+    
