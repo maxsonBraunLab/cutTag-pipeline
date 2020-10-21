@@ -34,6 +34,8 @@ meta <- read.csv(meta, header = T, stringsAsFactors = F)
 
 message('calculating deseq')
 # make deseqdataset
+print(counts)
+print(meta)
 ddsMat <- DESeqDataSetFromMatrix(countData = counts, colData = meta, design = ~condition)
 dds <- DESeq(ddsMat)
 
@@ -48,7 +50,8 @@ write.csv(lnormCounts, lnormCount)
 
 # calculate rlog transform
 rld <- rlog(dds, blind=FALSE)
-vsd <- vst(dds, blind=FALSE)
+vsd <- varianceStabilizingTransformation(dds, blind = TRUE,
+  fitType = "parametric")
 ntd <- normTransform(dds)
 
 message('plotting count transforms')

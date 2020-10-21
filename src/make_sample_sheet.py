@@ -34,6 +34,7 @@ def main():
     dmet=df.copy()
     dmet=dmet[['sample','condition']]
     dmet.loc[:,('sample')] = dmet.loc[:,('sample')].apply(lambda x: x.split("_")[0])
+    dmet.drop_duplicates(inplace=True)
     dmet.to_csv('src/deseq2_metadata.csv', index=False)
 
 if __name__ == "__main__": 

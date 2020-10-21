@@ -45,3 +45,22 @@ def get_igg(wildcards):
             return ""
     else:
         return ""
+
+def get_callpeaks(wildcards):
+    """
+    Returns the callpeaks input files
+    """
+    bam=f"data/markd/{wildcards.sample}.sorted.markd.bam"
+    bai=f"data/markd/{wildcards.sample}.sorted.markd.bam.bai"
+    cp="src/callpeaks.py"
+    if config["USEIGG"]:
+        igg=st.loc[wildcards.sample]['igg']
+        iggbam=f'data/markd/{igg}.sorted.markd.bam'
+        iggbam=f'data/markd/{igg}.sorted.markd.bam.bai'
+        isigg=config['IGG'] in wildcards.sample
+        if not isigg:
+            return [bam,bai,cp,iggbam]
+        else:
+            return [bam,bai,cp]
+    else:
+        return [bam,bai,cp]

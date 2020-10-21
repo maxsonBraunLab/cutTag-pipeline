@@ -23,6 +23,7 @@ print(marks)
 
 marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
+marks_noigg = [m for m in marks if config["IGG"] not in m]
 
 fastqScreenDict = {
 'database': {
@@ -43,9 +44,10 @@ rule all:
     input:
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}.fastq_screen.txt", read=reads),
-        expand("data/counts/{mark}_counts.tsv", mark=marks),
-        expand("data/aligned/{sample}.bam", sample=samps),
-        expand(["data/callpeaks/{sample}_peaks.bed", 
+        expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
+        expand(["data/markd/{sample}.sorted.markd.bam",
+                "data/markd/{sample}.sorted.markd.bam"], sample=samps),
+        expand(["data/callpeaks/{sample}_peaks.tsv", 
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
@@ -60,7 +62,7 @@ rule all:
         "data/deseq2/{mark}/{mark}-vsd.png",
         "data/deseq2/{mark}/{mark}-vsd-dist.png",
         "data/deseq2/{mark}/{mark}-rld-dist.png",
-        "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks)
+        "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg)
 
 # fastqc for each read 
 rule fastqc:
@@ -194,9 +196,9 @@ rule wget_callpeaks:
 
 rule callpeaks:
     input:
-        "data/markd/{sample}.sorted.markd.bam", "data/markd/{sample}.sorted.markd.bam.bai", "src/callpeaks.py"
+        get_callpeaks
     output:
-        "data/callpeaks/{sample}_peaks.bed"
+        "data/callpeaks/{sample}_peaks.tsv"
     conda:
         "envs/callpeaks.yml"
     log:
@@ -211,7 +213,7 @@ rule callpeaks:
 # get consensus
 rule consensus:
     input:
-       expand("data/callpeaks/{sample}_peaks.bed", sample=sample_noigg)
+       expand("data/callpeaks/{sample}_peaks.tsv", sample=sample_noigg)
     output:
        "data/counts/{mark}_counts.tsv"
     conda:
@@ -223,7 +225,7 @@ rule consensus:
 
 rule frip:
     input:
-        rules.callpeaks.output, rules.callpeaks.input
+        rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
     output:
         "data/plotEnrichment/frip_{sample}.png", "data/plotEnrichment/frip_{sample}.tsv"
     conda:
@@ -235,7 +237,7 @@ rule frip:
 
 rule multiqc:
     input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg)
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg), directory("data/")
     output:
         "data/multiqc/multiqc_report.html"
     conda:
@@ -243,7 +245,7 @@ rule multiqc:
     log:
         "data/logs/multiqc.log"
     shell:
-        "multiqc -o data/multiqc {input} > {log} 2>&1"
+        "multiqc -f -c src/multiqc_conf.yml -o data/multiqc {input} > {log} 2>&1"
 
 rule deseq2:
     input:
