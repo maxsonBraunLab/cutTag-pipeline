@@ -1,0 +1,15 @@
+# Other MultiQC config stuff here
+custom_data:
+    peaks:
+        file_format: 'txt'
+        section_name: 'Peak Counts'
+        description: 'Callpeaks peak counts'
+        plot_type: 'bargraph'
+        pconfig:
+            id: 'peakcounts bargraph'
+            title: 'Sample Peak Counts'
+            ylab: 'Number of Peaks'
+            xlab: 'Sample'
+sp:
+    peaks:
+        fn: '*.counts.tsv'
