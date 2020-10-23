@@ -35,7 +35,7 @@ BAMDIR=$3
 # output counts table filename
 OUTFILE=$4
 
-declare -a mpks=(${PEAKDIR}/*${MARK}*_peaks.bed)
+declare -a mpks=(${PEAKDIR}/*${MARK}*_peaks.tsv)
 
 # intersect replicate peaks across marks
 bedtools intersect -a ${mpks[0]} -b ${mpks[@]:1} -c | awk -v OFS='\t' '$7>1 {print $1,$2,$3,$4,"0","."}' > data/counts/${MARK}_consensus.bed
