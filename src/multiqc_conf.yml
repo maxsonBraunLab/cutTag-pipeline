@@ -12,4 +12,4 @@ custom_data:
             xlab: 'Sample'
 sp:
     peaks:
-        fn: '*.counts.tsv'
+        fn: '*.counts.txt'
