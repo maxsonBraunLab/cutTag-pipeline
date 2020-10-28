@@ -153,10 +153,10 @@ for (k in 1:length(lsc)) {
         write_tsv(path=tableName)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
-    sumtab = diffexp %>%
+    diffexp %>%
         summarise(DE05=nrow(filter(.,padj<0.05)),
                   DE01=nrow(filter(.,padj<0.01))) %>%
-    write_tsv(sumtab, summaryName)
+    write_tsv(summaryName)
 }
 
 # save RDS of deseq object
