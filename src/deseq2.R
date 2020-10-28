@@ -141,22 +141,21 @@ for (k in 1:length(lsc)) {
 
     tableName=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','diffexp.tsv')
 
+   
     # annottate peaks
     diffexp=res %>% 
-        rename(row='name') %>%
+        as_tibble(rownames='name') %>%
         left_join(peaks) %>%
         GRanges() %>%
-        join_nearest(genes, suffix=c(".peak", ".gene")) %>%
+        join_nearest(genestab, suffix=c(".peak", ".gene")) %>%
         as_tibble() %>%
         select(-strand, -score) %>%
         write_tsv(path=tableName)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
     sumtab = diffexp %>%
-        mutate(pclass=case_when(padj<0.01 ~ "DE<01",
-                                 padj<0.05 ~ "DE<05",
-                                 padj>0.05 ~ "notDE")) %>%
-        dplyr::count(pclass, sort=T) 
+        summarise(DE05=nrow(filter(.,padj<0.05)),
+                  DE01=nrow(filter(.,padj<0.01))) %>%
     write_tsv(sumtab, summaryName)
 }
 
