@@ -46,7 +46,8 @@ rule all:
         expand("data/fastq_screen/{read}.fastq_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
         expand(["data/markd/{sample}.sorted.markd.bam",
-                "data/markd/{sample}.sorted.markd.bam"], sample=samps),
+                "data/markd/{sample}.sorted.markd.bam",
+                "data/markd/{sample}.sorted.markd.fraglen.tsv"], sample=samps),
         expand(["data/callpeaks/{sample}_peaks.tsv", 
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
@@ -138,6 +139,7 @@ rule markdup:
     shell:
         "sambamba markdup --tmpdir=data/markd -t {threads} {input} {output} > {log} 2>&1"
 
+
 rule index:
     input:
         rules.markdup.output
@@ -150,6 +152,18 @@ rule index:
         "data/logs/samtools_index_{sample}.log"
     shell:
         "sambamba index -t {threads} {input} > {log} 2>&1"
+
+
+rule fraglength:
+    input:
+        rules.markdup.output
+    output:
+        "data/markd/{sample}.sorted.markd.fraglen.tsv"
+    conda:
+        "envs/align.yml"
+    shell:
+        "src/fraglen-dist.sh {input} {output}"
+
 
 rule preseq:
     input:
@@ -235,18 +249,6 @@ rule frip:
     shell:
         "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output[1]} -o {output[0]} > {log} 2>&1"
 
-rule multiqc:
-    input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps), directory("data/")
-    output:
-        "data/multiqc/multiqc_report.html"
-    conda:
-        "envs/multiqc.yml"
-    log:
-        "data/logs/multiqc.log"
-    shell:
-        "multiqc -f -c src/multiqc_conf.yml -o data/multiqc {input} > {log} 2>&1"
-
 rule deseq2:
     input:
         counts="data/counts/{mark}_counts.tsv",
@@ -271,3 +273,18 @@ rule deseq2:
         "envs/deseq2.yml"
     script:
         "src/deseq2.R"
+
+rule multiqc:
+    input:
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps),
+        expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
+        directory("data/")
+    output:
+        "data/multiqc/multiqc_report.html"
+    conda:
+        "envs/multiqc.yml"
+    log:
+        "data/logs/multiqc.log"
+    shell:
+        "multiqc -f -c src/multiqc_conf.yml -o data/multiqc {input} > {log} 2>&1"
+
