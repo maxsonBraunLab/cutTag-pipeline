@@ -154,8 +154,9 @@ for (k in 1:length(lsc)) {
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
     diffexp %>%
-        summarise(DE05=nrow(filter(.,padj<0.05)),
-                  DE01=nrow(filter(.,padj<0.01))) %>%
+        summarise(Condition=paste0(exp_prefix,"-",rname),
+                  DP05=nrow(filter(.,padj<0.05)),
+                  DP01=nrow(filter(.,padj<0.01))) %>%
     write_tsv(summaryName)
 }
 
