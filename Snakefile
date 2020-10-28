@@ -51,7 +51,7 @@ rule all:
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
-        ], sample=sample_noigg),
+        ], sample=samps),
         "data/multiqc/multiqc_report.html",
         "src/callpeaks.py",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.png",
@@ -237,7 +237,7 @@ rule frip:
 
 rule multiqc:
     input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg), directory("data/")
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps), directory("data/")
     output:
         "data/multiqc/multiqc_report.html"
     conda:
@@ -250,7 +250,8 @@ rule multiqc:
 rule deseq2:
     input:
         counts="data/counts/{mark}_counts.tsv",
-        meta="src/deseq2_metadata.csv" 
+        meta="src/deseq2_metadata.csv", 
+        genes=config["GENES"]
     output:
         pcaPlot="data/deseq2/{mark}/{mark}-rld-pca.png",
         pcaPlotVsd="data/deseq2/{mark}/{mark}-vsd-pca.png",

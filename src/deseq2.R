@@ -1,4 +1,4 @@
-library("dplyr")
+library("tidyverse")
 library("vsn")
 library("pheatmap")
 library("ggplot2")
@@ -6,6 +6,8 @@ library("RColorBrewer")
 library("DESeq2")
 library("PoiClaClu")
 library("gplots")
+library("plyranges")
+library("tidyr")
 
 message("setting snakemake parameters")
 
@@ -14,6 +16,7 @@ outdir = snakemake@params[["outdir"]]
 
 input = snakemake@input[["counts"]]
 meta = snakemake@input[["meta"]]
+genes = snakemake@input[["genes"]]
 pcaPlot = snakemake@output[["pcaPlot"]]
 pcaPlotVsd = snakemake@output[["pcaPlotVsd"]]
 normCount = snakemake@output[["normCounts"]]
@@ -23,6 +26,13 @@ sdMeanVsd = snakemake@output[["sdMeanVsd"]]
 sampleDistPlotVsd = snakemake@output[["sampleDistVsd"]]
 sampleDistPlotRld = snakemake@output[["sampleDistRld"]]
 rds = snakemake@output[["rds"]]
+
+
+# read in genes file
+genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "score", "strand")) %>% GRanges()
+
+# counts join
+peaks = read_tsv(input) %>% select(chrom, start, end, peak) %>% rename(peak='name')
 
 # read in counts table
 counts = read.delim(input, header=T, stringsAsFactors = F)
@@ -34,8 +44,6 @@ meta <- read.csv(meta, header = T, stringsAsFactors = F)
 
 message('calculating deseq')
 # make deseqdataset
-print(counts)
-print(meta)
 ddsMat <- DESeqDataSetFromMatrix(countData = counts, colData = meta, design = ~condition)
 dds <- DESeq(ddsMat)
 
@@ -114,12 +122,11 @@ for (k in 1:length(lsc)) {
     cl=lsc[[k]]
     rname=paste0(cl[1],"vs",cl[2])
     res=results(dds, 
-            independentFiltering = FALSE,
+            independentFiltering = TRUE,
             cooksCutoff = FALSE,
-            contrast = c("condition", cl[1], cl[2]))
-    res05 <- subset(res, padj < 0.05)
+            contrast = c("condition", cl[1], cl[2]),
+            alpha=0.05)
 
-    print(resultsNames(dds))
     # estimate shrinkage 
     resLFC <- lfcShrink(dds, coef=2, type="apeglm")
 
@@ -128,19 +135,29 @@ for (k in 1:length(lsc)) {
     png(maplot)
     par(mfrow=c(1,2), mar=c(4,4,2,1))
     xlim <- c(1,1e5); ylim <- c(-2,2)
-    plotMA(resLFC, xlim=xlim, ylim=ylim, main=paste(rname, "apeglm"))
-    plotMA(res, xlim=xlim, ylim=ylim, main=paste(rname, "normal"))
+    plotMA(resLFC, xlim=xlim, ylim=ylim, alpha=0.05, main=paste(rname, "apeglm"))
+    plotMA(res, xlim=xlim, ylim=ylim, alpha=0.05, main=paste(rname, "normal"))
     dev.off()
 
     tableName=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','diffexp.tsv')
-    tableName05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','sig05-diffexp.tsv')
-    write.table(res, file=tableName, quote=FALSE, sep='\t', col.names = TRUE )
-    write.table(res05, file=tableName, quote=FALSE, sep='\t', col.names = TRUE )
 
-    summary05Name=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-sig05-diffexp-summary.txt")
-    sink(summary05Name)
-    print(summary(results(dds, alpha=0.05)))
-    sink()
+    # annottate peaks
+    diffexp=res %>% 
+        rename(row='name') %>%
+        left_join(peaks) %>%
+        GRanges() %>%
+        join_nearest(genes, suffix=c(".peak", ".gene")) %>%
+        as_tibble() %>%
+        select(-strand, -score) %>%
+        write_tsv(path=tableName)
+
+    summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
+    sumtab = diffexp %>%
+        mutate(pclass=case_when(padj<0.01 ~ "DE<01",
+                                 padj<0.05 ~ "DE<05",
+                                 padj>0.05 ~ "notDE")) %>%
+        dplyr::count(pclass, sort=T) 
+    write_tsv(sumtab, summaryName)
 }
 
 # save RDS of deseq object
