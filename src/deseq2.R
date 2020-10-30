@@ -139,8 +139,7 @@ for (k in 1:length(lsc)) {
     plotMA(res, xlim=xlim, ylim=ylim, alpha=0.05, main=paste(rname, "normal"))
     dev.off()
 
-    tableName=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','diffexp.tsv')
-
+    tableName=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','peaks-annot.tsv')
    
     # annottate peaks
     diffexp=res %>% 
@@ -148,16 +147,45 @@ for (k in 1:length(lsc)) {
         left_join(peaks) %>%
         GRanges() %>%
         join_nearest(genestab, suffix=c(".peak", ".gene")) %>%
-        as_tibble() %>%
-        select(-strand, -score) %>%
-        write_tsv(path=tableName)
+        as_tibble() 
+    write_tsv(diffexp, path=tableName)
+
+    # differential peak files lfc > 0 | lfc > 0  padj < 0.05 | padj < 0.01
+    deup05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-05.tsv')
+    dedown05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-05.tsv')
+    deup01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-01.tsv')
+    dedown01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-01.tsv')
+    # sig up peaks
+    diffexp %>%
+        filter(log2FoldChange > 0, padj < 0.05) %>%
+        select(seqnames, start, end, name.peak,score,strand) %>%
+        write_tsv(deup05)
+
+    # sig down peaks
+    diffexp %>%
+        filter(log2FoldChange < 0, padj < 0.05) %>%
+        select(seqnames, start, end, name.peak,score,strand) %>%
+        write_tsv(dedown05)
+
+    # sig up peaks
+    diffexp %>%
+        filter(log2FoldChange > 0, padj < 0.01) %>%
+        select(seqnames, start, end, name.peak,score,strand) %>%
+        write_tsv(deup01)
+
+    # sig down peaks
+    diffexp %>%
+        filter(log2FoldChange < 0, padj < 0.01) %>%
+        select(seqnames, start, end, name.peak,score,strand) %>%
+        write_tsv(dedown05)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
     diffexp %>%
         summarise(Condition=paste0(exp_prefix,"-",rname),
                   DP05=nrow(filter(.,padj<0.05)),
                   DP01=nrow(filter(.,padj<0.01))) %>%
-    write_tsv(summaryName)
+        write_tsv(summaryName)
+
 }
 
 # save RDS of deseq object
