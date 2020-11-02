@@ -151,10 +151,10 @@ for (k in 1:length(lsc)) {
     write_tsv(diffexp, path=tableName)
 
     # differential peak files lfc > 0 | lfc > 0  padj < 0.05 | padj < 0.01
-    deup05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-05.tsv')
-    dedown05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-05.tsv')
-    deup01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-01.tsv')
-    dedown01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-01.tsv')
+    deup05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-05.bed')
+    dedown05=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-05.bed')
+    deup01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-up-01.bed')
+    dedown01=paste0(outdir,"/",exp_prefix,"/",cl[1],'-',cl[2],'-',exp_prefix,'-','differential-down-01.bed')
     # sig up peaks
     diffexp %>%
         filter(log2FoldChange > 0, padj < 0.05) %>%
