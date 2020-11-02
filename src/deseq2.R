@@ -177,7 +177,7 @@ for (k in 1:length(lsc)) {
     diffexp %>%
         filter(log2FoldChange < 0, padj < 0.01) %>%
         select(seqnames, start, end, name.peak,score,strand) %>%
-        write_tsv(dedown05)
+        write_tsv(dedown01)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
     diffexp %>%
