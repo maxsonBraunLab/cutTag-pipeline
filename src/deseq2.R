@@ -159,25 +159,25 @@ for (k in 1:length(lsc)) {
     diffexp %>%
         filter(log2FoldChange > 0, padj < 0.05) %>%
         select(seqnames, start, end, name.peak,score,strand) %>%
-        write_tsv(deup05)
+        write_tsv(deup05, col_names=FALSE)
 
     # sig down peaks
     diffexp %>%
         filter(log2FoldChange < 0, padj < 0.05) %>%
         select(seqnames, start, end, name.peak,score,strand) %>%
-        write_tsv(dedown05)
+        write_tsv(dedown05, col_names=FALSE)
 
     # sig up peaks
     diffexp %>%
         filter(log2FoldChange > 0, padj < 0.01) %>%
         select(seqnames, start, end, name.peak,score,strand) %>%
-        write_tsv(deup01)
+        write_tsv(deup01, col_names=FALSE)
 
     # sig down peaks
     diffexp %>%
         filter(log2FoldChange < 0, padj < 0.01) %>%
         select(seqnames, start, end, name.peak,score,strand) %>%
-        write_tsv(dedown01)
+        write_tsv(dedown01, col_names=FALSE)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
     diffexp %>%
