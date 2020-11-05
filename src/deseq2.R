@@ -35,7 +35,7 @@ genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "scor
 peaks = read_tsv(input) %>% select(chrom, start, end, peak) %>% rename(peak='name')
 
 # read in counts table
-counts = read.delim(input, header=T, stringsAsFactors = F)
+counts = read.delim(input, header=T, stringsAsFactors = F, check.names=F)
 rownames(counts) = counts$peak
 counts = counts[,7:ncol(counts)]
 
