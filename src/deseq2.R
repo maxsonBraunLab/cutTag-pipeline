@@ -42,6 +42,9 @@ counts = counts[,7:ncol(counts)]
 # read in metadata
 meta <- read.csv(meta, header = T, stringsAsFactors = F)
 
+# make the meta reflect the available sample names
+meta = meta[meta$sample %in% colnames(counts),]
+
 message('calculating deseq')
 # make deseqdataset
 ddsMat <- DESeqDataSetFromMatrix(countData = counts, colData = meta, design = ~condition)

@@ -17,9 +17,6 @@ validate(st, schema="schemas/samples.schema.yml")
 samps = get_samples()
 reads= get_reads()
 marks=get_marks()
-print(samps)
-print(reads)
-print(marks)
 
 marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
