@@ -278,7 +278,7 @@ for (k in 1:length(lsc)) {
         annot_filename=gsub(".tsv", "-05-clust.tsv", tableName)
         # annotate cluster and direction
         annots[["name.peak"]] = rownames(annots)
-        sig %>% left_join(annots) %>% write_delim(annot_filename)
+        sig %>% left_join(annots) %>% write_delim(annot_filename, delim="\t")
     }
 }
 
