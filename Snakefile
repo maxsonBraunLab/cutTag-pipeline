@@ -263,9 +263,8 @@ rule deseq2:
         rds="data/deseq2/{mark}/{mark}-dds.rds"
     params:
         mark=lambda wildcards: wildcards.mark,
-        outdir="data/deseq2/"
-    log:
-        "data/logs/deseq2-{mark}.log"
+        outdir = "data/deseq2/",
+        numclusters = 4
     conda:
         "envs/deseq2.yml"
     script:

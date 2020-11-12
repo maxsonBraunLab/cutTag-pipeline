@@ -12,6 +12,7 @@ dependencies:
     - r-pheatmap
     - r-tidyverse
     - r-rcolorbrewer
+    - r-dendextend
     - bioconductor-genomicranges
     - r-gplots
     - r-poiclaclu
