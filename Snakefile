@@ -280,16 +280,22 @@ rule frip_plot:
         "data/plotEnrichment/frip.html"
     run:
         pd.options.plotting.backend = "plotly"
-        frip_df = pd.concat([pd.read_csv(i, sep = "\t", usecols=["percent"]).rename(columns= {'percent': "_".join(i.split("_")[1:3])} ) for i in sorted(input)], axis = 1)
+        dfs = []
+        for i in sorted(input):
+            cond_marker = "_".join(i.split("_")[1:3])
+            temp_df = pd.read_csv(i, sep = "\t", usecols=["percent"]).rename(columns = {'percent': cond_marker})
+            dfs.append(temp_df)
+        frip_df = pd.concat(dfs, axis = 1)
         frip_df = frip_df.rename(index={0: 'inside'})
         frip_df.loc["outside"] = 100 - frip_df.loc['inside']
         fig = go.Figure(data=[
             go.Bar(name="inside_peaks", x=frip_df.columns, y=frip_df.loc['inside'], marker_color='rgb(255, 201, 57)'),
             go.Bar(name='outside_peaks', x=frip_df.columns, y=frip_df.loc['outside'], marker_color='rgb(0,39, 118)')
         ])
-        fig.update_layout(barmode='stack', title='Fraction of Reads in Peaks by Sample', 
+        fig.update_layout(barmode='stack', 
+            title='Fraction of Reads in Peaks by Sample', 
             xaxis_tickfont_size=14, yaxis=dict(title='Fraction of reads in peaks', 
-                titlefont_size=16, tickfont_size=14), xaxis=dict(title='Samples'))
+            titlefont_size=16, tickfont_size=14), xaxis=dict(title='Samples'))
         fig.write_html(str(output))
 
 rule deseq2:
