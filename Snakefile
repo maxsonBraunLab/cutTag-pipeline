@@ -5,6 +5,9 @@ from pathlib import Path,PurePath,PurePosixPath
 from collections import defaultdict
 import pandas as pd
 from snakemake.utils import validate, min_version
+import plotly as plt
+import plotly.graph_objects as go
+
 ##### set minimum snakemake version #####
 min_version("5.1.2")
 
@@ -36,6 +39,7 @@ fastqScreenDict = {
  'aligner_paths': {'bowtie2': 'bowtie2'}
 }
 
+localrules: frip_plot, fraglength_plot
 
 rule all:
     input:
@@ -61,6 +65,9 @@ rule all:
         "data/deseq2/{mark}/{mark}-vsd-dist.png",
         "data/deseq2/{mark}/{mark}-rld-dist.png",
         "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg)
+        # quality control plots
+        "data/qc/fraglen.html",
+        "data/qc/frip.html"
 
 # fastqc for each read 
 rule fastqc:
@@ -161,6 +168,26 @@ rule fraglength:
     shell:
         "src/fraglen-dist.sh {input} {output}"
 
+rule fraglength_plot:
+    input:
+        expand("data/markd/{sample}.sorted.markd.fraglen.tsv", sample = samps)
+    output:
+        "data/markd/fraglen.html"
+    run:
+        pd.options.plotting.backend = "plotly"
+        dfs = []
+        for i in input:
+            cond_marker = [os.path.basename(i).split(".")[0]]
+            temp_df = pd.read_csv(i, sep = "\t", index_col = 0, names = cond_marker)
+            dfs.append(temp_df)
+        df = pd.concat(dfs, axis = 1)
+        fraglen = df.plot()
+        fraglen.update_layout( 
+            title='Fragment Length Distribution', 
+            xaxis_title='Fragment Length (bp)', 
+            yaxis_title='Counts', 
+            legend_title_text='Samples')
+        fraglen.write_html(str(output))
 
 rule preseq:
     input:
@@ -246,10 +273,29 @@ rule frip:
     shell:
         "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output[1]} -o {output[0]} > {log} 2>&1"
 
+rule frip_plot:
+    input:
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample = samps)
+    output:
+        "data/plotEnrichment/frip.html"
+    run:
+        pd.options.plotting.backend = "plotly"
+        frip_df = pd.concat([pd.read_csv(i, sep = "\t", usecols=["percent"]).rename(columns= {'percent': "_".join(i.split("_")[1:3])} ) for i in sorted(input)], axis = 1)
+        frip_df = frip_df.rename(index={0: 'inside'})
+        frip_df.loc["outside"] = 100 - frip_df.loc['inside']
+        fig = go.Figure(data=[
+            go.Bar(name="inside_peaks", x=frip_df.columns, y=frip_df.loc['inside'], marker_color='rgb(255, 201, 57)'),
+            go.Bar(name='outside_peaks', x=frip_df.columns, y=frip_df.loc['outside'], marker_color='rgb(0,39, 118)')
+        ])
+        fig.update_layout(barmode='stack', title='Fraction of Reads in Peaks by Sample', 
+            xaxis_tickfont_size=14, yaxis=dict(title='Fraction of reads in peaks', 
+                titlefont_size=16, tickfont_size=14), xaxis=dict(title='Samples'))
+        fig.write_html(str(output))
+
 rule deseq2:
     input:
         counts="data/counts/{mark}_counts.tsv",
-        meta="src/deseq2_metadata.csv", 
+        meta="src/deseq2_metadata.csv",
         genes=config["GENES"]
     output:
         pcaPlot="data/deseq2/{mark}/{mark}-rld-pca.png",

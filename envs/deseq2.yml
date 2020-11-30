@@ -17,4 +17,4 @@ dependencies:
     - r-gplots
     - r-poiclaclu
     - bioconductor-plyranges
-    
+    - r-ggrepel 
