@@ -9,6 +9,8 @@ library("gplots")
 library("plyranges")
 library("tidyr")
 library("dendextend")
+library("ggrepel")
+
 
 message("setting snakemake parameters")
 
@@ -112,12 +114,12 @@ dev.off()
 
 # plot PCA rld
 png(pcaPlot)
-plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-rld"))
+plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-rld")) + geom_text_repel(aes(label=name))
 dev.off()
 
 # plot PCA vsd
 png(pcaPlotVsd)
-plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-vsd"))
+plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-vsd")) + geom_text_repel(aes(label=name))
 dev.off()
 
 # make contrasts
