@@ -56,18 +56,18 @@ rule all:
         ], sample=samps),
         "data/multiqc/multiqc_report.html",
         "src/callpeaks.py",
-        expand(["data/deseq2/{mark}/{mark}-rld-pca.png",
-        "data/deseq2/{mark}/{mark}-vsd-pca.png",
+        expand(["data/deseq2/{mark}/{mark}-rld-pca.svg",
+        "data/deseq2/{mark}/{mark}-vsd-pca.svg",
         "data/deseq2/{mark}/{mark}-normcounts.csv",
         "data/deseq2/{mark}/{mark}-lognormcounts.csv",
         "data/deseq2/{mark}/{mark}-rld.svg",
         "data/deseq2/{mark}/{mark}-vsd.svg",
         "data/deseq2/{mark}/{mark}-vsd-dist.svg",
         "data/deseq2/{mark}/{mark}-rld-dist.svg",
-        "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg)
+        "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg),
         # quality control plots
-        "data/qc/fraglen.html",
-        "data/qc/frip.html"
+        "data/markd/fraglen.html",
+        "data/plotEnrichment/frip.html"
 
 # fastqc for each read 
 rule fastqc:
