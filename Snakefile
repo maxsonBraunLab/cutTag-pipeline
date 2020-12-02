@@ -60,10 +60,10 @@ rule all:
         "data/deseq2/{mark}/{mark}-vsd-pca.png",
         "data/deseq2/{mark}/{mark}-normcounts.csv",
         "data/deseq2/{mark}/{mark}-lognormcounts.csv",
-        "data/deseq2/{mark}/{mark}-rld.png",
-        "data/deseq2/{mark}/{mark}-vsd.png",
-        "data/deseq2/{mark}/{mark}-vsd-dist.png",
-        "data/deseq2/{mark}/{mark}-rld-dist.png",
+        "data/deseq2/{mark}/{mark}-rld.svg",
+        "data/deseq2/{mark}/{mark}-vsd.svg",
+        "data/deseq2/{mark}/{mark}-vsd-dist.svg",
+        "data/deseq2/{mark}/{mark}-rld-dist.svg",
         "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg)
         # quality control plots
         "data/qc/fraglen.html",
@@ -304,14 +304,14 @@ rule deseq2:
         meta="src/deseq2_metadata.csv",
         genes=config["GENES"]
     output:
-        pcaPlot="data/deseq2/{mark}/{mark}-rld-pca.png",
-        pcaPlotVsd="data/deseq2/{mark}/{mark}-vsd-pca.png",
+        pcaPlot="data/deseq2/{mark}/{mark}-rld-pca.svg",
+        pcaPlotVsd="data/deseq2/{mark}/{mark}-vsd-pca.svg",
         normCounts="data/deseq2/{mark}/{mark}-normcounts.csv",
         lnormCounts="data/deseq2/{mark}/{mark}-lognormcounts.csv",
-        sdMeanRld="data/deseq2/{mark}/{mark}-rld.png",
-        sdMeanVsd="data/deseq2/{mark}/{mark}-vsd.png",
-        sampleDistVsd="data/deseq2/{mark}/{mark}-vsd-dist.png",
-        sampleDistRld="data/deseq2/{mark}/{mark}-rld-dist.png",
+        sdMeanRld="data/deseq2/{mark}/{mark}-rld.svg",
+        sdMeanVsd="data/deseq2/{mark}/{mark}-vsd.svg",
+        sampleDistVsd="data/deseq2/{mark}/{mark}-vsd-dist.svg",
+        sampleDistRld="data/deseq2/{mark}/{mark}-rld-dist.svg",
         rds="data/deseq2/{mark}/{mark}-dds.rds"
     params:
         mark=lambda wildcards: wildcards.mark,
