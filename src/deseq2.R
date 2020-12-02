@@ -41,7 +41,7 @@ genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "scor
 peaks = read_tsv(input) %>% select(chrom, start, end, peak) %>% rename(peak='name')
 
 # read in counts table
-counts = read.delim(input, header=T, stringsAsFactors = F)
+counts = read.delim(input, header=T, stringsAsFactors = F, check.names=F)
 rownames(counts) = counts$peak
 counts = counts[,7:ncol(counts)]
 
@@ -52,6 +52,8 @@ meta <- read.csv(meta, header = T, stringsAsFactors = F)
 meta = meta[meta$sample %in% colnames(counts),]
 
 message('calculating deseq...')
+print(head(counts))
+print(head(meta))
 # make deseqdataset
 ddsMat <- DESeqDataSetFromMatrix(countData = counts, colData = meta, design = ~condition)
 dds <- DESeq(ddsMat)
@@ -125,7 +127,6 @@ dev.off()
 # make contrasts
 c = combn(unique(meta$condition), 2)
 lsc=split(c, rep(1:ncol(c), each = nrow(c)))
-g
 message('writing contrast results...')
 # write differential results for each contrast
 for (k in 1:length(lsc)) {
@@ -141,7 +142,7 @@ for (k in 1:length(lsc)) {
     resLFC <- lfcShrink(dds, coef=2, type="apeglm")
 
     #plotMA
-    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.png")
+    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.svg")
     svg(maplot)
     par(mfrow=c(1,2), mar=c(4,4,2,1))
     xlim <- c(1,1e5); ylim <- c(-2,2)
@@ -267,14 +268,14 @@ for (k in 1:length(lsc)) {
             annotation_row = annots,
             annotation_colors = colors)
 
-        save_pheatmap_svg <- function(x, filename, width=1200, height=1000, res = 150) {
-            svg(filename, width = width, height = height, res = res)
+        save_pheatmap_svg <- function(x, filename, width=7, height=7) {
+            svg(filename, width = width, height = height)
             grid::grid.newpage()
             grid::grid.draw(x$gtable)
             dev.off()
         }
 
-        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.png")
+        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.svg")
         save_pheatmap_svg(heat, heatmap_filename)
 
         annot_filename=gsub(".tsv", "-05-clust.tsv", tableName)
