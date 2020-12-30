@@ -51,6 +51,11 @@ meta <- read.csv(meta, header = T, stringsAsFactors = F)
 # make the meta reflect the available sample names
 meta = meta[meta$sample %in% colnames(counts),]
 
+# make sure meta rownames and counts colnames in the same order.
+rownames(meta) <- meta$sample
+counts <- counts[, rownames(meta)]
+stopifnot(rownames(meta) == colnames(counts))
+
 message('calculating deseq...')
 print(head(counts))
 print(head(meta))
