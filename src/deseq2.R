@@ -41,7 +41,7 @@ genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "scor
 peaks = read_tsv(input) %>% select(chrom, start, end, peak) %>% rename(peak='name')
 
 # read in counts table
-counts = read.delim(input, header=T, stringsAsFactors = F)
+counts = read.delim(input, header=T, stringsAsFactors = F, check.names=F)
 rownames(counts) = counts$peak
 counts = counts[,7:ncol(counts)]
 
@@ -52,6 +52,8 @@ meta <- read.csv(meta, header = T, stringsAsFactors = F)
 meta = meta[meta$sample %in% colnames(counts),]
 
 message('calculating deseq...')
+print(head(counts))
+print(head(meta))
 # make deseqdataset
 ddsMat <- DESeqDataSetFromMatrix(countData = counts, colData = meta, design = ~condition)
 dds <- DESeq(ddsMat)
@@ -74,19 +76,19 @@ ntd <- normTransform(dds)
 
 message('plotting count transforms...')
 # plot the transform for the first two samples
-png(sdMeanRld)
+svg(sdMeanRld)
 rldCounts <- meanSdPlot(assay(rld))
 rldCounts$gg + labs(title="meanSdPlot - rlog transformed")
 dev.off()
 
-png(sdMeanVsd)
+svg(sdMeanVsd)
 vsdCounts <- meanSdPlot(assay(vsd))
 vsdCounts$gg + labs(title="meanSdPlot - vsd transformed")
 dev.off()
 
 message('plotting poisson distance sample cross correlation...')
 # plot sample distances 
-png(sampleDistPlotVsd)
+svg(sampleDistPlotVsd)
 sampleDists <- dist(t(assay(vsd)))
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(meta$sample, meta$condition, sep="-")
@@ -99,7 +101,7 @@ pheatmap(sampleDistMatrix,
          main=paste(exp_prefix, "vsd sample distance matrix"))
 dev.off()
 
-png(sampleDistPlotRld)
+svg(sampleDistPlotRld)
 sampleDists <- dist(t(assay(rld)))
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(meta$sample, meta$condition, sep="-")
@@ -113,19 +115,18 @@ pheatmap(sampleDistMatrix,
 dev.off()
 
 # plot PCA rld
-png(pcaPlot)
+svg(pcaPlot)
 plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-rld")) + geom_text_repel(aes(label=name))
 dev.off()
 
 # plot PCA vsd
-png(pcaPlotVsd)
+svg(pcaPlotVsd)
 plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-vsd")) + geom_text_repel(aes(label=name))
 dev.off()
 
 # make contrasts
 c = combn(unique(meta$condition), 2)
 lsc=split(c, rep(1:ncol(c), each = nrow(c)))
-
 message('writing contrast results...')
 # write differential results for each contrast
 for (k in 1:length(lsc)) {
@@ -141,8 +142,8 @@ for (k in 1:length(lsc)) {
     resLFC <- lfcShrink(dds, coef=2, type="apeglm")
 
     #plotMA
-    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.png")
-    png(maplot)
+    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.svg")
+    svg(maplot)
     par(mfrow=c(1,2), mar=c(4,4,2,1))
     xlim <- c(1,1e5); ylim <- c(-2,2)
     plotMA(resLFC, xlim=xlim, ylim=ylim, alpha=0.05, main=paste(rname, "apeglm"))
@@ -267,15 +268,15 @@ for (k in 1:length(lsc)) {
             annotation_row = annots,
             annotation_colors = colors)
 
-        save_pheatmap_png <- function(x, filename, width=1200, height=1000, res = 150) {
-            png(filename, width = width, height = height, res = res)
+        save_pheatmap_svg <- function(x, filename, width=7, height=7) {
+            svg(filename, width = width, height = height)
             grid::grid.newpage()
             grid::grid.draw(x$gtable)
             dev.off()
         }
 
-        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.png")
-        save_pheatmap_png(heat, heatmap_filename)
+        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.svg")
+        save_pheatmap_svg(heat, heatmap_filename)
 
         annot_filename=gsub(".tsv", "-05-clust.tsv", tableName)
         # annotate cluster and direction
