@@ -57,7 +57,7 @@ rule all:
         "data/plotEnrichment/frip_{sample}.tsv",
         ], sample=samps),
         "data/multiqc/multiqc_report.html",
-        "src/callpeaks.py",
+        "src/gopeaks",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.svg",
         "data/deseq2/{mark}/{mark}-vsd-pca.svg",
         "data/deseq2/{mark}/{mark}-normcounts.csv",

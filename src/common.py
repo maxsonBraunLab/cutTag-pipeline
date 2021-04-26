@@ -52,7 +52,7 @@ def get_callpeaks(wildcards):
     """
     bam=f"data/markd/{wildcards.sample}.sorted.markd.bam"
     bai=f"data/markd/{wildcards.sample}.sorted.markd.bam.bai"
-    cp="src/callpeaks.py"
+    cp="src/gopeaks"
     if config["USEIGG"]:
         igg=st.loc[wildcards.sample]['igg']
         iggbam=f'data/markd/{igg}.sorted.markd.bam'
