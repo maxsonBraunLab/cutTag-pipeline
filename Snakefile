@@ -48,7 +48,9 @@ rule all:
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
         expand(["data/markd/{sample}.sorted.markd.bam",
                 "data/markd/{sample}.sorted.markd.bam",
-                "data/markd/{sample}.sorted.markd.fraglen.tsv"], sample=samps),
+                "data/markd/{sample}.sorted.markd.fraglen.tsv",
+                "data/trakcs/{sample}.bw",
+                ], sample=samps),
         expand(["data/callpeaks/{sample}_peaks.tsv", 
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
@@ -157,6 +159,17 @@ rule index:
     shell:
         "sambamba index -t {threads} {input} > {log} 2>&1"
 
+rule tracks:
+    input:
+        rules.markdup.output
+    output:
+        "data/trakcs/{sample}.bw"
+    conda:
+        "envs/dtools.yml"
+    threads:
+        8
+    shell:
+        "bamCoverage -p {threads} --binSize 10 --smoothLength 50 --normalizeUsing CPM -b {input} -o {output}"
 
 rule fraglength:
     input:
@@ -228,24 +241,22 @@ rule plotFinger:
 
 rule wget_callpeaks:
     output:
-        "src/callpeaks.py"
+        "src/gopeaks"
     shell:
-        "src/wget_callpeaks.sh"
+        "src/wget_gopeaks.sh {config[GOPEAKS_RELEASE_VERSION]}"
 
 rule callpeaks:
     input:
         get_callpeaks
     output:
         "data/callpeaks/{sample}_peaks.tsv"
-    conda:
-        "envs/callpeaks.yml"
     log:
         "data/logs/callpeaks_{sample}.log"
     params:
         igg=get_igg
     shell:
         """
-        ./src/callpeaks.py -b {input[0]} -o data/callpeaks/{wildcards.sample} -cs {config[CSIZES]} {params.igg} > {log} 2>&1
+        ./src/gopeaks -bam {input[0]} -control {params.igg} -of data/callpeaks/{wildcards.sample} > {log} 2>&1
         """
 
 # get consensus
