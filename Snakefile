@@ -51,7 +51,7 @@ rule all:
                 "data/markd/{sample}.sorted.markd.fraglen.tsv",
                 "data/trakcs/{sample}.bw",
                 ], sample=samps),
-        expand(["data/callpeaks/{sample}_peaks.tsv", 
+        expand(["data/callpeaks/{sample}_peaks.bed", 
         "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
@@ -249,20 +249,20 @@ rule callpeaks:
     input:
         get_callpeaks
     output:
-        "data/callpeaks/{sample}_peaks.tsv"
+        "data/callpeaks/{sample}_peaks.bed"
     log:
         "data/logs/callpeaks_{sample}.log"
     params:
         igg=get_igg
     shell:
         """
-        ./src/gopeaks -bam {input[0]} -control {params.igg} -of data/callpeaks/{wildcards.sample} > {log} 2>&1
+        ./src/gopeaks -bam {input[0]} -control {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
         """
 
 # get consensus
 rule consensus:
     input:
-       expand("data/callpeaks/{sample}_peaks.tsv", sample=sample_noigg)
+       expand("data/callpeaks/{sample}_peaks.bed", sample=sample_noigg)
     output:
        "data/counts/{mark}_counts.tsv"
     conda:
