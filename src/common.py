@@ -40,7 +40,7 @@ def get_igg(wildcards):
         iggbam=f'data/markd/{igg}.sorted.markd.bam'
         isigg=config['IGG'] in wildcards.sample
         if not isigg:
-            return f'-cf {iggbam}'
+            return f'{iggbam}'
         else:
             return ""
     else:
