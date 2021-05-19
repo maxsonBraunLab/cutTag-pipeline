@@ -17,4 +17,4 @@ BOWTIE2:
         - "/home/groups/MaxsonLab/indices/ecoli_EB1/genome"
     MYCO:
         - "/home/groups/MaxsonLab/indices/mycoplasma_index/mycoplasma"
-GOPEAKS_RELEASE_VERSION: "v0.1.5"
+GOPEAKS_RELEASE_VERSION: "v0.1.6"

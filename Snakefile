@@ -145,7 +145,6 @@ rule markdup:
     shell:
         "sambamba markdup --tmpdir=data/markd -t {threads} {input} {output} > {log} 2>&1"
 
-
 rule index:
     input:
         rules.markdup.output
@@ -256,7 +255,7 @@ rule callpeaks:
         igg=get_igg
     shell:
         """
-        ./src/gopeaks -bam {input[0]} -control {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
+        ./src/gopeaks -bam {input[0]} {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
         """
 
 # get consensus
@@ -276,6 +275,19 @@ rule frip:
     input:
         rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
     output:
+        png="data/frip/frip_{sample}.png",
+        tsv="data/frip/frip_{sample}.tsv"
+    conda:
+        "envs/dtools.yml"
+    log:
+        "data/logs/plotEnrichment_{sample}.log"
+    shell:
+        "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output.tsv} -o {output.png} > {log} 2>&1"
+
+rule frip:
+    input:
+        rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
+    output:
         "data/plotEnrichment/frip_{sample}.png", "data/plotEnrichment/frip_{sample}.tsv"
     conda:
         "envs/dtools.yml"
@@ -283,6 +295,7 @@ rule frip:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
         "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output[1]} -o {output[0]} > {log} 2>&1"
+
 
 rule frip_plot:
     input:
