@@ -238,24 +238,20 @@ rule plotFinger:
     shell:
         "plotFingerprint -b {input[0]} --smartLabels --outRawCounts {output} > {log} 2>&1"
 
-rule wget_callpeaks:
-    output:
-        "src/gopeaks"
-    shell:
-        "src/wget_gopeaks.sh {config[GOPEAKS_RELEASE_VERSION]}"
-
 rule callpeaks:
     input:
         get_callpeaks
     output:
         "data/callpeaks/{sample}_peaks.bed"
+    conda: 
+        "envs/gopeaks.yml"
     log:
         "data/logs/callpeaks_{sample}.log"
     params:
         igg=get_igg
     shell:
         """
-        ./src/gopeaks -bam {input[0]} {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
+        gopeaks -bam {input[0]} {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
         """
 
 # get consensus

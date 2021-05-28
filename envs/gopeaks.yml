@@ -1,0 +1,4 @@
+channels:
+    - jakevc
+dependencies:
+    - gopeaks=0.1.7
