@@ -57,7 +57,6 @@ rule all:
         "data/plotEnrichment/frip_{sample}.tsv",
         ], sample=samps),
         "data/multiqc/multiqc_report.html",
-        "src/gopeaks",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.svg",
         "data/deseq2/{mark}/{mark}-vsd-pca.svg",
         "data/deseq2/{mark}/{mark}-normcounts.csv",
@@ -271,8 +270,8 @@ rule frip:
     input:
         rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
     output:
-        png="data/frip/frip_{sample}.png",
-        tsv="data/frip/frip_{sample}.tsv"
+        png="data/plotEnrichment/frip_{sample}.png",
+        tsv="data/plotEnrichment/frip_{sample}.tsv"
     conda:
         "envs/dtools.yml"
     log:

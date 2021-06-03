@@ -52,15 +52,14 @@ def get_callpeaks(wildcards):
     """
     bam=f"data/markd/{wildcards.sample}.sorted.markd.bam"
     bai=f"data/markd/{wildcards.sample}.sorted.markd.bam.bai"
-    cp="src/gopeaks"
     if config["USEIGG"]:
         igg=st.loc[wildcards.sample]['igg']
         iggbam=f'data/markd/{igg}.sorted.markd.bam'
         iggbam=f'data/markd/{igg}.sorted.markd.bam.bai'
         isigg=config['IGG'] in wildcards.sample
         if not isigg:
-            return [bam,bai,cp,iggbam]
+            return [bam,bai,iggbam]
         else:
-            return [bam,bai,cp]
+            return [bam,bai]
     else:
-        return [bam,bai,cp]
+        return [bam,bai]
