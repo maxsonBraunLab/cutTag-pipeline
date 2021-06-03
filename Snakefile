@@ -250,7 +250,7 @@ rule callpeaks:
         igg=get_igg
     shell:
         """
-        gopeaks -bam {input[0]} {params.igg} -of data/callpeaks/{wildcards.sample}_peaks.bed > {log} 2>&1
+        gopeaks -bam {input[0]} {params.igg} -of {output} > {log} 2>&1
         """
 
 # get consensus

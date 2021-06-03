@@ -6,3 +6,5 @@ __default__:
     cpus-per-task: 2
 bowtie2:
     cpus-per-task: 8
+callpeaks:
+    mem: 25000
