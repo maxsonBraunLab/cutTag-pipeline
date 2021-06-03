@@ -57,7 +57,6 @@ rule all:
         "data/plotEnrichment/frip_{sample}.tsv",
         ], sample=samps),
         "data/multiqc/multiqc_report.html",
-        "src/gopeaks",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.svg",
         "data/deseq2/{mark}/{mark}-vsd-pca.svg",
         "data/deseq2/{mark}/{mark}-normcounts.csv",
@@ -271,27 +270,14 @@ rule frip:
     input:
         rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
     output:
-        png="data/frip/frip_{sample}.png",
-        tsv="data/frip/frip_{sample}.tsv"
+        png="data/plotEnrichment/frip_{sample}.png",
+        tsv="data/plotEnrichment/frip_{sample}.tsv"
     conda:
         "envs/dtools.yml"
     log:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
-        "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output.tsv} -o {output.png} > {log} 2>&1"
-
-rule frip:
-    input:
-        rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
-    output:
-        "data/plotEnrichment/frip_{sample}.png", "data/plotEnrichment/frip_{sample}.tsv"
-    conda:
-        "envs/dtools.yml"
-    log: 
-        "data/logs/plotEnrichment_{sample}.log"
-    shell:
         "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output[1]} -o {output[0]} > {log} 2>&1"
-
 
 rule frip_plot:
     input:
