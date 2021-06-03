@@ -270,8 +270,7 @@ rule frip:
     input:
         rules.callpeaks.output, "data/markd/{sample}.sorted.markd.bam"
     output:
-        png="data/plotEnrichment/frip_{sample}.png",
-        tsv="data/plotEnrichment/frip_{sample}.tsv"
+        "data/plotEnrichment/frip_{sample}.png", "data/plotEnrichment/frip_{sample}.tsv"
     conda:
         "envs/dtools.yml"
     log:
