@@ -35,16 +35,19 @@ BAMDIR=$3
 # output counts table filename
 OUTFILE=$4
 
-declare -a mpks=(${PEAKDIR}/*${MARK}*_peaks.tsv)
+# array of replicates per mark
+declare -a mpks=(${PEAKDIR}/*${MARK}*_peaks.bed)
 
-# intersect replicate peaks across marks
-bedtools intersect -a ${mpks[0]} -b ${mpks[@]:1} -c | awk -v OFS='\t' '$7>1 {print $1,$2,$3,$4,"0","."}' > data/counts/${MARK}_consensus.bed
+# get union peak (consensus) across marks and conditions
+cat ${mpks[@]} | sort -k1,1 -k2,2n \
+    | bedtools merge -d -1 \
+    | awk -v OFS='\t' '{print $1,$2,$3}' > data/counts/${MARK}_consensus.bed
 
-# count the number of reads permark 
+# count the number of reads per union peak
 bedtools multicov -bams ${BAMDIR}/*${MARK}*.bam -bed data/counts/${MARK}_consensus.bed -D > ${OUTFILE}_tmp
 
 # label the counts table
-ls ${BAMDIR}/*${MARK}*.bam  | sed 's!.*/!!' | cut -d_ -f1 | xargs | tr ' ' '\t' | awk '{print "chrom\tstart\tend\tpeak\tscore\tstrand\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
+ls ${BAMDIR}/*${MARK}*.bam  | sed 's!.*/!!' | cut -d_ -f1 | xargs | tr ' ' '\t' | awk '{print "chrom\tstart\tend\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
 
 # remove tmp 
 rm ${OUTFILE}_tmp

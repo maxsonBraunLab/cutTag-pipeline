@@ -38,12 +38,17 @@ rds = snakemake@output[["rds"]]
 genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "score", "strand")) %>% GRanges()
 
 # counts join
-peaks = read_tsv(input) %>% select(chrom, start, end, peak) %>% rename(peak='name')
+peaks = read_tsv(input) %>% 
+    mutate(row=row_number()) %>%
+    mutate(name=paste0("peak", as.character(row)))
+        
 
 # read in counts table
-counts = read.delim(input, header=T, stringsAsFactors = F, check.names=F)
+counts = read.delim(input, header=T, stringsAsFactors = F, check.names=F) %>%
+    mutate(row=row_number()) %>%
+    mutate(peak=paste0("peak", as.character(row)))
 rownames(counts) = counts$peak
-counts = counts[,7:ncol(counts)]
+counts = counts[,4:ncol(counts)]
 
 # read in metadata
 meta <- read.csv(meta, header = T, stringsAsFactors = F)
@@ -81,19 +86,19 @@ ntd <- normTransform(dds)
 
 message('plotting count transforms...')
 # plot the transform for the first two samples
-svg(sdMeanRld)
+png(sdMeanRld)
 rldCounts <- meanSdPlot(assay(rld))
 rldCounts$gg + labs(title="meanSdPlot - rlog transformed")
 dev.off()
 
-svg(sdMeanVsd)
+png(sdMeanVsd)
 vsdCounts <- meanSdPlot(assay(vsd))
 vsdCounts$gg + labs(title="meanSdPlot - vsd transformed")
 dev.off()
 
 message('plotting poisson distance sample cross correlation...')
 # plot sample distances 
-svg(sampleDistPlotVsd)
+png(sampleDistPlotVsd)
 sampleDists <- dist(t(assay(vsd)))
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(meta$sample, meta$condition, sep="-")
@@ -106,7 +111,7 @@ pheatmap(sampleDistMatrix,
          main=paste(exp_prefix, "vsd sample distance matrix"))
 dev.off()
 
-svg(sampleDistPlotRld)
+png(sampleDistPlotRld)
 sampleDists <- dist(t(assay(rld)))
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(meta$sample, meta$condition, sep="-")
@@ -120,12 +125,12 @@ pheatmap(sampleDistMatrix,
 dev.off()
 
 # plot PCA rld
-svg(pcaPlot)
+png(pcaPlot)
 plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-rld")) + geom_text_repel(aes(label=name))
 dev.off()
 
 # plot PCA vsd
-svg(pcaPlotVsd)
+png(pcaPlotVsd)
 plotPCA(rld, intgroup = c("condition")) + labs(title=paste0(exp_prefix,"-vsd")) + geom_text_repel(aes(label=name))
 dev.off()
 
@@ -147,8 +152,8 @@ for (k in 1:length(lsc)) {
     resLFC <- lfcShrink(dds, coef=2, type="apeglm")
 
     #plotMA
-    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.svg")
-    svg(maplot)
+    maplot=paste0(outdir,"/",exp_prefix,"/",exp_prefix,"-",rname,"plotMA.png")
+    png(maplot)
     par(mfrow=c(1,2), mar=c(4,4,2,1))
     xlim <- c(1,1e5); ylim <- c(-2,2)
     plotMA(resLFC, xlim=xlim, ylim=ylim, alpha=0.05, main=paste(rname, "apeglm"))
@@ -174,25 +179,25 @@ for (k in 1:length(lsc)) {
     # sig up peaks
     diffexp %>%
         filter(log2FoldChange > 0, padj < 0.05) %>%
-        select(seqnames, start, end, name.peak,score,strand) %>%
+        select(seqnames, start, end, name.peak,name.gene,score,strand) %>%
         write_tsv(deup05, col_names=FALSE)
 
     # sig down peaks
     diffexp %>%
         filter(log2FoldChange < 0, padj < 0.05) %>%
-        select(seqnames, start, end, name.peak,score,strand) %>%
+        select(seqnames, start, end, name.peak,name.gene,score,strand) %>%
         write_tsv(dedown05, col_names=FALSE)
 
     # sig up peaks
     diffexp %>%
         filter(log2FoldChange > 0, padj < 0.01) %>%
-        select(seqnames, start, end, name.peak,score,strand) %>%
+        select(seqnames, start, end, name.peak,name.gene,score,strand) %>%
         write_tsv(deup01, col_names=FALSE)
 
     # sig down peaks
     diffexp %>%
         filter(log2FoldChange < 0, padj < 0.01) %>%
-        select(seqnames, start, end, name.peak,score,strand) %>%
+        select(seqnames, start, end, name.peak,name.gene,score,strand) %>%
         write_tsv(dedown01, col_names=FALSE)
 
     summaryName=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-diffexp-summary.txt")
@@ -274,13 +279,13 @@ for (k in 1:length(lsc)) {
             annotation_colors = colors)
 
         save_pheatmap_svg <- function(x, filename, width=7, height=7) {
-            svg(filename, width = width, height = height)
+            png(filename, width = width, height = height)
             grid::grid.newpage()
             grid::grid.draw(x$gtable)
             dev.off()
         }
 
-        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.svg")
+        heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.png")
         save_pheatmap_svg(heat, heatmap_filename)
 
         annot_filename=gsub(".tsv", "-05-clust.tsv", tableName)
