@@ -14,6 +14,22 @@ def get_marks():
     """
     return list(st['mark'])
 
+def get_mark_conditions():
+    """
+    return list of samples by condition
+    """
+    st['mark_condition']=st['mark'].astype(str)+"_"+st['condition']
+    return st['mark_condition'].unique().tolist()
+
+def get_tracks_by_mark_condition(wildcards):
+    """
+    return list of samples by mark_condition
+    """
+    st['mark_condition']=st['mark'].astype(str)+"_"+st['condition']
+    samps=st.groupby(["mark_condition"])['sample'].apply(list)[wildcards.mark_condition]
+    return [f"data/tracks/{s}.bw" for s in samps]
+    
+
 def get_bowtie2_input(wildcards):
     """
     returns reads associated with a sample

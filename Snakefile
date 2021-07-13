@@ -20,6 +20,7 @@ validate(st, schema="schemas/samples.schema.yml")
 samps = get_samples()
 reads= get_reads()
 marks=get_marks()
+mark_conditions=get_mark_conditions()
 
 marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
@@ -49,7 +50,7 @@ rule all:
         expand(["data/markd/{sample}.sorted.markd.bam",
                 "data/markd/{sample}.sorted.markd.bam",
                 "data/markd/{sample}.sorted.markd.fraglen.tsv",
-                "data/trakcs/{sample}.bw",
+                "data/tracks/{sample}.bw",
                 ], sample=samps),
         expand(["data/callpeaks/{sample}_peaks.bed", 
         "data/preseq/lcextrap_{sample}.txt",
@@ -68,7 +69,8 @@ rule all:
         "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg),
         # quality control plots
         "data/markd/fraglen.html",
-        "data/plotEnrichment/frip.html"
+        "data/plotEnrichment/frip.html",
+        expand("data/mergebw/{mark_condition}.bw", mark_condition=mark_conditions)
 
 # fastqc for each read 
 rule fastqc:
@@ -161,7 +163,7 @@ rule tracks:
     input:
         rules.markdup.output
     output:
-        "data/trakcs/{sample}.bw"
+        "data/tracks/{sample}.bw"
     conda:
         "envs/dtools.yml"
     threads:
@@ -169,6 +171,16 @@ rule tracks:
     shell:
         "bamCoverage -p {threads} --binSize 10 --smoothLength 50 --normalizeUsing CPM -b {input} -o {output}"
 
+rule merge_bw:
+    input:
+        get_tracks_by_mark_condition
+    output:
+        "data/mergebw/{mark_condition}.bw"
+    conda:
+        "envs/mergebw.yml"
+    shell:
+        "bash src/mergebw.sh -c {config[CSIZES]} -o {output} {input}"
+    
 rule fraglength:
     input:
         rules.markdup.output

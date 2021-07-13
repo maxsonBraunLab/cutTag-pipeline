@@ -14,8 +14,8 @@ file_exits(){
 }
 
 cleanup() {
-    rm tmp.bdg &> /dev/null
-    rm tmp.sort.bdg &> /dev/null
+    rm ${out_name}.tmp.bdg &> /dev/null
+    rm ${out_name}.tmp.sort.bdg &> /dev/null
 }
 
 [[ $# -eq 0 ]] && usage
@@ -77,9 +77,9 @@ fi
 echo "merging the following files..."
 echo ${script_args[@]}
 
-cmd="bigWigMerge ${script_args[@]} tmp.bdg"
+cmd="bigWigMerge ${script_args[@]} ${out_name}.tmp.bdg"
 echo $cmd
-bigWigMerge ${script_args[@]} tmp.bdg
+bigWigMerge ${script_args[@]} ${out_name}.tmp.bdg
 
 if [ $? -eq 0 ]; then
     echo "..."
@@ -91,7 +91,7 @@ else
 fi
 
 # ensure sorted
-sort -k1,1 -k2,2n tmp.bdg > tmp.sort.bdg
+sort -k1,1 -k2,2n ${out_name}.tmp.bdg > ${out_name}.tmp.sort.bdg
 
 if [ $? -eq 0 ]; then
     echo "..."
@@ -103,7 +103,7 @@ else
 fi
 
 # convert to bigwig
-bedGraphToBigWig tmp.sort.bdg $chrom_size $out_name
+bedGraphToBigWig ${out_name}.tmp.sort.bdg $chrom_size $out_name
 
 if [ $? -eq 0 ]; then
     echo "..."
