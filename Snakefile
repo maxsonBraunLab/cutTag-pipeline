@@ -70,7 +70,8 @@ rule all:
         # quality control plots
         "data/markd/fraglen.html",
         "data/plotEnrichment/frip.html",
-        expand("data/mergebw/{mark_condition}.bw", mark_condition=mark_conditions)
+        expand("data/mergebw/{mark_condition}.bw", mark_condition=mark_conditions),
+        expand("data/highConf/{mark_condition}.highConf.bed", mark_condition=mark_conditions)
 
 # fastqc for each read 
 rule fastqc:
@@ -181,6 +182,24 @@ rule merge_bw:
     shell:
         "bash src/mergebw.sh -c {config[CSIZES]} -o {output} {input}"
     
+rule make_high_conf_peaks:
+    input:
+        get_peaks_by_mark_condition
+    output:
+        "data/highConf/{mark_condition}.highConf.bed"
+    conda:
+        "envs/bedtools.yml"
+    shell:
+        """
+        # merge all peaks to get union peak with at least
+        # two reps per condition per peak
+        cat {input} | sort -k1,1 -k2,2n \
+        | bedtools merge \
+        | bedtools intersect -a - -b {input} -c \
+        | awk -v OFS='\t' '$4>=2 {{print}}' > {output} 
+        """
+
+
 rule fraglength:
     input:
         rules.markdup.output
@@ -262,7 +281,7 @@ rule callpeaks:
         igg=get_igg
     shell:
         """
-        gopeaks -bam {input[0]} {params.igg} -of {output} > {log} 2>&1
+        gopeaks -mdist 1000 -bam {input[0]} {params.igg} -of {output} > {log} 2>&1
         """
 
 # get consensus

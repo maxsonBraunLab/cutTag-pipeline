@@ -23,12 +23,19 @@ def get_mark_conditions():
 
 def get_tracks_by_mark_condition(wildcards):
     """
-    return list of samples by mark_condition
+    return list of tracks by mark_condition
     """
     st['mark_condition']=st['mark'].astype(str)+"_"+st['condition']
     samps=st.groupby(["mark_condition"])['sample'].apply(list)[wildcards.mark_condition]
     return [f"data/tracks/{s}.bw" for s in samps]
     
+def get_peaks_by_mark_condition(wildcards):
+    """
+    return list of peaks by mark_condition
+    """
+    st['mark_condition']=st['mark'].astype(str)+"_"+st['condition']
+    samps=st.groupby(["mark_condition"])['sample'].apply(list)[wildcards.mark_condition]
+    return [f"data/callpeaks/{s}_peaks.bed" for s in samps]
 
 def get_bowtie2_input(wildcards):
     """
