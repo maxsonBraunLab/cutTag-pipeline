@@ -15,7 +15,6 @@ file_exits(){
 
 cleanup() {
     rm ${out_name}.tmp.bdg &> /dev/null
-    rm ${out_name}.tmp.sort.bdg &> /dev/null
 }
 
 [[ $# -eq 0 ]] && usage
@@ -60,9 +59,9 @@ echo "Using chrom.sizes file: $chrom_size"
 echo "Output file name will be: $out_name" 
 
 # require bigWigMerge
-if ! command -v bigWigMerge &> /dev/null
+if ! command -v wiggletools &> /dev/null
 then
-    echo "bigWigMerge not found"
+    echo "wiggletools not found"
     exit
 fi
 
@@ -77,33 +76,21 @@ fi
 echo "merging the following files..."
 echo ${script_args[@]}
 
-cmd="bigWigMerge ${script_args[@]} ${out_name}.tmp.bdg"
+cmd="wiggletools mean ${script_args[@]} | grep -v "_" | awk 'NF==4{print}' > ${out_name}.tmp.bdg"
 echo $cmd
-bigWigMerge ${script_args[@]} ${out_name}.tmp.bdg
+wiggletools mean ${script_args[@]} | grep -v "_" | awk 'NF==4{print}' > ${out_name}.tmp.bdg
 
 if [ $? -eq 0 ]; then
     echo "..."
 else
-    echo "Command bigWigMerge failed to complete..."
-    echo "quitting.."
-    cleanup
-    exit 1
-fi
-
-# ensure sorted
-sort -k1,1 -k2,2n ${out_name}.tmp.bdg > ${out_name}.tmp.sort.bdg
-
-if [ $? -eq 0 ]; then
-    echo "..."
-else
-    echo "Failed to sort merged bedgraph..."
+    echo "Command wiggletools failed to complete..."
     echo "quitting.."
     cleanup
     exit 1
 fi
 
 # convert to bigwig
-bedGraphToBigWig ${out_name}.tmp.sort.bdg $chrom_size $out_name
+bedGraphToBigWig ${out_name}.tmp.bdg $chrom_size $out_name
 
 if [ $? -eq 0 ]; then
     echo "..."
@@ -114,6 +101,6 @@ else
     exit 1
 fi
 
-#cleanup tmp files
 cleanup
 echo "done"
+

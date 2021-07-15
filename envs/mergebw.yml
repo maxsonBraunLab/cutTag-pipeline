@@ -3,5 +3,5 @@ channels:
     - conda-forge
     - defaults
 dependencies:
-    - ucsc-bigwigmerge
+    - wiggletools
     - ucsc-bedgraphtobigwig
