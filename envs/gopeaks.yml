@@ -3,4 +3,4 @@ channels:
     - conda-forge
 dependencies:
     - libgcc-ng=9.3.0
-    - gopeaks=0.1.7
+    - gopeaks=0.1.9
