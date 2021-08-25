@@ -117,6 +117,10 @@ HoxW_2_Rbp1,HoxW
 HoxW_3_Rbp1,HoxW
 ```
 
+# Method
+
+![](rulegraph.svg)
+
 # Execution
 
 Setup snakemake profile to run on compute cluster:
