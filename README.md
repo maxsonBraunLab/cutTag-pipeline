@@ -28,32 +28,32 @@ This file:
 LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz
 
 Is renamed to:
-M6Q3_RBP1_S93_R1.fastq.gz
+M6Q_3_RBP1_R1.fastq.gz
 
 2. Make the sample sheet and deseq2 metadata.
 
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
 ```
-$./src/make_sample_sheet.py data/raw
+$ python src/make_sample_sheet.py data/raw
 ```
 
 This will make a samplesheet for the experiment called samplesheet.tsv in the root of the directory as well as the file `src/deseq2_metadata.csv`, the contents of the samplesheet will be structured like the following example:
 
 ```
 sample	R1	R2	mark	condition	igg
-HoxE1_IgG_S130	data/raw/HoxE1_IgG_S130_R1.fastq.gz	data/raw/HoxE1_IgG_S130_R2.fastq.gz	IgG	HoxE	HoxE1_IgG_S130
-HoxE1_Rbp1_S121	data/raw/HoxE1_Rbp1_S121_R1.fastq.gz	data/raw/HoxE1_Rbp1_S121_R2.fastq.gz	Rbp1	HoxE	HoxE1_Rbp1_S121
-HoxE2_Rbp1_S122	data/raw/HoxE2_Rbp1_S122_R1.fastq.gz	data/raw/HoxE2_Rbp1_S122_R2.fastq.gz	Rbp1	HoxE	HoxE2_Rbp1_S122
-HoxE3_Rbp1_S123	data/raw/HoxE3_Rbp1_S123_R1.fastq.gz	data/raw/HoxE3_Rbp1_S123_R2.fastq.gz	Rbp1	HoxE	HoxE3_Rbp1_S123
-HoxM1_IgG_S132	data/raw/HoxM1_IgG_S132_R1.fastq.gz	data/raw/HoxM1_IgG_S132_R2.fastq.gz	IgG	HoxM	HoxM1_IgG_S132
-HoxM1_Rbp1_S127	data/raw/HoxM1_Rbp1_S127_R1.fastq.gz	data/raw/HoxM1_Rbp1_S127_R2.fastq.gz	Rbp1	HoxM	HoxM1_Rbp1_S127
-HoxM2_Rbp1_S128	data/raw/HoxM2_Rbp1_S128_R1.fastq.gz	data/raw/HoxM2_Rbp1_S128_R2.fastq.gz	Rbp1	HoxM	HoxM2_Rbp1_S128
-HoxM3_Rbp1_S129	data/raw/HoxM3_Rbp1_S129_R1.fastq.gz	data/raw/HoxM3_Rbp1_S129_R2.fastq.gz	Rbp1	HoxM	HoxM3_Rbp1_S129
-HoxW1_IgG_S131	data/raw/HoxW1_IgG_S131_R1.fastq.gz	data/raw/HoxW1_IgG_S131_R2.fastq.gz	IgG	HoxW	HoxW1_IgG_S131
-HoxW1_Rbp1_S124	data/raw/HoxW1_Rbp1_S124_R1.fastq.gz	data/raw/HoxW1_Rbp1_S124_R2.fastq.gz	Rbp1	HoxW	HoxW1_Rbp1_S124
-HoxW2_Rbp1_S125	data/raw/HoxW2_Rbp1_S125_R1.fastq.gz	data/raw/HoxW2_Rbp1_S125_R2.fastq.gz	Rbp1	HoxW	HoxW2_Rbp1_S125
-HoxW3_Rbp1_S126	data/raw/HoxW3_Rbp1_S126_R1.fastq.gz	data/raw/HoxW3_Rbp1_S126_R2.fastq.gz	Rbp1	HoxW	HoxW3_Rbp1_S126
+HoxE_1_IgG	data/raw/HoxE_1_IgG_R1.fastq.gz	data/raw/HoxE_1_IgG_R2.fastq.gz	IgG	HoxE	HoxE_1_IgG
+HoxE_1_Rbp1	data/raw/HoxE_1_Rbp1_R1.fastq.gz	data/raw/HoxE_1_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_1_Rbp1
+HoxE_2_Rbp1	data/raw/HoxE_2_Rbp1_R1.fastq.gz	data/raw/HoxE_2_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_2_Rbp1
+HoxE_3_Rbp1	data/raw/HoxE_3_Rbp1_R1.fastq.gz	data/raw/HoxE_3_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_3_Rbp1
+HoxM_1_IgG	data/raw/HoxM_1_IgG_R1.fastq.gz	data/raw/HoxM_1_IgG_R2.fastq.gz	IgG	HoxM	HoxM_1_IgG
+HoxM_1_Rbp1	data/raw/HoxM_1_Rbp1_R1.fastq.gz	data/raw/HoxM_1_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_1_Rbp1
+HoxM_2_Rbp1	data/raw/HoxM_2_Rbp1_R1.fastq.gz	data/raw/HoxM_2_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_2_Rbp1
+HoxM_3_Rbp1	data/raw/HoxM_3_Rbp1_R1.fastq.gz	data/raw/HoxM_3_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_3_Rbp1
+HoxW_1_IgG	data/raw/HoxW_1_IgG_R1.fastq.gz	data/raw/HoxW_1_IgG_R2.fastq.gz	IgG	HoxW	HoxW_1_IgG
+HoxW_1_Rbp1	data/raw/HoxW_1_Rbp1_R1.fastq.gz	data/raw/HoxW_1_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_1_Rbp1
+HoxW_2_Rbp1	data/raw/HoxW_2_Rbp1_R1.fastq.gz	data/raw/HoxW_2_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_2_Rbp1
+HoxW_3_Rbp1	data/raw/HoxW_3_Rbp1_R1.fastq.gz	data/raw/HoxW_3_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_3_Rbp1
 ```
 
 The script splits the file name on the '_' and uses the first split for the condition, and the second split for the mark. The 'igg' column is the same as the 'sample' column and should be manually replaced with the sample name of the IGG or control you would like to use for that sample. If the sample is and IgG it can be the same as it's name, and won't affect peak calling. 
@@ -63,18 +63,18 @@ So a fixed version of the table above would look like this:
 
 ```
 sample	R1	R2	mark	condition	igg
-HoxE1_IgG_S130	data/raw/HoxE1_IgG_S130_R1.fastq.gz	data/raw/HoxE1_IgG_S130_R2.fastq.gz	IgG	HoxE	HoxE1_IgG_S130
-HoxE1_Rbp1_S121	data/raw/HoxE1_Rbp1_S121_R1.fastq.gz	data/raw/HoxE1_Rbp1_S121_R2.fastq.gz	Rbp1	HoxE	HoxE1_IgG_S130
-HoxE2_Rbp1_S122	data/raw/HoxE2_Rbp1_S122_R1.fastq.gz	data/raw/HoxE2_Rbp1_S122_R2.fastq.gz	Rbp1	HoxE	HoxE1_IgG_S130
-HoxE3_Rbp1_S123	data/raw/HoxE3_Rbp1_S123_R1.fastq.gz	data/raw/HoxE3_Rbp1_S123_R2.fastq.gz	Rbp1	HoxE    HoxE1_IgG_S130	
-HoxM1_IgG_S132	data/raw/HoxM1_IgG_S132_R1.fastq.gz	data/raw/HoxM1_IgG_S132_R2.fastq.gz	IgG	HoxM	HoxM1_IgG_S132
-HoxM1_Rbp1_S127	data/raw/HoxM1_Rbp1_S127_R1.fastq.gz	data/raw/HoxM1_Rbp1_S127_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
-HoxM2_Rbp1_S128	data/raw/HoxM2_Rbp1_S128_R1.fastq.gz	data/raw/HoxM2_Rbp1_S128_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
-HoxM3_Rbp1_S129	data/raw/HoxM3_Rbp1_S129_R1.fastq.gz	data/raw/HoxM3_Rbp1_S129_R2.fastq.gz	Rbp1	HoxM	HoxM1_IgG_S132
-HoxW1_IgG_S131	data/raw/HoxW1_IgG_S131_R1.fastq.gz	data/raw/HoxW1_IgG_S131_R2.fastq.gz	IgG	HoxW	HoxW1_IgG_S131
-HoxW1_Rbp1_S124	data/raw/HoxW1_Rbp1_S124_R1.fastq.gz	data/raw/HoxW1_Rbp1_S124_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
-HoxW2_Rbp1_S125	data/raw/HoxW2_Rbp1_S125_R1.fastq.gz	data/raw/HoxW2_Rbp1_S125_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
-HoxW3_Rbp1_S126	data/raw/HoxW3_Rbp1_S126_R1.fastq.gz	data/raw/HoxW3_Rbp1_S126_R2.fastq.gz	Rbp1	HoxW	HoxW1_IgG_S131
+HoxE_1_IgG	data/raw/HoxE_1_IgG_R1.fastq.gz	data/raw/HoxE_1_IgG_R2.fastq.gz	IgG	HoxE	HoxE_1_IgG
+HoxE_1_Rbp1	data/raw/HoxE_1_Rbp1_R1.fastq.gz	data/raw/HoxE_1_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_1_IgG
+HoxE_2_Rbp1	data/raw/HoxE_2_Rbp1_R1.fastq.gz	data/raw/HoxE_2_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_1_IgG
+HoxE_3_Rbp1	data/raw/HoxE_3_Rbp1_R1.fastq.gz	data/raw/HoxE_3_Rbp1_R2.fastq.gz	Rbp1	HoxE	HoxE_1_IgG
+HoxM_1_IgG	data/raw/HoxM_1_IgG_R1.fastq.gz	data/raw/HoxM_1_IgG_R2.fastq.gz	IgG	HoxM	HoxM_1_IgG
+HoxM_1_Rbp1	data/raw/HoxM_1_Rbp1_R1.fastq.gz	data/raw/HoxM_1_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_1_IgG
+HoxM_2_Rbp1	data/raw/HoxM_2_Rbp1_R1.fastq.gz	data/raw/HoxM_2_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_1_IgG
+HoxM_3_Rbp1	data/raw/HoxM_3_Rbp1_R1.fastq.gz	data/raw/HoxM_3_Rbp1_R2.fastq.gz	Rbp1	HoxM	HoxM_1_IgG
+HoxW_1_IgG	data/raw/HoxW_1_IgG_R1.fastq.gz	data/raw/HoxW_1_IgG_R2.fastq.gz	IgG	HoxW	HoxW_1_IgG
+HoxW_1_Rbp1	data/raw/HoxW_1_Rbp1_R1.fastq.gz	data/raw/HoxW_1_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_1_IgG
+HoxW_2_Rbp1	data/raw/HoxW_2_Rbp1_R1.fastq.gz	data/raw/HoxW_2_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_1_IgG
+HoxW_3_Rbp1	data/raw/HoxW_3_Rbp1_R1.fastq.gz	data/raw/HoxW_3_Rbp1_R2.fastq.gz	Rbp1	HoxW	HoxW_1_IgG
 ```
 
 For this example there was only one IgG per condition, so the sample name corresponding to that IGG was used for each sample in the condition. In the case that each sample had it's own control file, each entry would correspond to the IgG for that sample. If only one IgG was used in the whole experiment, then it's sample name could be used for each row. If you are not using IgG set config['USEIGG'] to false, and don't modify the samplesheet.
@@ -98,23 +98,23 @@ Make sure deseq2_metadata.csv looks right. The file is created when you run `mak
  - should have two columns labeled "sample", and "condition"
  - the sample column corresponds to the replicates of the given condition, and should be the same as the first split of the raw file: e.g. M6C3_4Me1_S12_R2.fastq.gz will have "sample" equal to M6C3.
  - the condition should be the name for each sample condition, and doees not have to come from the file name, it could be changed to whatever you would like to have displayed in the deseq2 plots.
- 
+
  The file src/deseq2_metadata is populated with the following example data:
- 
+
 ```
 sample,condition
-HoxE1_IgG_S130,HoxE
-HoxE1_Rbp1_S121,HoxE
-HoxE2_Rbp1_S122,HoxE
-HoxE3_Rbp1_S123,HoxE
-HoxM1_IgG_S132,HoxM
-HoxM1_Rbp1_S127,HoxM
-HoxM2_Rbp1_S128,HoxM
-HoxM3_Rbp1_S129,HoxM
-HoxW1_IgG_S131,HoxW
-HoxW1_Rbp1_S124,HoxW
-HoxW2_Rbp1_S125,HoxW
-HoxW3_Rbp1_S126,HoxW
+HoxE_1_IgG,HoxE
+HoxE_1_Rbp1,HoxE
+HoxE_2_Rbp1,HoxE
+HoxE_3_Rbp1,HoxE
+HoxM_1_IgG,HoxM
+HoxM_1_Rbp1,HoxM
+HoxM_2_Rbp1,HoxM
+HoxM_3_Rbp1,HoxM
+HoxW_1_IgG,HoxW
+HoxW_1_Rbp1,HoxW
+HoxW_2_Rbp1,HoxW
+HoxW_3_Rbp1,HoxW
 ```
 
 # Execution
@@ -177,4 +177,4 @@ Each mark should have the following output files:
 For each contrast, the differentially expressed genes are written to a file ending in `-diffexp.tsv` as well as those with an adjusted p-value less than 0.05 with the extension `-sig05-diffexp.tsv`. A summary of the results using an alpha of 0.05 is also written to a file with the extension `-sig05-diffexp-summary.txt`. Additionally two MA plots are written to the file ending in `plotMA.png` that have highlighted differential peaks with an adjusted p-value less than 0.1.
 
 See the following paper for further explanations of the above plots and data transforms:
-https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#exporting-results-to-csv-files
+https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#exporting-results-to-csv-files 
