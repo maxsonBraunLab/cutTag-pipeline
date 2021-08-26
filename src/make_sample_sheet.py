@@ -23,7 +23,7 @@ def main():
 
     df["read"] = df["file"].apply(lambda x: "R1" if "R1" in x else "R2")
     df["igg"] = df["sample"]
-    
+
     df=df.pivot_table(index=['sample','igg','mark','condition'], columns='read', values='file',aggfunc=sum).reset_index()
     df=df[["sample","R1","R2","mark","condition","igg"]]
     df.columns.name = None
@@ -33,7 +33,7 @@ def main():
     # write deseq2 metadata to file
     dmet=df.copy()
     dmet=dmet[['sample','condition']]
-    dmet.loc[:,('sample')] = dmet.loc[:,('sample')].apply(lambda x: x.split("_")[0])
+    dmet.loc[:,('sample')] = dmet.loc[:,('sample')].apply(lambda x: "_".join(x.split("_")[0:2]))
     dmet.drop_duplicates(inplace=True)
     dmet.to_csv('src/deseq2_metadata.csv', index=False)
 
