@@ -5,6 +5,8 @@ __default__:
     nodes: 1
     cpus-per-task: 2
     job-name: "{rule}"
+    error: "jobs/{rule}_%j.err"
+    out: "jobs/{rule}_%j.out"
 bowtie2:
     cpus-per-task: 8
 callpeaks:
