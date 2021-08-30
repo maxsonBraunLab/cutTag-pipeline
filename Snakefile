@@ -45,7 +45,7 @@ localrules: frip_plot, fraglength_plot
 rule all:
     input:
         expand("data/fastqc/{read}.html", read=reads),
-        expand("data/fastq_screen/{read}.fastq_screen.txt", read=reads),
+        expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
         expand(["data/markd/{sample}.sorted.markd.bam",
                 "data/markd/{sample}.sorted.markd.bam",
@@ -91,17 +91,15 @@ rule fastq_screen:
     input:
         "data/raw/{read}.fastq.gz"
     output:
-        txt="data/fastq_screen/{read}.fastq_screen.txt",
-        png="data/fastq_screen/{read}.fastq_screen.png"
-    params:
-        fastq_screen_config=fastqScreenDict,
-        subset=100000,
-        aligner='bowtie2'
+        "data/fastq_screen/{read}_screen.txt"
+    conda:
+        "envs/fastq_screen.yml"
     log:
         "data/logs/fastq_screen_{read}.log"
     threads: 8
-    wrapper:
-        "0.65.0/bio/fastq_screen"
+    shell:
+        "fastq_screen --aligner bowtie2 --threads {threads} --outdir data/fastq_screen "
+        "--conf {config[FASTQ_SCREEN]} --force {input} > {log} 2>&1"
 
 # align samples to genome
 rule bowtie2:
