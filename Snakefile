@@ -278,9 +278,7 @@ rule callpeaks:
     params:
         igg=get_igg
     shell:
-        """
-        gopeaks -mdist 1000 -bam {input[0]} {params.igg} -of {output} > {log} 2>&1
-        """
+        "gopeaks -mdist 1000 -bam {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} > {log} 2>&1"
 
 # get consensus
 rule consensus:
@@ -355,6 +353,17 @@ rule deseq2:
         "envs/deseq2.yml"
     script:
         "src/deseq2.R"
+
+rule homer:
+    input:
+        "data/deseq2/{mark}/{mark}-dds.rds"
+    output:
+        "data/homer/{mark}.done"
+    conda:
+        "envs/homer.yml"
+    threads: 8
+    shell:
+        "bash src/homer.sh -m {wildcards.mark} -g {config[FASTA]}"
 
 rule multiqc:
     input:
