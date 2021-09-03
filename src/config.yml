@@ -8,15 +8,6 @@ GENOME:
     - "/home/groups/MaxsonLab/indices/mm10/mm10"
 GENES: 
     - "genes/mm10_refseq_genes.bed"
-BOWTIE2:
-    HG38:
-        - "/home/groups/MaxsonLab/indices/GRch38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
-    MM10:
-        - "/home/groups/MaxsonLab/indices/mm10/mm10"
-    ECOLI:
-        - "/home/groups/MaxsonLab/indices/ecoli_EB1/genome"
-    MYCO:
-        - "/home/groups/MaxsonLab/indices/mycoplasma_index/mycoplasma"
 FASTQ_SCREEN: "src/fastq_screen.conf"
 FASTA: "/home/groups/MaxsonLab/indices/mm10/mm10.fa"
 N_INTERSECTS: 2
