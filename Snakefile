@@ -160,7 +160,8 @@ rule index:
 
 rule tracks:
     input:
-        rules.markdup.output
+        rules.markdup.output,
+        rules.index.output
     output:
         "data/tracks/{sample}.bw"
     conda:
@@ -168,7 +169,7 @@ rule tracks:
     threads:
         8
     shell:
-        "bamCoverage -p {threads} --binSize 10 --smoothLength 50 --normalizeUsing CPM -b {input} -o {output}"
+        "bamCoverage -p {threads} --binSize 10 --smoothLength 50 --normalizeUsing CPM -b {input[0]} -o {output}"
 
 rule merge_bw:
     input:
@@ -288,10 +289,8 @@ rule consensus:
        "data/counts/{mark}_counts.tsv"
     conda:
        "envs/bedtools.yml"
-    log:
-       "data/logs/{mark}_counts.log"
     shell:
-       "src/consensus_peaks.sh {wildcards.mark} data/callpeaks data/markd {output} > {log} 2>&1"
+       "bash src/consensus_peaks.sh {wildcards.mark} {config[N_INTERSECTS]} {output}"
 
 rule frip:
     input:
