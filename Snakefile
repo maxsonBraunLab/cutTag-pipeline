@@ -26,10 +26,26 @@ marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
 
+fastqScreenDict = {
+'database': {
+   'hg38': {
+     'bowtie2': config["BOWTIE2"]["HG38"][0]},
+   'mm10': {
+     'bowtie2': config["BOWTIE2"]["MM10"][0]}, 
+   'ecoli': {
+     'bowtie2': config["BOWTIE2"]["ECOLI"][0]}, 
+   'myco': {
+     'bowtie2': config["BOWTIE2"]["MYCO"][0]}, 
+ },
+ 'aligner_paths': {'bowtie2': 'bowtie2'}
+}
+
 localrules: frip_plot, fraglength_plot
 
 rule all:
     input:
+        "data/tracks/windows.bed.gz",
+        expand("data/tracks/{sample}.bw", sample = samps),
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
@@ -144,18 +160,28 @@ rule index:
     shell:
         "sambamba index -t {threads} {input} > {log} 2>&1"
 
+rule windows:
+    input:
+        config["CSIZES"]
+    output:
+        "data/tracks/windows.bed.gz"
+    conda:
+        "envs/bedtools.yml"
+    shell:
+        "bedtools makewindows -g {input} -w 10 | gzip > {output}"
+
 rule tracks:
     input:
-        rules.markdup.output,
-        rules.index.output
+        bam = rules.markdup.output,
+        bai = rules.index.output,
+        windows = rules.windows.output,
+        csizes = config["CSIZES"]
     output:
         "data/tracks/{sample}.bw"
     conda:
-        "envs/dtools.yml"
-    threads:
-        8
+        "envs/tracks.yml"
     shell:
-        "bamCoverage -p {threads} --binSize 10 --smoothLength 50 --normalizeUsing CPM -b {input[0]} -o {output}"
+        "bash src/tracks.sh -i {input.bam} -o {output} -c {input.csizes} -w {input.windows}"
 
 rule merge_bw:
     input:
