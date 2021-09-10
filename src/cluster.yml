@@ -11,3 +11,6 @@ bowtie2:
     cpus-per-task: 8
 callpeaks:
     mem: 25000
+tracks:
+    mem: 8G
+    cpus-per-task: 8
