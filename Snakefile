@@ -26,20 +26,6 @@ marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
 
-fastqScreenDict = {
-'database': {
-   'hg38': {
-     'bowtie2': config["BOWTIE2"]["HG38"][0]},
-   'mm10': {
-     'bowtie2': config["BOWTIE2"]["MM10"][0]}, 
-   'ecoli': {
-     'bowtie2': config["BOWTIE2"]["ECOLI"][0]}, 
-   'myco': {
-     'bowtie2': config["BOWTIE2"]["MYCO"][0]}, 
- },
- 'aligner_paths': {'bowtie2': 'bowtie2'}
-}
-
 localrules: frip_plot, fraglength_plot
 
 rule all:
