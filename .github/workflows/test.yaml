@@ -1,4 +1,4 @@
-name: cut&tag-seq-test
+name: cutTag-seq-test
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  test-cut&tag-seq:
+  test-cutTag-seq:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash -l {0} # default to bash shell
     steps:
-      - name: 1 - Check out cut&tag # -------------------------------------------------------------
+      - name: 1 - Check out cutTag # -------------------------------------------------------------
         uses: actions/checkout@v2
 
       - name: 2 - Install Conda and SnakeMake # ---------------------------------------------------
