@@ -374,6 +374,8 @@ rule homer:
 
 rule multiqc:
     input:
+        expand("data/fastqc/{read}.html", read=reads),
+        expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps),
         expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
         expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
