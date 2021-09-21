@@ -26,19 +26,11 @@ marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
 
-fastqScreenDict = {
-'database': {
-   'hg38': {
-     'bowtie2': config["BOWTIE2"]["HG38"][0]},
-   'mm10': {
-     'bowtie2': config["BOWTIE2"]["MM10"][0]}, 
-   'ecoli': {
-     'bowtie2': config["BOWTIE2"]["ECOLI"][0]}, 
-   'myco': {
-     'bowtie2': config["BOWTIE2"]["MYCO"][0]}, 
- },
- 'aligner_paths': {'bowtie2': 'bowtie2'}
-}
+def defect_mode(wildcards, attempt):
+    if attempt == 1:
+        return ""
+    elif attempt > 1:
+        return "-D"
 
 localrules: frip_plot, fraglength_plot
 
@@ -69,6 +61,7 @@ rule all:
         "data/deseq2/{mark}/{mark}-vsd-dist.png",
         "data/deseq2/{mark}/{mark}-rld-dist.png",
         "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg),
+        expand("data/homer/{mark}.done", mark = marks_noigg),
         # quality control plots
         "data/markd/fraglen.html",
         "data/plotEnrichment/frip.html",
@@ -247,25 +240,28 @@ rule preseq:
        rules.markdup.output
     output:
         "data/preseq/estimates_{sample}.txt"
+    resources:
+        defect_mode = defect_mode
     conda:
         "envs/preseq.yml"
     log:
         "data/logs/preseq_{sample}.log"
     shell:
-        "preseq c_curve -B -P -o {output} {input} > {log} 2>&1" 
+        "preseq c_curve -B {resources.defect_mode} -l 1000000000 -o {output} {input} > {log} 2>&1"
 
 rule preseq_lcextrap:
     input:
         rules.markdup.output
     output:
         "data/preseq/lcextrap_{sample}.txt"
+    resources:
+        defect_mode = defect_mode
     conda:
         "envs/preseq.yml"
     log:
         "data/logs/preseq_{sample}.log"
     shell:
-        "preseq lc_extrap -B -P -e 1000000000 -o {output} {input} > {log} 2>&1"
-    
+        "preseq lc_extrap -B {resources.defect_mode} -l 1000000000 -e 1000000000 -o {output} {input} > {log} 2>&1"
 
 rule plotFinger:
     input:
@@ -380,7 +376,7 @@ rule multiqc:
     input:
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps),
         expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
-        directory("data/")
+        expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
     output:
         "data/multiqc/multiqc_report.html"
     conda:
@@ -388,5 +384,5 @@ rule multiqc:
     log:
         "data/logs/multiqc.log"
     shell:
-        "multiqc -f -c src/multiqc_conf.yml -o data/multiqc {input} > {log} 2>&1"
+        "multiqc data/ -f -c src/multiqc_conf.yml -o data/multiqc --ignore data/homer > {log} 2>&1"
 

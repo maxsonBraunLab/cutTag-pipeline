@@ -1,0 +1,16 @@
+__default__:
+    mem: 2500
+    partition: "exacloud"
+    time: "03:00:00"
+    nodes: 1
+    cpus-per-task: 2
+    job-name: "{rule}"
+    error: "jobs/{rule}_%j.err"
+    out: "jobs/{rule}_%j.out"
+bowtie2:
+    cpus-per-task: 8
+callpeaks:
+    mem: 25000
+tracks:
+    mem: 8G
+    cpus-per-task: 8

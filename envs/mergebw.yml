@@ -5,3 +5,4 @@ channels:
 dependencies:
     - wiggletools
     - ucsc-bedgraphtobigwig
+    - ucsc-bigwigtobedgraph 

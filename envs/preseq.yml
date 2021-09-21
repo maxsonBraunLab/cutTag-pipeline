@@ -3,5 +3,5 @@ channels:
     - conda-forge
     - defaults
 dependencies:
-    - preseq=2.0.3
+    - preseq=3.1.2
     - samtools=1.10.0

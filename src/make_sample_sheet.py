@@ -33,11 +33,12 @@ def main():
     # write deseq2 metadata to file
     dmet=df.copy()
     dmet=dmet[['sample','condition']]
-    dmet.loc[:,('sample')] = dmet.loc[:,('sample')].apply(lambda x: "_".join(x.split("_")[0:2]))
+    dmet=dmet[- dmet['sample'].str.contains("IgG")]
     dmet.drop_duplicates(inplace=True)
     dmet.to_csv('src/deseq2_metadata.csv', index=False)
 
 if __name__ == "__main__": 
     main()
+
 
 

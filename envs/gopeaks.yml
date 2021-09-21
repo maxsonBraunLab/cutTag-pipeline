@@ -2,5 +2,5 @@ channels:
     - jakevc
     - conda-forge
 dependencies:
-    - libgcc-ng=9.3.0
+    # - libgcc-ng=9.3.0
     - gopeaks=0.1.9

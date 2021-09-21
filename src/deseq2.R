@@ -33,7 +33,6 @@ sampleDistPlotVsd = snakemake@output[["sampleDistVsd"]]
 sampleDistPlotRld = snakemake@output[["sampleDistRld"]]
 rds = snakemake@output[["rds"]]
 
-
 # read in genes file
 genestab = read_tsv(genes, col_names=c("seqnames", "start", "end", "name", "score", "strand")) %>% GRanges()
 
