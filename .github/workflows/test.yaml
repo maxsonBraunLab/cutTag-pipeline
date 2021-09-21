@@ -1,4 +1,4 @@
-name: cutTag-seq-test
+name: cutTag-test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test-cutTag-seq:
+  test-cutTag:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,6 +49,6 @@ jobs:
       - name: 6 - Run the Snake # -----------------------------------------------------------------
         run: |
           source activate /usr/share/miniconda/envs/snakemake
-          snakemake -j 2 --use-conda --directory .test --restart-times 1 --keep-going
+          snakemake -j 2 --use-conda --directory .test --keep-going
           tree .test
 
