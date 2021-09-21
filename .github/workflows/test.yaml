@@ -1,0 +1,54 @@
+name: cut&tag-seq-test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-cut&tag-seq:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0} # default to bash shell
+    steps:
+      - name: 1 - Check out cut&tag # -------------------------------------------------------------
+        uses: actions/checkout@v2
+
+      - name: 2 - Install Conda and SnakeMake # ---------------------------------------------------
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: snakemake
+          environment-file: .test/snakemake.5.32.yaml
+
+      - name: 3 - Activate Conda Environment # ----------------------------------------------------
+        run: |
+            tree
+            echo ----------
+            tree .test
+            conda init bash
+            source ~/.bashrc
+            source activate snakemake
+            conda info
+            conda list
+
+      - name: 4 - Prepare the Snake # -------------------------------------------------------------
+        run: |
+          source activate /usr/share/miniconda/envs/snakemake
+          snakemake -j 1 -np --directory .test
+          snakemake -j 2 --use-conda --conda-frontend mamba --conda-create-envs-only --directory .test
+
+      - name: 5  - Bowtie2 Index # ----------------------------------------------------------------
+        run: |
+          cd .test
+          source activate .snakemake/conda/c8bc2b2833dacaa11d6c74dbf05fcd1a
+          bowtie2-build --thread 4 testdata/Homo_sapiens.GRCh38.dna_rm.chromosome.1.fa.gz testdata/hg38_chr1
+          cd ..
+
+      - name: 6 - Run the Snake # -----------------------------------------------------------------
+        run: |
+          source activate /usr/share/miniconda/envs/snakemake
+          snakemake -j 2 --use-conda --directory .test --restart-times 1 --keep-going
+          tree .test
+
