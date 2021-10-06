@@ -368,9 +368,8 @@ rule homer:
         "data/homer/{mark}.done"
     conda:
         "envs/homer.yml"
-    threads: 8
     shell:
-        "bash src/homer.sh -m {wildcards.mark} -g {config[FASTA]}"
+        "bash src/homer.sh -m {wildcards.mark} -s 1 -p 4 -g {config[FASTA]}"
 
 rule multiqc:
     input:
@@ -387,4 +386,5 @@ rule multiqc:
         "data/logs/multiqc.log"
     shell:
         "multiqc data/ -f -c src/multiqc_conf.yml -o data/multiqc --ignore data/homer > {log} 2>&1"
+
 
