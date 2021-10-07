@@ -3,7 +3,7 @@ USEIGG: true
 #  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
 IGG: "IgG"
 CSIZES:
-    - "/home/groups/MaxsonLab/indices/mm10/mm10.chrom.sizes"
+    - "src/mm10.chrom.sizes"
 GENOME:
     - "/home/groups/MaxsonLab/indices/mm10/mm10"
 GENES: 
