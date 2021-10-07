@@ -42,7 +42,7 @@ jobs:
       - name: 5  - Bowtie2 Index # ----------------------------------------------------------------
         run: |
           cd .test
-          source activate .snakemake/conda/f7a80b2b
+          source activate .snakemake/conda/c5ec7e8d 
           bowtie2-build --thread 4 testdata/Homo_sapiens.GRCh38.dna_rm.chromosome.1.fa.gz testdata/hg38_chr1
           cd ..
 
