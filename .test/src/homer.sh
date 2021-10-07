@@ -1,20 +1,29 @@
 #!/usr/bin/bash
 
-while getopts "m:g:" op
+while getopts "m:g:s:p:" op
 do
 	case "$op" in
 		m)  mark="$OPTARG";;
 		g)  genome="$OPTARG";;
+		s)  slurm="$OPTARG";;
+		p)  p="$OPTARG";;
 		\?) exit 1;;
 	esac
 done
 
-if [ -f $g ];
+if [ -f $genome ];
 then
 	echo "I found the FASTA file!"
 else
 	echo -e "$g does not exist. Exiting program."
 	exit
+fi
+
+if [[ $slurm == 1 || $slurm == 0 ]]; then
+	true
+else
+	echo "ERROR: -s must be either 0 or 1 for SLURM submission."
+	exit 1
 fi
 
 log_file_exists() {
@@ -30,55 +39,58 @@ log_file_exists() {
 
 }
 
-# detect deseq2 output per mark ---------------------------------------------------------
+# detect contrast combinations per mark
+contrasts=$(find "data/deseq2/${mark}" -name "*.bed" | cut -d/ -f4 | cut -d- -f1-2 | sort | uniq)
 
-# mark already defined
-contrast=$(find "data/deseq2/${mark}" -name "*.bed" | cut -d/ -f4 | cut -d- -f1-2 | uniq)
-up_05="data/deseq2/${mark}/${contrast}-${mark}-differential-up-05.bed"
-up_01="data/deseq2/${mark}/${contrast}-${mark}-differential-up-01.bed"
-down_05="data/deseq2/${mark}/${contrast}-${mark}-differential-down-05.bed"
-down_01="data/deseq2/${mark}/${contrast}-${mark}-differential-down-01.bed"
+# HOMER analysis per contrast -----------------------------------------------------------
 
-declare -a differential_peaks=($up_05 $up_01 $down_05 $down_01)
+for contrast in $contrasts; do
 
-# because there can be up to 4 homer runs per mark, we will run these 4 in the same node.
+	echo "assessing contrast $contrast in mark $mark"
 
-# HOMER analysis ------------------------------------------------------------------------
+	up_05="data/deseq2/${mark}/${contrast}-${mark}-differential-up-05.bed"
+	up_01="data/deseq2/${mark}/${contrast}-${mark}-differential-up-01.bed"
+	down_05="data/deseq2/${mark}/${contrast}-${mark}-differential-down-05.bed"
+	down_01="data/deseq2/${mark}/${contrast}-${mark}-differential-down-01.bed"
 
-for file in ${differential_peaks[@]}; do
+	declare -a differential_peaks=($up_05 $up_01 $down_05 $down_01)
 
-	echo "assessing $file for HOMER analysis"
+	# assess and run HOMER per bed file
+	for file in ${differential_peaks[@]}; do
 
-	# make sure file exists
-	if [ -f "$file" ]; then
-		echo "$file detected"
-	fi
+		# check if file exists
+		if [ -f "$file" ]; then
 
-	peak_count=$(wc -l "$file" | cut -d" " -f1)
+			echo "$file detected"
+			peak_count=$(cat $file | wc -l)
 
-	# run HOMER if DE peaks is greater than 10 peaks
-	if [ "$peak_count" -lt 10 ]; then
-		echo "ERROR: $file had less than 10 differential peaks"
+			# run HOMER if >= 10 peaks
+			if [ "$peak_count" -gt 10 ]; then
 
-	else
+				# extract dir,sig info for the run.
+				echo "Running HOMER for $peak_count peaks in $file"
+				directionality=$(basename $file | cut -d- -f5) # "up" or "down"
+				sig=$(basename $file | cut -d- -f6 | cut -d. -f1) # e.g. 0.01 or 0.05
 
-		# extract dir,sig info for the run.
-		echo "Running HOMER for $peak_count peaks in $file"
-		directionality=$(basename $file | cut -d- -f5) # "up" or "down"
-		sig=$(basename $file | cut -d- -f6 | cut -d. -f1) # e.g. 0.01 or 0.05
+				# file I/O
+				output_dir="data/homer/${contrast}-${mark}-${directionality}-${sig}"
+				log="data/logs/homer_${contrast}-${mark}-${directionality}-${sig}.log"
+				log_file_exists $log
 
-		# file I/O
-		output_dir="data/homer/${contrast}-${mark}-${directionality}-${sig}"
-		log="data/logs/homer_${contrast}-${mark}-${directionality}-${sig}.log"
-		log_file_exists $log
+				# HOMER local run/submission to SLURM
+				if [ $slurm == 0 ]; then
+					findMotifsGenome.pl $file $genome $output_dir -size 200 -p $p > $log 2>&1 &
+				fi
 
-		# HOMER command in {{{ parallel }}}
-		cmd="findMotifsGenome.pl $file $genome $output_dir -size 200 > $log 2>&1 &"
-		eval $cmd
-
-	fi
-
+				if [ $slurm == 1 ]; then
+					job_out="jobs/homer-$contrast.out"
+					job_err="jobs/homer-$contrast.err"
+					sbatch -e $job_err -o $job_out --job-name "HOMER" --time "02:00:00" --mem="8G" --cpus-per-task=$p --wait --wrap="findMotifsGenome.pl $file $genome $output_dir -size 200 -p $p > $log 2>&1" &
+				fi
+			fi
+		fi
+	done
 done
-wait
 
+wait
 touch data/homer/$mark.done

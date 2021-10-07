@@ -369,7 +369,7 @@ rule homer:
     conda:
         "envs/homer.yml"
     shell:
-        "bash src/homer.sh -m {wildcards.mark} -s 1 -p 4 -g {config[FASTA]}"
+        "bash src/homer.sh -m {wildcards.mark} -s 0 -p 4 -g {config[FASTA]}"
 
 rule multiqc:
     input:
