@@ -36,8 +36,6 @@ localrules: frip_plot, fraglength_plot
 
 rule all:
     input:
-        "data/tracks/windows.bed.gz",
-        expand("data/tracks/{sample}.bw", sample = samps),
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
@@ -153,28 +151,17 @@ rule index:
     shell:
         "sambamba index -t {threads} {input} > {log} 2>&1"
 
-rule windows:
-    input:
-        config["CSIZES"]
-    output:
-        "data/tracks/windows.bed.gz"
-    conda:
-        "envs/bedtools.yml"
-    shell:
-        "bedtools makewindows -g {input} -w 10 | gzip > {output}"
-
 rule tracks:
     input:
         bam = rules.markdup.output,
         bai = rules.index.output,
-        windows = rules.windows.output,
-        csizes = config["CSIZES"]
     output:
         "data/tracks/{sample}.bw"
     conda:
-        "envs/tracks.yml"
+        "envs/dtools.yml"
+    threads: 8
     shell:
-        "bash src/tracks.sh -i {input.bam} -o {output} -c {input.csizes} -w {input.windows}"
+        "bamCoverage -b {input[0]} -o {output} --binSize 10 --smoothLength 50 --normalizeUsing CPM -p {threads} "
 
 rule merge_bw:
     input:
