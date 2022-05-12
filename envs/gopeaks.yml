@@ -1,6 +1,7 @@
+name: gopeaks
 channels:
-    - jakevc
-    - conda-forge
+  - bioconda
+  - conda-forge
 dependencies:
-    # - libgcc-ng=9.3.0
-    - gopeaks=0.1.9
+  - gopeaks=1.0.0
+

@@ -1,0 +1,12 @@
+__default__:
+    mem: 16G
+    partition: "exacloud"
+    time: "03:00:00"
+    nodes: 1
+    cpus-per-task: 8
+    job-name: "{rule}"
+    error: "jobs/{rule}_%j.err"
+    out: "jobs/{rule}_%j.out"
+callpeaks:
+    mem: 64G
+

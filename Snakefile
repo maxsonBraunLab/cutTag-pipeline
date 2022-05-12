@@ -36,8 +36,6 @@ localrules: frip_plot, fraglength_plot
 
 rule all:
     input:
-        "data/tracks/windows.bed.gz",
-        expand("data/tracks/{sample}.bw", sample = samps),
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
@@ -153,28 +151,17 @@ rule index:
     shell:
         "sambamba index -t {threads} {input} > {log} 2>&1"
 
-rule windows:
-    input:
-        config["CSIZES"]
-    output:
-        "data/tracks/windows.bed.gz"
-    conda:
-        "envs/bedtools.yml"
-    shell:
-        "bedtools makewindows -g {input} -w 10 | gzip > {output}"
-
 rule tracks:
     input:
         bam = rules.markdup.output,
         bai = rules.index.output,
-        windows = rules.windows.output,
-        csizes = config["CSIZES"]
     output:
         "data/tracks/{sample}.bw"
     conda:
-        "envs/tracks.yml"
+        "envs/dtools.yml"
+    threads: 8
     shell:
-        "bash src/tracks.sh -i {input.bam} -o {output} -c {input.csizes} -w {input.windows}"
+        "bamCoverage -b {input[0]} -o {output} --binSize 10 --smoothLength 50 --normalizeUsing CPM -p {threads} "
 
 rule merge_bw:
     input:
@@ -185,7 +172,9 @@ rule merge_bw:
         "envs/mergebw.yml"
     shell:
         "bash src/mergebw.sh -c {config[CSIZES]} -o {output} {input}"
-    
+
+# merge all peaks to get union peak with at least
+# two reps per condition per peak
 rule make_high_conf_peaks:
     input:
         get_peaks_by_mark_condition
@@ -194,14 +183,10 @@ rule make_high_conf_peaks:
     conda:
         "envs/bedtools.yml"
     shell:
-        """
-        # merge all peaks to get union peak with at least
-        # two reps per condition per peak
-        cat {input} | sort -k1,1 -k2,2n \
-        | bedtools merge \
-        | bedtools intersect -a - -b {input} -c \
-        | awk -v OFS='\t' '$4>=2 {{print}}' > {output} 
-        """
+        "cat {input} | sort -k1,1 -k2,2n | "
+        "bedtools merge | "
+        "bedtools intersect -a - -b {input} -c | "
+        "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
 
 
 rule fraglength:
@@ -283,11 +268,11 @@ rule callpeaks:
     conda: 
         "envs/gopeaks.yml"
     log:
-        "data/logs/callpeaks_{sample}.log"
+        "data/callpeaks/{sample}_gopeaks.json"
     params:
         igg=get_igg
     shell:
-        "gopeaks -mdist 1000 -bam {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} > {log} 2>&1"
+        "gopeaks -b {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} > {log} 2>&1"
 
 # get consensus
 rule consensus:
