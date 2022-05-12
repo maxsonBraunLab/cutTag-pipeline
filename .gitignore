@@ -3,3 +3,7 @@ data/
 .test/.snakemake
 .test/data/raw/*.norun
 .test/.RData
+cluster.yaml
+jobs/
+samplesheet.tsv
+
