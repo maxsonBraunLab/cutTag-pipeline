@@ -270,9 +270,10 @@ rule callpeaks:
     log:
         "data/callpeaks/{sample}_gopeaks.json"
     params:
-        igg=get_igg
+        igg = get_igg,
+        params = callpeaks_params
     shell:
-        "gopeaks -b {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} > {log} 2>&1"
+        "gopeaks -b {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} {params.params} > {log} 2>&1"
 
 # get consensus
 rule consensus:

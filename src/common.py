@@ -86,3 +86,13 @@ def get_callpeaks(wildcards):
             return [bam,bai]
     else:
         return [bam,bai]
+
+def callpeaks_params(wildcards):
+    """
+    Returns callpeaks parameters specified by the user in the samplesheet
+    """
+    params = st.loc[wildcards.sample]['params']
+    if params == "-":
+        return ""
+    else:
+        return params
