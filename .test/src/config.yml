@@ -1,10 +1,13 @@
 #should we use IGG for peak calling or not? 
 USEIGG: true
 #  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
-IGG: IgG
-CSIZES: testdata/hg38.chrom.sizes
-GENOME: testdata/hg38_chr1
-GENES: genes/hg38_refseq_genes.bed
-FASTQ_SCREEN: src/fastq_screen.conf
-FASTA: testdata/Homo_sapiens.GRCh38.dna_rm.chromosome.1.fa.gz
+IGG: "IgG"
+CSIZES:
+    - "src/mm10.chrom.sizes"
+GENOME:
+    - "/home/groups/MaxsonLab/indices/mm10/mm10"
+GENES: 
+    - "genes/mm10_refseq_genes.bed"
+FASTQ_SCREEN: "src/fastq_screen.conf"
+FASTA: "/home/groups/MaxsonLab/indices/mm10/mm10.fa"
 N_INTERSECTS: 2

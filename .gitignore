@@ -1,9 +1,13 @@
 data/
 .snakemake
-.test/.snakemake
-.test/data/raw/*.norun
-.test/.RData
 cluster.yaml
 jobs/
 samplesheet.tsv
 
+.test/src/*
+.test/testdata/preparsed
+.test/Rplots.pdf
+.test/.snakemake
+.test/data/raw/*.norun
+.test/.RData
+.test/testdata/hg38_chr1*
