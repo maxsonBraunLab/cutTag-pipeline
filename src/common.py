@@ -96,3 +96,9 @@ def callpeaks_params(wildcards):
         return ""
     else:
         return params
+
+def defect_mode(wildcards, attempt):
+    if attempt == 1:
+        return ""
+    elif attempt > 1:
+        return "-D"

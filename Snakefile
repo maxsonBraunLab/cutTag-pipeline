@@ -12,11 +12,19 @@ import plotly.graph_objects as go
 min_version("5.1.2")
 
 include: "src/common.py"
+
+# validate inputs
+
 configfile: "src/config.yml"
 validate(config, schema="schemas/config.schema.yml")
 
 st = pd.read_table('samplesheet.tsv').set_index('sample',drop=False)
 validate(st, schema="schemas/samples.schema.yml")
+
+deseq2_md = pd.read_table("src/deseq2_metadata.csv", sep = ",").set_index('sample', drop = False)
+validate(deseq2_md, schema="schemas/deseq2.schema.yml")
+
+# parse config files
 
 samps = get_samples()
 reads= get_reads()
@@ -26,12 +34,6 @@ mark_conditions=get_mark_conditions()
 marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
-
-def defect_mode(wildcards, attempt):
-    if attempt == 1:
-        return ""
-    elif attempt > 1:
-        return "-D"
 
 localrules: frip_plot, fraglength_plot
 
