@@ -15,7 +15,7 @@ include: "src/common.py"
 
 # validate inputs
 
-configfile: "src/config.yml"
+configfile: "config.yml"
 validate(config, schema="schemas/config.schema.yml")
 
 st = pd.read_table('samplesheet.tsv').set_index('sample',drop=False)

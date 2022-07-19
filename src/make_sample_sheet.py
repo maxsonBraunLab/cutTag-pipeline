@@ -27,6 +27,8 @@ def main():
     df=df.pivot_table(index=['sample','igg','mark','condition'], columns='read', values='file',aggfunc=sum).reset_index()
     df=df[["sample","R1","R2","mark","condition","igg"]]
     df.columns.name = None
+    df["gopeaks"] = "-"
+
     # write sample sheet to file
     df.to_csv(outfile, sep='\t', index=False)
 

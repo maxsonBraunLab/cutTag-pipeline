@@ -91,7 +91,7 @@ def callpeaks_params(wildcards):
     """
     Returns callpeaks parameters specified by the user in the samplesheet
     """
-    params = st.loc[wildcards.sample]['params']
+    params = st.loc[wildcards.sample]['gopeaks']
     if params == "-":
         return ""
     else:

@@ -23,6 +23,9 @@ properties:
   igg:
     type: string
     description: igg file to use, initially set to same as filename, must change to represent igg sample
+  gopeaks:
+    type: string
+    description: string of extra GoPeaks parameters to use. input and output are defined by default.
 
 required:
   - sample
@@ -31,3 +34,4 @@ required:
   - mark
   - condition
   - igg
+  - gopeaks
