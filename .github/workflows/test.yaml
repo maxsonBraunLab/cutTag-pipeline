@@ -1,0 +1,47 @@
+name: CUT&TAG test
+
+on:
+  push:
+    branches: [ test ]
+  pull_request:
+    branches: [ test ]
+
+jobs:
+  test-cutTag:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0} # default to bash shell
+    steps:
+      - name: 0 - Sync main and test # -----------------------------------------------------------
+        uses: tretuna/sync-branches@1.4.0
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          FROM_BRANCH: main
+          TO_BRANCH: test
+
+      - name: 1 - Check out test branch # ---------------------------------------------------------
+        uses: actions/checkout@v3
+        with:
+          ref: 'test'
+
+      - name: 2 - Install Conda and SnakeMake # ---------------------------------------------------
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: snakemake
+          environment-file: .test/testdata/snakemake.5.32.yaml
+
+      - name: 3 - Activate Conda Environment # ----------------------------------------------------
+        run: |
+            tree
+            echo ----------
+            tree .test
+            conda init bash
+            source ~/.bashrc
+            source activate snakemake
+            conda info
+            conda list
+            # make sure testing sub-folder has up-to-date scripts
+            mkdir -p .test/src
+            cp -r src .test/src
+
