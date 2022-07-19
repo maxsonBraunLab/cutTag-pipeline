@@ -1,0 +1,15 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: deseq2 metadata schema
+properties:
+  sample:
+    type: string
+    description: unique sample name / identifier in the format {condition}_{replicate}_{mark}
+    pattern: "(.+)_([0-9]+)_(.+)"
+  condition:
+    type: string
+    description: condition of a sample
+
+required:
+  - sample
+  - condition
