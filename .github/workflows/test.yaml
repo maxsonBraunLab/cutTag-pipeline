@@ -20,6 +20,15 @@ jobs:
           FROM_BRANCH: main
           TO_BRANCH: test
 
+      # - name: 0 - Conda cache # -------------------------------------------------------------------
+      #   uses: actions/cache@v2
+      #   env:
+      #     CACHE_NUMBER: 0
+      #   with:
+      #     path: ~/conda_pkgs_dir
+      #     key:
+      #       ${{  runner.os  }}-conda-${{  env.CACHE_NUMBER  }}-${{  hashFiles('.test/testdata/snakeamke.5.32.yaml')  }}
+
       - name: 1 - Check out test branch # ---------------------------------------------------------
         uses: actions/checkout@v3
         with:
@@ -30,6 +39,8 @@ jobs:
         with:
           activate-environment: snakemake
           environment-file: .test/testdata/snakemake.5.32.yaml
+          # use-only-tar-bz2: true
+          use-mamba: true
 
       - name: 3 - Activate Conda Environment # ----------------------------------------------------
         run: |
@@ -44,4 +55,23 @@ jobs:
             # make sure testing sub-folder has up-to-date scripts
             mkdir -p .test/src
             cp -r src .test/src
+
+      - name: 4 - Prepare the Snake # -------------------------------------------------------------
+        run: |
+          source activate /usr/share/miniconda/envs/snakemake
+          snakemake -j 1 -np --directory .test
+          snakemake -j 2 --use-conda --conda-frontend mamba --conda-create-envs-only --directory .test
+
+      - name: 5  - Bowtie2 Index # ----------------------------------------------------------------
+        run: |
+          cd .test
+          source activate .snakemake/conda/c5ec7e8d 
+          bowtie2-build --thread 4 testdata/Homo_sapiens.GRCh38.dna_rm.chromosome.1.fa.gz testdata/hg38_chr1
+          cd ..
+
+      - name: 6 - Run the Snake # -----------------------------------------------------------------
+        run: |
+          source activate /usr/share/miniconda/envs/snakemake
+          snakemake -j 2 --use-conda --directory .test --keep-going
+          tree .test
 
