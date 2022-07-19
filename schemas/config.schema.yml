@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: config file schema
+properties:
+  USEIGG:
+    type: boolean
+    description: whether to use IgG for all samples or not
+  IGG:
+    type: string
+    description: how is IgG spelled? e.g. "IgG"
+  CSIZES:
+    type: string
+    description: path to a tab-separated file of chromosome sizes
+  GENOME:
+    type: string
+    description: path to a bowtie2 index
+  GENES:
+    type: string
+    description: path to a BED6 file with gene name as the 4th column
+  FASTQ_SCREEN:
+    type: string
+    description: path to a fastq screen config file
+  FASTA:
+    type: string
+    description: path to a FASTQ file corresponding to the GENOME
+  N_INTERSECTS:
+    type: integer
+    description: the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
+
+required:
+  - USEIGG
+  - IGG
+  - CSIZES
+  - GENOME
+  - GENES
+  - FASTQ_SCREEN
+  - FASTA
+  - N_INTERSECTS

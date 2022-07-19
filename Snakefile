@@ -13,6 +13,7 @@ min_version("5.1.2")
 
 include: "src/common.py"
 configfile: "src/config.yml"
+validate(config, schema="schemas/config.schema.yml")
 
 st = pd.read_table('samplesheet.tsv').set_index('sample',drop=False)
 validate(st, schema="schemas/samples.schema.yml")
