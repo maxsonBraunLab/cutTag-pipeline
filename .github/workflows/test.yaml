@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ test ]
 
+env:
+  snakemake_file: .test/testdata/snakemake.5.32.yaml # this env runs the pipeline
+
 jobs:
   test-cutTag:
     runs-on: ubuntu-latest
@@ -20,14 +23,14 @@ jobs:
           FROM_BRANCH: main
           TO_BRANCH: test
 
-      # - name: 0 - Conda cache # -------------------------------------------------------------------
-      #   uses: actions/cache@v2
-      #   env:
-      #     CACHE_NUMBER: 0
-      #   with:
-      #     path: ~/conda_pkgs_dir
-      #     key:
-      #       ${{  runner.os  }}-conda-${{  env.CACHE_NUMBER  }}-${{  hashFiles('.test/testdata/snakeamke.5.32.yaml')  }}
+      - name: 0 - Conda cache # -------------------------------------------------------------------
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-${{ runner.os }}--${{ runner.arch }}-${{ hashFiles('env.snakemake_file') }}-${{ env.CACHE_NUMBER }}
+        id: cache
 
       - name: 1 - Check out test branch # ---------------------------------------------------------
         uses: actions/checkout@v3
@@ -38,8 +41,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: snakemake
-          environment-file: .test/testdata/snakemake.5.32.yaml
-          # use-only-tar-bz2: true
+          environment-file: env.snakemake_file
+          use-only-tar-bz2: true
           use-mamba: true
 
       - name: 3 - Activate Conda Environment # ----------------------------------------------------
