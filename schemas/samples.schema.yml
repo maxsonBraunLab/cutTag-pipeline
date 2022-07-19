@@ -5,12 +5,15 @@ properties:
   sample:
     type: string
     description: unique sample name / identifier
+    pattern: "(.+)_([0-9]+)_(.+)"
   R1:
     type: string
-    description: path to the the read1 fastq file 
+    description: path to the the read1 fastq file
+    pattern: "data\/raw\/.+R1.fastq.gz"
   R2:
     type: string
-    description: path to the the read2 fastq file 
+    description: path to the the read2 fastq file
+    pattern: "data\/raw\/.+R2.fastq.gz"
   mark:
     type: string
     description: epigenetic mark used
@@ -28,4 +31,3 @@ required:
   - mark
   - condition
   - igg
-    
