@@ -43,15 +43,14 @@ rule all:
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
         expand(["data/markd/{sample}.sorted.markd.bam",
-                "data/markd/{sample}.sorted.markd.bam",
                 "data/markd/{sample}.sorted.markd.fraglen.tsv",
                 "data/tracks/{sample}.bw",
+                "data/preseq/lcextrap_{sample}.txt",
                 ], sample=samps),
         expand(["data/callpeaks/{sample}_peaks.bed", 
-        "data/preseq/lcextrap_{sample}.txt",
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
-        ], sample=samps),
+        ], sample=sample_noigg),
         "data/multiqc/multiqc_report.html",
         expand(["data/deseq2/{mark}/{mark}-rld-pca.png",
         "data/deseq2/{mark}/{mark}-vsd-pca.png",
@@ -61,8 +60,8 @@ rule all:
         "data/deseq2/{mark}/{mark}-vsd.png",
         "data/deseq2/{mark}/{mark}-vsd-dist.png",
         "data/deseq2/{mark}/{mark}-rld-dist.png",
-        "data/deseq2/{mark}/{mark}-dds.rds"], mark=marks_noigg),
-        expand("data/homer/{mark}.done", mark = marks_noigg),
+        "data/deseq2/{mark}/{mark}-dds.rds",
+        "data/homer/{mark}.done"], mark=marks_noigg),
         # quality control plots
         "data/markd/fraglen.html",
         "data/plotEnrichment/frip.html",
@@ -303,7 +302,7 @@ rule frip:
 
 rule frip_plot:
     input:
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample = samps)
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample = sample_noigg)
     output:
         "data/plotEnrichment/frip.html"
     run:
@@ -364,7 +363,7 @@ rule multiqc:
     input:
         expand("data/fastqc/{read}.html", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
-        expand("data/plotEnrichment/frip_{sample}.tsv", sample=samps),
+        expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg),
         expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
         expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
     output:
