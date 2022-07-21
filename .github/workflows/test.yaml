@@ -26,7 +26,7 @@ jobs:
           CACHE_NUMBER: 0
         with:
           path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}-${{ hashFiles('.test/testdata/snakemake.5.32.yaml') }}-${{ env.CACHE_NUMBER }}
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.test/testdata/snakemake.5.32.yaml') }}-${{ env.CACHE_NUMBER }}
         id: cache
 
       - name: 1 - Check out test branch # ---------------------------------------------------------
