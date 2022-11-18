@@ -37,6 +37,8 @@ marks_noigg = [m for m in marks if config["IGG"] not in m]
 
 localrules: frip_plot, fraglength_plot
 
+singularity: "library://gartician/miniconda3/4.12.0"
+
 rule all:
     input:
         expand("data/fastqc/{read}.html", read=reads),

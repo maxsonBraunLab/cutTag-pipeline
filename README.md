@@ -122,6 +122,36 @@ HoxW_2_Rbp1,HoxW
 HoxW_3_Rbp1,HoxW
 ```
 
+# Reproducible results with SnakeMake + Singularity
+
+To ensure the reproducibility of your results, we recommend running a SnakeMake workflow using Singularity containers. These containers standardize the underlying operating system of the workflow (e.g. Ubuntu, centOS, etc.), while conda tracks the installation of bioinformatic software (e.g. bowtie2, samtools, deseq2). To utilize Singularity in your analysis, we recommend to modify the invocation command like this after creating symlinks, `samplesheet.tsv` file, and the `src/deseq2_metadata.csv`:
+
+```bash
+indices_folder="/home/groups/MaxsonLab/indices"
+conda_folder=$CONDA_PREFIX_1
+fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/sequencing/files"
+
+# Singularity + interactive run
+snakemake -j <n cores> \
+	--use-conda \
+	--conda-prefix $conda_folder \
+	--use-singularity \
+	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder'
+
+# Singularity + slurm run
+snakemake -j <n jobs> \
+	--use-conda \
+	--conda-prefix $conda_folder \
+	--use-singularity \
+	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder' \
+	--profile slurm \
+	--cluster-config cluster.yaml
+
+```
+
+The above command will install the pipeline's conda environments into the `conda-prefix` directory. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm).
+
+
 # Method
 
 ![](rulegraph.svg)

@@ -2,9 +2,17 @@
 FASTQ_SCREEN: src/fastq_screen.conf
 
 # Alignment -------------------------------------------------------------------
-GENOME: /home/groups/MaxsonLab/indices/mm10/mm10 # path to a bowtie2 index
+GENOME: # path to a bowtie2 index
+# /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index
+# /home/groups/MaxsonLab/indices/mm10/mm10
+
 FASTA: /home/groups/MaxsonLab/indices/mm10/mm10.fa
-GENES: genes/mm10_refseq_genes.bed
+# /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
+# /home/groups/MaxsonLab/indices/mm10/mm10.fa
+
+GENES: 
+# genes/mm10_refseq_genes.bed
+# genes/hg38_refseq_genes.bed
 
 # Peak Calling ----------------------------------------------------------------
 
@@ -14,7 +22,10 @@ USEIGG: true
 #  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
 IGG: IgG
 
-CSIZES: src/mm10.chrom.sizes
+CSIZES: 
+# src/mm10.chrom.sizes
+# src/hg38.chrom.sizes
+
 
 # Peak Processing
 N_INTERSECTS: 2 # the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
