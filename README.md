@@ -158,7 +158,7 @@ More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu
 
 ```bash
 indices_folder="/home/groups/MaxsonLab/indices"
-conda_folder=$CONDA_PREFIX_1
+conda_folder="${CONDA_PREFIX_1}/envs"
 fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/sequencing/files"
 
 # Singularity + interactive run
