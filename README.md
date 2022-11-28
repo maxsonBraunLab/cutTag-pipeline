@@ -177,18 +177,20 @@ snakemake -j <n cores> \
 	--use-conda \
 	--conda-prefix $conda_folder \
 	--use-singularity \
-	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder'
+	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder"
 
 # Singularity + slurm run
 snakemake -j <n jobs> \
 	--use-conda \
 	--conda-prefix $conda_folder \
 	--use-singularity \
-	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder' \
+	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder" \
 	--profile slurm \
 	--cluster-config cluster.yaml
 
 ```
+
+NOTE: make sure to use double quotes and insert an integer for the -j flag. 
 
 The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
 
