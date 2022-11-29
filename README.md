@@ -165,13 +165,25 @@ srun -p light --time=36:00:00 --pty bash
 module load /etc/modulefiles/singularity/current
 ```
 
-More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). Then we recommend to modify the invocation command like this after creating symlinks, `samplesheet.tsv` file, and the `src/deseq2_metadata.csv`:
+More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). If it is your first time running the pipeline, and especially when using Singularity, we must install all the conda environments using the following command:
 
 ```bash
 indices_folder="/home/groups/MaxsonLab/indices"
 conda_folder="${CONDA_PREFIX_1}/envs"
 fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/sequencing/files"
 
+snakemake -j 1 \
+	--verbose \
+	--use-conda \
+	--conda-prefix $conda_folder \
+	--use-singularity \
+	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder" \
+	--conda-create-envs-only
+
+```
+The above code snippet will take about an hour or more to set up, but is a one-time installation. After creating the conda environments, symlinks, `samplesheet.tsv`, and the `src/deseq2_metadata.csv`, we can invoke the pipeline in the same shell like this:
+
+```bash
 # Singularity + interactive run
 snakemake -j <n cores> \
 	--use-conda \
