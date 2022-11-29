@@ -1,7 +1,7 @@
 # cutTag-pipeline
 
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
-![ci/cd status](https://github.com/maxsonBraunLab/cutTag-pipeline/actions/workflows/test.yaml/badge.svg)
+![ci/cd status](https://github.com/maxsonBraunLab/cutTag-pipeline/actions/workflows/test.yaml/badge.svg?branch=test)
 [![snakemake minimum](https://img.shields.io/badge/snakemake->=5.32-<COLOR>.svg)](https://shields.io/)
 ![Maintainer](https://img.shields.io/badge/maintainer-gartician-blue)
 
@@ -9,37 +9,39 @@ Snakemake pipeline for Cut&amp;Tag analysis
 
 # Setup
 
-1. Configure the project directory
+## 1. Configure the project directory
 
-```
-#clone to your local called 'my-project'
-git clone https://github.com/maxsonBraunLab/cutTag-pipeline.git my-project
+```bash
+#clone to your local working directory
+git clone https://github.com/maxsonBraunLab/cutTag-pipeline.git
 
-#create directory for your fastq files
+#create a directory for your fastq files
 cd my-project
 mkdir -p data/raw
 
 # link fastqs to data/raw 
-ln -s /path/to/fastq/files/* data/raw
+ln -s /path/to/fastq/files/sample1_R1.fastq.gz data/raw
+ln -s /path/to/fastq/files/sample1_R2.fastq.gz data/raw
+ln -s /path/to/fastq/files/sample2_R1.fastq.gz data/raw
+ln -s /path/to/fastq/files/sample2_R2.fastq.gz data/raw
+...
 
 # make scripts executable
 chmod +x src/*.py src/*.sh
 ```
 
+**IMPORTANT**
 
-Rename all samples in data/raw to simplify sample information, for example:
+After creating the symlinks, rename all the symlinks in data/raw to the following format: `{condition}_{replicate}_{mark}_{R1|R2}.fastq.gz`
 
-This file:
-LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz
+For example, a file with this original name **LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz** will be renamed to
+**M6Q_3_RBP1_R1.fastq.gz**
 
-Is renamed to:
-M6Q_3_RBP1_R1.fastq.gz
-
-2. Make the sample sheet and deseq2 metadata.
+## 2. Make the sample sheet and deseq2 metadata.
 
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
-```
+```bash
 $ python src/make_sample_sheet.py data/raw
 ```
 
@@ -85,24 +87,33 @@ HoxW_3_Rbp1	data/raw/HoxW_3_Rbp1_R1.fastq.gz	data/raw/HoxW_3_Rbp1_R2.fastq.gz	Rb
 For this example there was only one IgG per condition, so the sample name corresponding to that IGG was used for each sample in the condition. In the case that each sample had it's own control file, each entry would correspond to the IgG for that sample. If only one IgG was used in the whole experiment, then it's sample name could be used for each row. If you are not using IgG set config['USEIGG'] to false, and don't modify the samplesheet.
 
 
-3. Edit configuration files 
+## 3. Edit configuration files 
 
-Edit runtime configuration in the file src/config.yml:
+1. Edit runtime configuration in the file src/config.yml:
 
-- Specify the path to the bowtie2 index for the genome you are aligning to.
-- Specify the path to the bowtie2 indices for the fastq_screen genomes.
+   - Specify the path to the bowtie2 index for the genome you are aligning to.
 
-The pipeline detects samples in the subdirectory data/raw with the following assumptions:
+   - Specify the path to the fastq screen configuration file.
 
- - Paired end reads
- - Read 1 and 2 are designated using "_R1", and "_R2"
- - the epigenetic mark label is the second split of the sample name by _ delimeter. For example M6C3_4Me1_S12_R2.fastq.gz will have the {mark} wildcard set to 4me1. This effects the output files from the calculation of counts tables.
+   - Specify the path to the genome FASTA file.
 
-Make sure deseq2_metadata.csv looks right. The file is created when you run `make_sample_sheet.py` and should have the following properties:
+   - Specify the path to the chromosome sizes. 
 
- - should have two columns labeled "sample", and "condition"
- - the sample column corresponds to the replicates of the given condition, and should be the same as the first split of the raw file: e.g. M6C3_4Me1_S12_R2.fastq.gz will have "sample" equal to M6C3.
- - the condition should be the name for each sample condition, and doees not have to come from the file name, it could be changed to whatever you would like to have displayed in the deseq2 plots.
+2. The pipeline detects samples in the subdirectory data/raw with the following assumptions:
+
+    - Paired end reads
+
+    - Read 1 and 2 are designated using "_R1", and "_R2"
+
+    - Samples are designated in the following convention: `{condition}_{replicate}_{mark}_{R1|R2}.fastq.gz`
+      This format affects the output files and ensures the bigwig files from the same marks are merged.  
+
+3. Make sure the `src/deseq2_metadata.csv` looks right. The file is created when you run `make_sample_sheet.py` and should have the following properties:
+
+ - Should have two columns labeled "sample", and "condition"
+ - The sample column corresponds to the individual biological replicates (includes all fields around the "_" delimiter). 
+ - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
+ - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
 
  The file src/deseq2_metadata is populated with the following example data:
 
@@ -158,7 +169,7 @@ More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu
 
 ```bash
 indices_folder="/home/groups/MaxsonLab/indices"
-conda_folder=$CONDA_PREFIX_1
+conda_folder="${CONDA_PREFIX_1}/envs"
 fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/sequencing/files"
 
 # Singularity + interactive run
@@ -166,18 +177,20 @@ snakemake -j <n cores> \
 	--use-conda \
 	--conda-prefix $conda_folder \
 	--use-singularity \
-	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder'
+	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder"
 
 # Singularity + slurm run
 snakemake -j <n jobs> \
 	--use-conda \
 	--conda-prefix $conda_folder \
 	--use-singularity \
-	--singularity-args '--bind $indices_folder,$conda_folder,$fastq_folder' \
+	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder" \
 	--profile slurm \
 	--cluster-config cluster.yaml
 
 ```
+
+NOTE: make sure to use double quotes and insert an integer for the -j flag. 
 
 The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
 
