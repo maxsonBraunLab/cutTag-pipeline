@@ -1,7 +1,21 @@
-name: homer
+name: cutTag-homer
 channels:
-  - defaults
   - bioconda
-  - conda-forge
+  - defaults
 dependencies:
-  - homer=4.11
+  - _libgcc_mutex=0.1=main
+  - _openmp_mutex=5.1=1_gnu
+  - ca-certificates=2022.10.11=h06a4308_0
+  - homer=4.11=pl5321h9f5acd7_7
+  - libgcc-ng=11.2.0=h1234567_1
+  - libgomp=11.2.0=h1234567_1
+  - libidn2=2.3.2=h7f8727e_0
+  - libnsl=2.0.0=h5eee18b_0
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - libunistring=0.9.10=h27cfd23_0
+  - openssl=1.1.1s=h7f8727e_0
+  - perl=5.32.1=0_h5eee18b_perl5
+  - unzip=6.0=h611a1e1_0
+  - wget=1.21.3=h0b77cf5_0
+  - zlib=1.2.13=h5eee18b_0
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-homer

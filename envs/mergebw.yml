@@ -1,8 +1,41 @@
+name: cutTag-mergebw
 channels:
-    - bioconda
-    - conda-forge
-    - defaults
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
-    - wiggletools
-    - ucsc-bedgraphtobigwig
-    - ucsc-bigwigtobedgraph 
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bzip2=1.0.8=h7f98852_4
+  - ca-certificates=2022.9.24=ha878542_0
+  - curl=7.64.0=h646f8bb_0
+  - gsl=2.4=h294904e_1006
+  - htslib=1.9=ha228f0b_7
+  - krb5=1.16.3=hc83ff2d_1000
+  - libbigwig=0.4.2=hdfb72b2_0
+  - libblas=3.9.0=16_linux64_openblas
+  - libcblas=3.9.0=16_linux64_openblas
+  - libcurl=7.64.0=h01ee5af_0
+  - libdeflate=1.0=h14c3975_1
+  - libedit=3.1.20191231=he28a2e2_2
+  - libgcc=7.2.0=h69d50b8_2
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgfortran-ng=12.2.0=h69a702a_19
+  - libgfortran5=12.2.0=h337968e_19
+  - libgomp=12.2.0=h65d4601_19
+  - libopenblas=0.3.21=pthreads_h78a6416_3
+  - libpng=1.6.38=h753d276_0
+  - libssh2=1.8.0=h1ad7b7a_1003
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libuuid=2.32.1=h7f98852_1000
+  - libzlib=1.2.13=h166bdaf_4
+  - mysql-connector-c=6.1.6=2
+  - ncurses=6.3=h27087fc_1
+  - openssl=1.0.2u=h516909a_0
+  - tk=8.6.12=h27826a3_0
+  - ucsc-bedgraphtobigwig=377=h199ee4e_0
+  - ucsc-bigwigtobedgraph=377=h199ee4e_0
+  - wiggletools=1.2.3=hba6f200_0
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=h166bdaf_4
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-mergebw

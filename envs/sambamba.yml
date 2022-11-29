@@ -1,6 +1,22 @@
+name: cutTag-sambamba
 channels:
-    - bioconda 
-    - conda-forge
-    - defaults
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
-    - sambamba
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bzip2=1.0.8=h7f98852_4
+  - ldc=1.28.1=hcf88599_0
+  - libedit=3.1.20191231=he28a2e2_2
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+  - libllvm12=12.0.1=hf817b99_2
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libzlib=1.2.13=h166bdaf_4
+  - lz4-c=1.9.3=h9c3ff4c_1
+  - ncurses=6.3=h27087fc_1
+  - sambamba=0.8.2=h98b6b92_2
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=h166bdaf_4
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-sambamba

@@ -1,7 +1,12 @@
-name: gopeaks
+name: cutTag-gopeaks
 channels:
   - bioconda
   - conda-forge
+  - defaults
 dependencies:
-  - gopeaks=1.0.0
-
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - gopeaks=1.0.0=hf05dbd8_0
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-gopeaks

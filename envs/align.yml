@@ -1,8 +1,44 @@
+name: cutTag-align
 channels:
-    - bioconda 
-    - conda-forge
-    - defaults
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
-    - bowtie2=2.4.1
-    - samtools=1.13
-    - tbb=2020.2
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bowtie2=2.4.1=py38h1c8e9b9_3
+  - bzip2=1.0.8=h7f98852_4
+  - c-ares=1.11.0=h470a237_1
+  - ca-certificates=2022.9.24=ha878542_0
+  - curl=7.71.1=he644dc0_8
+  - htslib=1.9=ha228f0b_7
+  - krb5=1.17.2=h926e7f8_0
+  - ld_impl_linux-64=2.39=hcc3a1bd_1
+  - libcurl=7.71.1=hcdd3856_8
+  - libdeflate=1.0=h14c3975_1
+  - libedit=3.1.20191231=h46ee950_2
+  - libev=4.33=h516909a_1
+  - libffi=3.2.1=he1b5a44_1007
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+  - libnghttp2=1.41.0=hab1572f_1
+  - libnsl=2.0.0=h7f98852_0
+  - libssh2=1.10.0=haa6b8db_3
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libzlib=1.2.13=h166bdaf_4
+  - ncurses=6.1=hf484d3e_1002
+  - openssl=1.1.1s=h166bdaf_0
+  - perl=5.32.1=2_h7f98852_perl5
+  - pip=22.3.1=pyhd8ed1ab_0
+  - python=3.8.5=h4d41432_2_cpython
+  - python_abi=3.8=3_cp38
+  - readline=8.0=h46ee950_1
+  - samtools=1.9=h10a08f8_12
+  - setuptools=65.5.1=pyhd8ed1ab_0
+  - sqlite=3.32.3=hcee41ef_1
+  - tbb=2020.2=h4bd325d_4
+  - tk=8.6.12=h27826a3_0
+  - wheel=0.38.4=pyhd8ed1ab_0
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=h166bdaf_4
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-align

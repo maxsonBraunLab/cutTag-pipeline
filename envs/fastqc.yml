@@ -1,0 +1,32 @@
+name: cutTag-fastqc
+channels:
+  - bioconda
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - _openmp_mutex=5.1=1_gnu
+  - dbus=1.13.18=hb2f20db_0
+  - expat=2.4.9=h6a678d5_0
+  - fastqc=0.11.9=hdfd78af_1
+  - font-ttf-dejavu-sans-mono=2.37=hd3eb1b0_0
+  - fontconfig=2.13.1=hef1e5e3_1
+  - freetype=2.12.1=h4a9f257_0
+  - gdbm=1.18=hd4cb3f1_4
+  - glib=2.69.1=he621ea3_2
+  - icu=58.2=he6710b0_3
+  - libffi=3.4.2=h6a678d5_6
+  - libgcc-ng=11.2.0=h1234567_1
+  - libgomp=11.2.0=h1234567_1
+  - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - libuuid=1.41.5=h5eee18b_0
+  - libxcb=1.15=h7f8727e_0
+  - libxml2=2.9.14=h74e7548_0
+  - ncurses=6.3=h5eee18b_3
+  - openjdk=11.0.13=h87a67e3_0
+  - pcre=8.45=h295c915_0
+  - perl=5.34.0=h5eee18b_2
+  - readline=8.2=h5eee18b_0
+  - xz=5.2.6=h5eee18b_0
+  - zlib=1.2.13=h5eee18b_0
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-fastqc

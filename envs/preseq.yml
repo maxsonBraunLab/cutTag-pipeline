@@ -1,7 +1,30 @@
+name: cutTag-preseq
 channels:
-    - bioconda 
-    - conda-forge
-    - defaults
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
-    - preseq=3.1.2
-    - samtools=1.10.0
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bzip2=1.0.8=h7f98852_4
+  - c-ares=1.18.1=h7f98852_0
+  - ca-certificates=2022.9.24=ha878542_0
+  - htslib=1.16=h6bc39ce_0
+  - keyutils=1.6.1=h166bdaf_0
+  - krb5=1.19.3=h3790be6_0
+  - libcurl=7.86.0=h7bff187_1
+  - libdeflate=1.13=h166bdaf_0
+  - libedit=3.1.20191231=he28a2e2_2
+  - libev=4.33=h516909a_1
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgomp=12.2.0=h65d4601_19
+  - libnghttp2=1.47.0=hdcd2b5c_1
+  - libssh2=1.10.0=haa6b8db_3
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libzlib=1.2.13=h166bdaf_4
+  - ncurses=6.3=h27087fc_1
+  - openssl=1.1.1s=h166bdaf_0
+  - preseq=3.2.0=h867801b_3
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=h166bdaf_4
+prefix: /home/groups/MaxsonLab/kongg/anaconda3/envs/cutTag-preseq
