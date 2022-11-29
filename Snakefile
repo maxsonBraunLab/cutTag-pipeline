@@ -31,17 +31,20 @@ reads= get_reads()
 marks=get_marks()
 mark_conditions=get_mark_conditions()
 
+if not os.path.exists("data/fastqc"):
+    os.makedirs("data/fastqc")
+
 marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
 
 localrules: frip_plot, fraglength_plot
 
-singularity: "library://gartician/miniconda3/4.12.0"
+singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
 
 rule all:
     input:
-        expand("data/fastqc/{read}.html", read=reads),
+        expand("data/fastqc/{read}_fastqc.{ext}", read=reads, ext = ["html", "zip"]),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
         expand(["data/markd/{sample}.sorted.markd.bam",
@@ -75,13 +78,15 @@ rule fastqc:
     input:
         "data/raw/{read}.fastq.gz"
     output:
-        html="data/fastqc/{read}.html",
+        html="data/fastqc/{read}_fastqc.html",
         zip="data/fastqc/{read}_fastqc.zip"
+    conda:
+        "envs/fastqc.yml"
     log:
         "data/logs/fastqc_{read}.log"
     threads: 4
-    wrapper:
-        "0.65.0/bio/fastqc"
+    shell:
+        "fastqc -t {threads} --outdir data/fastqc {input} > {log} 2>&1"
 
 # detect contaminants
 rule fastq_screen:
@@ -174,6 +179,8 @@ rule merge_bw:
         "data/mergebw/{mark_condition}.bw"
     conda:
         "envs/mergebw.yml"
+    resources:
+        mem_mb = 8000
     shell:
         "bash src/mergebw.sh -c {config[CSIZES]} -o {output} {input}"
 
@@ -363,7 +370,7 @@ rule homer:
 
 rule multiqc:
     input:
-        expand("data/fastqc/{read}.html", read=reads),
+        expand("data/fastqc/{read}_fastqc.zip", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg),
         expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
@@ -375,6 +382,8 @@ rule multiqc:
     log:
         "data/logs/multiqc.log"
     shell:
+        "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; "
         "multiqc data/ -f -c src/multiqc_conf.yml -o data/multiqc --ignore data/homer > {log} 2>&1"
 
+# export different locales for singularity workaround: https://click.palletsprojects.com/en/8.1.x/unicode-support/
 

@@ -76,9 +76,9 @@ fi
 echo "merging the following files..."
 echo ${script_args[@]}
 
-cmd="wiggletools mean ${script_args[@]} | grep -v "_" | awk 'NF==4{print}' > ${out_name}.tmp.bdg"
+cmd="wiggletools mean ${script_args[@]} | grep -vE '_|EBV|GL|JH' | awk 'NF==4{print}' | sort -S 8G -k1,1 -k2,2n > ${out_name}.tmp.bdg"
 echo $cmd
-wiggletools mean ${script_args[@]} | grep -v "_" | awk 'NF==4{print}' > ${out_name}.tmp.bdg
+eval $cmd
 
 if [ $? -eq 0 ]; then
     echo "..."
