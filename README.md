@@ -12,14 +12,16 @@ Snakemake pipeline for Cut&amp;Tag analysis
 ## 1. Configure the project directory
 
 ```bash
-#clone to your local working directory
+# cd into a project directory
+
+# type the following to get a copy of the pipeline
 git clone https://github.com/maxsonBraunLab/cutTag-pipeline.git
 
 #create a directory for your fastq files
-cd my-project
+cd cutTag-pipeline
 mkdir -p data/raw
 
-# link fastqs to data/raw 
+# link fastqs to data/raw
 ln -s /path/to/fastq/files/sample1_R1.fastq.gz data/raw
 ln -s /path/to/fastq/files/sample1_R2.fastq.gz data/raw
 ln -s /path/to/fastq/files/sample2_R1.fastq.gz data/raw
@@ -151,7 +153,7 @@ snakemake -j <n cores> --use-conda --conda-prefix $CONDA_PREFIX_1/envs
 snakemake -j <n jobs> --use-conda --conda-prefix $CONDA_PREFIX_1/envs --profile slurm --cluster-config src/cluster.yml
 ```
 
-You can standardize further arguments for running the pipeline in batch mode using the following [instructions](https://github.com/Snakemake-Profiles/slurm).
+You can standardize further arguments for running the pipeline in batch mode using the following [instructions](https://github.com/Snakemake-Profiles/slurm). The maxsonBraunLab repository [slurm](https://github.com/maxsonBraunLab/slurm) contains further instructions to set up a SnakeMake profile.
 
 # Reproducible results with SnakeMake + Singularity
 
@@ -160,6 +162,9 @@ To ensure the reproducibility of your results, we recommend running a SnakeMake 
 ```bash
 # request an interactive node
 srun -p light --time=36:00:00 --pty bash
+
+# re-activate your environment with snakemake
+conda activate <snakemake-env>
 
 # load the singularity program
 module load /etc/modulefiles/singularity/current
@@ -170,7 +175,7 @@ More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu
 ```bash
 indices_folder="/home/groups/MaxsonLab/indices"
 conda_folder="${CONDA_PREFIX_1}/envs"
-fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/sequencing/files"
+fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/FASTQ/folder/"
 
 snakemake -j 1 \
 	--verbose \
