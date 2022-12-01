@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 import os
 import re
+import yaml
 
 def main():
 
@@ -32,10 +33,16 @@ def main():
     # write sample sheet to file
     df.to_csv(outfile, sep='\t', index=False)
 
+    # define how IgG is spelled
+    with open("config.yml", 'r') as f:
+        config = yaml.safe_load(f)
+
+    igg = config["IGG"]
+
     # write deseq2 metadata to file
     dmet=df.copy()
     dmet=dmet[['sample','condition']]
-    dmet=dmet[- dmet['sample'].str.contains("IgG")]
+    dmet=dmet[- dmet['sample'].str.contains(igg)]
     dmet.drop_duplicates(inplace=True)
     dmet.to_csv('src/deseq2_metadata.csv', index=False)
 
