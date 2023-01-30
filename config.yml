@@ -4,11 +4,11 @@ FASTQ_SCREEN: src/fastq_screen.conf
 # Alignment -------------------------------------------------------------------
 GENOME:
 # /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index
-# /home/groups/MaxsonLab/indices/mm10/mm10
+# /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10
 
 FASTA:
 # /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
-# /home/groups/MaxsonLab/indices/mm10/mm10.fa
+# /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10.fa
 
 GENES: 
 # genes/mm10_refseq_genes.bed

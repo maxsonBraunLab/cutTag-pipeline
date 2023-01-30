@@ -5,8 +5,8 @@ __default__:
     nodes: 1
     cpus-per-task: 8
     job-name: "{rule}"
-    error: "jobs/{rule}_%j.err"
-    out: "jobs/{rule}_%j.out"
+    error: "jobs/{rule}/{rule}_%j.err"
+    out: "jobs/{rule}/{rule}_%j.out"
 callpeaks:
     mem: 64G
 
