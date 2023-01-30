@@ -382,6 +382,7 @@ rule multiqc:
     log:
         "data/logs/multiqc.log"
     shell:
+        # comment out the "export ..." line if not running pipeline through Singularity
         "export LC_ALL=C.UTF-8; export LANG=C.UTF-8; "
         "multiqc data/ -f -c src/multiqc_conf.yml -o data/multiqc --ignore data/homer > {log} 2>&1"
 

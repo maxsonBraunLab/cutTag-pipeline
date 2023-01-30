@@ -91,7 +91,7 @@ For this example there was only one IgG per condition, so the sample name corres
 
 ## 3. Edit configuration files 
 
-1. Edit runtime configuration in the file src/config.yml:
+1. Edit runtime configuration in the file `config.yml`:
 
    - Specify the path to the bowtie2 index for the genome you are aligning to.
 
@@ -150,7 +150,7 @@ To invoke the pipeline, please use either of the two options below:
 snakemake -j <n cores> --use-conda --conda-prefix $CONDA_PREFIX_1/envs
 
 # run in batch mode. Recommended for running intensive jobs.
-snakemake -j <n jobs> --use-conda --conda-prefix $CONDA_PREFIX_1/envs --profile slurm --cluster-config src/cluster.yml
+snakemake -j <n jobs> --use-conda --conda-prefix $CONDA_PREFIX_1/envs --profile slurm --cluster-config cluster.yaml
 ```
 
 You can standardize further arguments for running the pipeline in batch mode using the following [instructions](https://github.com/Snakemake-Profiles/slurm). The maxsonBraunLab repository [slurm](https://github.com/maxsonBraunLab/slurm) contains further instructions to set up a SnakeMake profile.
@@ -207,7 +207,7 @@ snakemake -j <n jobs> \
 
 ```
 
-NOTE: make sure to use double quotes and insert an integer for the -j flag. 
+NOTE: make sure to use double quotes, and insert an integer for the -j flag. 
 
 The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
 
