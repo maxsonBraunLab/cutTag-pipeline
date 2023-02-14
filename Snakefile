@@ -40,7 +40,9 @@ marks_noigg = [m for m in marks if config["IGG"] not in m]
 
 localrules: frip_plot, fraglength_plot
 
-singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
+#singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
+singularity: "/home/groups/MaxsonLab/software/singularity-containers/4.12.0_sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591.sif"
+
 
 rule all:
     input:
@@ -307,7 +309,7 @@ rule frip:
     log:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
-        "plotEnrichment -b {input[1]} --BED {input[0]} --regionLabels 'frip' --outRawCounts {output[1]} -o {output[0]} > {log} 2>&1"
+        "bash src/skip_frip.sh {input[0]} {input[1]} {output[0]} {output[1]}"
 
 rule frip_plot:
     input:
