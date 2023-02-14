@@ -67,6 +67,7 @@ dependencies:
   - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python_abi=3.7=2_cp37m
   - readline=8.1.2=h0f457ee_0
+  - samtools
   - scipy=1.7.3=py37hf2a6cf1_0
   - setuptools=65.5.1=pyhd8ed1ab_0
   - six=1.16.0=pyh6c4a22f_0
