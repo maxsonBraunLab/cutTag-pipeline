@@ -309,7 +309,7 @@ rule frip:
     log:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
-        "bash src/skip_frip.sh {input[0]} {input[1]} {output[0]} {output[1]}"
+        "bash src/skip_frip.sh {input[0]} {input[1]} {output[0]} {output[1]} {log}"
 
 rule frip_plot:
     input:
