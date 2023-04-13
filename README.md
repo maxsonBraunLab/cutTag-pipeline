@@ -29,7 +29,7 @@ ln -s /path/to/fastq/files/sample2_R2.fastq.gz data/raw
 ...
 
 # make scripts executable
-chmod +x src/*.py src/*.sh
+chmod +x src/*.py src/*.sh *.sh
 ```
 
 **IMPORTANT**
@@ -150,6 +150,12 @@ To invoke the pipeline, please use either of the two options below:
 snakemake -j <n cores> --use-conda --conda-prefix $CONDA_PREFIX_1/envs
 
 # run in batch mode. Recommended for running intensive jobs.
+sbatch run_pipeline_conda.sh
+```
+
+For users running the pipeline in batch mode, `run_pipeline_conda.sh` is a wrapper script that contains the following command:
+
+```bash
 snakemake -j <n jobs> --use-conda --conda-prefix $CONDA_PREFIX_1/envs --profile slurm --cluster-config cluster.yaml
 ```
 
@@ -169,6 +175,18 @@ conda activate <snakemake-env>
 # load the singularity program
 module load /etc/modulefiles/singularity/current
 ```
+
+By default, Singularity will create and use a cache directory in your personal user root folder (i.e. in `/home/users/<username>`). This may create problems as there is limited space in a user's root folder on Exacloud. To avoid issues with space in your root folder, you can set the Singularity cache directory path to a folder in your lab group directory like this:
+
+```bash
+# make a cache folder inside your lab user folder 
+mkdir /home/groups/MaxsonLab/<your_user_folder>/singularity_cache
+
+# make the path to the cache folder accessible to other processes
+export SINGULARITY_CACHEDIR=/home/groups/MaxsonLab/<your_user_folder>/singularity_cache
+```
+
+If you are an experienced user, you can add the `export SINGULARITY_CACHEDIR=...` line to your `.bashrc` file. Otherwise, run the `export SINGULARITY_CACHEDIR=...` command before doing the steps below.
 
 More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). If it is your first time running the pipeline, and especially when using Singularity, we must install all the conda environments using the following command:
 
@@ -196,20 +214,15 @@ snakemake -j <n cores> \
 	--use-singularity \
 	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder"
 
-# Singularity + slurm run
-snakemake -j <n jobs> \
-	--use-conda \
-	--conda-prefix $conda_folder \
-	--use-singularity \
-	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder" \
-	--profile slurm \
-	--cluster-config cluster.yaml
-
+# Singularity + slurm (batch) run
+sbatch run_pipeline_singularity.sh
 ```
+
+For users running the Singularity version of the pipeline in batch mode, `run_pipeline_singularity.sh` is a wrapper script for the pipeline. You will need to add the appropriate FASTQ folder path to the script prior to running. Additional instructions are provided in the wrapper script.
 
 NOTE: make sure to use double quotes, and insert an integer for the -j flag. 
 
-The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
+The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` in the wrapper script will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
 
 # Method
 
