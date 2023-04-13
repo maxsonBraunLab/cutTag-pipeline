@@ -21,9 +21,9 @@ num_jobs=100
 snakemake -j $num_jobs \
 --verbose \
 --use-conda \
+--conda-prefix $CONDA_PREFIX_1/envs \
 --profile slurm \
---cluster-config cluster.yaml \
---rerun-incomplete
+--cluster-config cluster.yaml
 
 
 exit
