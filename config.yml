@@ -7,6 +7,10 @@ GENOME:
 # /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10
 
 FASTA:
+#-----If running Homer (pipeline default), use one of the following homer_preparsed FASTA symlinks:
+# /home/groups/MaxsonLab/indices/homer_preparsed/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
+# /home/groups/MaxsonLab/indices/homer_preparsed/mm10.fa
+#-----If not running Homer, use one of the following FASTA files:
 # /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
 # /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10.fa
 
