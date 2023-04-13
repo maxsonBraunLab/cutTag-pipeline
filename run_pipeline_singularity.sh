@@ -11,7 +11,7 @@
 # - be on an interactive/compute node so that Singularity module can be activated
 # - conda activate snakemake environment
 # - check that slurm_singularity profile for snakemake is set up
-# - check that "jobs" folder exists
+# - check that "jobs" folder exists in the main pipeline directory (if not, mkdir jobs)
 # - add correct paths to indices and fastq folders below
 
 # To run this wrapper, do: sbatch run_pipeline_singularity.sh

@@ -10,7 +10,7 @@
 # Make sure to do the following before running this script:
 # - conda activate snakemake environment
 # - check that slurm profile for snakemake is set up
-# - check that "jobs" folder exists
+# - check that "jobs" folder exists in the main pipeline directory (if not, mkdir jobs)
 
 # To run this wrapper, do: sbatch run_pipeline_conda.sh
 
