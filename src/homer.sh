@@ -40,7 +40,7 @@ log_file_exists() {
 }
 
 # detect contrast combinations per mark
-contrasts=$(find "data/deseq2/${mark}" -name "*.bed" | cut -d/ -f4 | cut -d- -f1-2 | sort | uniq)
+contrasts=$(find "data/deseq2/${mark}" -name "*.bed" | cut -d/ -f4 | sed -E "s/([a-zA-Z0-9.-]+)-($mark)-([a-zA-Z0-9-]+)(.bed)/\1/" | sort | uniq)
 
 # HOMER analysis per contrast -----------------------------------------------------------
 
@@ -55,6 +55,8 @@ for contrast in $contrasts; do
 
 	declare -a differential_peaks=($up_05 $up_01 $down_05 $down_01)
 
+	echo -e "Differential peaks files:\n${differential_peaks[@]}"
+
 	# assess and run HOMER per bed file
 	for file in ${differential_peaks[@]}; do
 
@@ -64,13 +66,15 @@ for contrast in $contrasts; do
 			echo "$file detected"
 			peak_count=$(cat $file | wc -l)
 
+			echo "Peak count: $peak_count"
+
 			# run HOMER if >= 10 peaks
-			if [ "$peak_count" -gt 10 ]; then
+			if [ "$peak_count" -ge 10 ]; then
 
 				# extract dir,sig info for the run.
 				echo "Running HOMER for $peak_count peaks in $file"
-				directionality=$(basename $file | cut -d- -f5) # "up" or "down"
-				sig=$(basename $file | cut -d- -f6 | cut -d. -f1) # e.g. 0.01 or 0.05
+				directionality=$(basename $file | sed -E "s/([a-zA-Z0-9._-]+)-(down|up)-([0-9]+)(.bed)/\2/") # "up" or "down"
+				sig=$(basename $file | sed -E "s/([a-zA-Z0-9._-]+)-(down|up)-([0-9]+)(.bed)/\3/") # e.g. significance level (01 or 05)
 
 				# file I/O
 				output_dir="data/homer/${contrast}-${mark}-${directionality}-${sig}"
@@ -83,8 +87,11 @@ for contrast in $contrasts; do
 				fi
 
 				if [ $slurm == 1 ]; then
-					job_out="jobs/homer-$contrast.out"
-					job_err="jobs/homer-$contrast.err"
+					if [ ! -d "jobs/homer" ]; then
+						mkdir -p jobs/homer
+					fi
+					job_out="jobs/homer/homer-${contrast}-${mark}_%j.out"
+					job_err="jobs/homer/homer-${contrast}-${mark}_%j.err"
 					sbatch -e $job_err -o $job_out --job-name "HOMER" --time "02:00:00" --mem="8G" --cpus-per-task=$p --wait --wrap="findMotifsGenome.pl $file $genome $output_dir -size 200 -p $p > $log 2>&1" &
 				fi
 			fi
@@ -94,3 +101,5 @@ done
 
 wait
 touch data/homer/$mark.done
+
+exit
