@@ -29,12 +29,13 @@ num_jobs=100
 module load /etc/modulefiles/singularity/current
 
 # run snakemake pipeline
+# Note: if a separate Snakemake slurm profile for Singularity exists (e.g. slurm_singularity), you can use it instead of the default slurm profile
 snakemake -j $num_jobs \
 --verbose \
 --use-conda \
 --use-singularity \
 --singularity-args "--bind $indices_folder,$conda_folder,$conda_pkgs_folder,$fastq_folder" \
---profile slurm_singularity \
+--profile slurm \
 --conda-prefix $conda_folder \
 --cluster-config cluster.yaml
 
