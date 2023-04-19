@@ -46,6 +46,7 @@ singularity: "/home/groups/MaxsonLab/software/singularity-containers/4.12.0_sha2
 
 rule all:
     input:
+        expand("data/fastp/{read}.fastq.gz", read=reads) if config["TRIM_ADAPTERS"] else [],
         expand("data/fastqc/{read}_fastqc.{ext}", read=reads, ext = ["html", "zip"]),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
@@ -75,10 +76,28 @@ rule all:
         expand("data/mergebw/{mark_condition}.bw", mark_condition=mark_conditions),
         expand("data/highConf/{mark_condition}.highConf.bed", mark_condition=mark_conditions)
 
+
+if config["TRIM_ADAPTERS"]:
+    # trim adapters from reads before alignment
+    rule fastp:
+        input:
+            r1 = "data/raw/{sample}_R1.fastq.gz",
+            r2 = "data/raw/{sample}_R2.fastq.gz"
+        output:
+            r1 = "data/fastp/{sample}_R1.fastq.gz",
+            r2 = "data/fastp/{sample}_R2.fastq.gz"
+        conda: 
+            "envs/fastp.yaml"
+        log:
+            "data/logs/fastp/{sample}.fastp.json"
+        threads: 8
+        shell:
+            "fastp -i {input.r1} -I {input.r2} -o {output.r1} -O {output.r2} --detect_adapter_for_pe --disable_quality_filtering --thread {threads} -j {log} -h /dev/null"
+
 # fastqc for each read 
 rule fastqc:
     input:
-        "data/raw/{read}.fastq.gz"
+        "data/fastp/{read}.fastq.gz" if config["TRIM_ADAPTERS"] else "data/raw/{read}.fastq.gz"
     output:
         html="data/fastqc/{read}_fastqc.html",
         zip="data/fastqc/{read}_fastqc.zip"
@@ -108,7 +127,8 @@ rule fastq_screen:
 # align samples to genome
 rule bowtie2:
     input:
-        get_bowtie2_input
+        r1 = "data/fastp/{sample}_R1.fastq.gz" if config["TRIM_ADAPTERS"] else "data/raw/{sample}_R1.fastq.gz",
+        r2 = "data/fastp/{sample}_R2.fastq.gz" if config["TRIM_ADAPTERS"] else "data/raw/{sample}_R2.fastq.gz"
     output:
         "data/aligned/{sample}.bam"
     log:
@@ -121,7 +141,7 @@ rule bowtie2:
         "--no-unal --no-mixed --threads {threads} "
         "--no-discordant --phred33 "
         "-I 10 -X 700 -x {config[GENOME]} "
-        "-1 {input[0]} -2 {input[1]} 2>{log.err} | samtools view -@ {threads} -Sbh - > {output}"
+        "-1 {input.r1} -2 {input.r2} 2>{log.err} | samtools view -@ {threads} -Sbh - > {output}"
 
 rule sort:
     input:
@@ -375,6 +395,7 @@ rule multiqc:
         expand("data/fastqc/{read}_fastqc.zip", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg),
+        # comment out the expand("data/deseq2/...) line if no replicates used in experiment
         expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
         expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
     output:

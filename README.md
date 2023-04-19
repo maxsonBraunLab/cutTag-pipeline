@@ -93,6 +93,10 @@ For this example there was only one IgG per condition, so the sample name corres
 
 1. Edit runtime configuration in the file `config.yml`:
 
+   - Specify whether or not to trim adapters from raw reads to improve downstream alignment rate. You can decide based on adapter content in the sequencing core's FastQC reports.
+
+   - Specify whether or not to use IGG for peak calling.
+
    - Specify the path to the bowtie2 index for the genome you are aligning to.
 
    - Specify the path to the fastq screen configuration file.
