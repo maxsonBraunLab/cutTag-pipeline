@@ -230,7 +230,15 @@ The above command will install the pipeline's conda environments into the `conda
 
 # Method
 
+Without adapter trimming:
+
 ![](rulegraph.svg)
+
+
+With adapter trimming enabled:
+
+![](rulegraph2.svg)
+
 
 # Output
 
