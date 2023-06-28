@@ -10,6 +10,7 @@ library("plyranges")
 library("tidyr")
 library("dendextend")
 library("ggrepel")
+library("tools")
 
 
 message("setting snakemake parameters")
@@ -282,15 +283,20 @@ for (k in 1:length(lsc)) {
             annotation_row = annots,
             annotation_colors = colors)
 
-        save_pheatmap_svg <- function(x, filename, width=7, height=7) {
-            pdf(filename, width = width, height = height)
+        save_pheatmap <- function(x, filename, width=7, height=7) {
+            if (tolower(tools::file_ext(filename)) == "png") {
+                png(filename = filename, width = width, height = height)
+            }
+            else {
+                pdf(filename, width = width, height = height)
+            }
             grid::grid.newpage()
             grid::grid.draw(x$gtable)
             dev.off()
         }
 
         heatmap_filename=paste0(outdir,"/",exp_prefix,"/",cl[1],"-",cl[2],"-",exp_prefix,"-heatmap.pdf")
-        save_pheatmap_svg(heat, heatmap_filename)
+        save_pheatmap(heat, heatmap_filename)
 
         annot_filename=gsub(".tsv", "-05-clust.tsv", tableName)
         # annotate cluster and direction
