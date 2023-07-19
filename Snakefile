@@ -388,7 +388,8 @@ rule homer:
     conda:
         "envs/homer.yml"
     shell:
-        "bash src/homer.sh -m {wildcards.mark} -s 0 -p 4 -g {config[FASTA]}"
+        "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
+# this rule submits HOMER runs to SLURM if -s = 1. A run is each unique contrast
 
 rule multiqc:
     input:
