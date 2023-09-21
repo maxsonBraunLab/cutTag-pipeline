@@ -3,7 +3,7 @@ FASTQ_SCREEN: src/fastq_screen.conf
 
 # Adapter Trimming ------------------------------------------------------------
 # option to trim adapters from raw reads to improve alignment rate (True or False)
-TRIM_ADAPTERS: False
+TRIM_ADAPTERS: True
 
 # Alignment -------------------------------------------------------------------
 GENOME:

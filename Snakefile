@@ -87,12 +87,12 @@ if config["TRIM_ADAPTERS"]:
             r1 = "data/fastp/{sample}_R1.fastq.gz",
             r2 = "data/fastp/{sample}_R2.fastq.gz"
         conda: 
-            "envs/fastp.yaml"
+            "envs/fastp.yml"
         log:
             "data/logs/fastp/{sample}.fastp.json"
         threads: 8
         shell:
-            "fastp -i {input.r1} -I {input.r2} -o {output.r1} -O {output.r2} --detect_adapter_for_pe --disable_quality_filtering --thread {threads} -j {log} -h /dev/null"
+            "fastp -i {input.r1} -I {input.r2} -o {output.r1} -O {output.r2} --detect_adapter_for_pe --thread {threads} -j {log} -h /dev/null"
 
 # fastqc for each read 
 rule fastqc:
