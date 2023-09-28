@@ -15,11 +15,13 @@ If you do not have a Snakemake environment, please follow the instructions in th
 
 ## 1. Configure the project directory
 
+On the Github repo for this pipeline, click the green "Code" button near the top right corner and copy the Clone / HTTPS URL (ends with .git). Then run the following on the command line:
+
 ```bash
 # cd into a project directory
 
-# type the following to get a copy of the pipeline
-git clone https://github.com/maxsonBraunLab/cutTag-pipeline.git
+# paste the copied URL after `git clone` command to get a copy of pipeline
+git clone <URL for repo>
 
 #create a directory for your fastq files
 cd cutTag-pipeline
