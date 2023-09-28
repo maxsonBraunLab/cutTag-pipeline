@@ -9,7 +9,7 @@ import plotly as plt
 import plotly.graph_objects as go
 
 ##### set minimum snakemake version #####
-min_version("5.1.2")
+min_version("5.32.0")
 
 include: "src/common.py"
 
@@ -42,7 +42,6 @@ localrules: frip_plot, fraglength_plot
 
 #singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
 # singularity: "/home/groups/MaxsonLab/software/singularity-containers/4.12.0_sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591.sif"
-# singularity: "/home/groups/MaxsonLab/nguythai/projects/pipeline_maintenance/cutTag-pipeline-singularity/container_files/image_files/cuttag_envs.sif"
 
 rule all:
     input:
@@ -89,7 +88,7 @@ if config["TRIM_ADAPTERS"]:
         conda: 
             "envs/fastp.yml"
         singularity:
-            "container_files/image_files/container_per_env/fastp.sif"
+            os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastp.sif")
         log:
             "data/logs/fastp/{sample}.fastp.json"
         threads: 8
@@ -122,7 +121,7 @@ rule fastq_screen:
     conda:
         "envs/fastq_screen.yml"
     singularity:
-        "container_files/image_files/container_per_env/fastq_screen.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastq_screen.sif")
     log:
         "data/logs/fastq_screen_{read}.log"
     threads: 8
@@ -142,7 +141,7 @@ rule bowtie2:
     conda:
         "envs/align.yml"
     singularity:
-        "container_files/image_files/container_per_env/align.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "align.sif")
     threads: 8
     shell:
         "bowtie2 --local --very-sensitive-local "
@@ -159,7 +158,7 @@ rule sort:
     conda:
         "envs/sambamba.yml"
     singularity:
-        "container_files/image_files/container_per_env/sambamba.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/sambamba_sort_{sample}.log"
@@ -174,7 +173,7 @@ rule markdup:
     conda:
         "envs/sambamba.yml"
     singularity:
-        "container_files/image_files/container_per_env/sambamba.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/sambamba_markdup_{sample}.log"
@@ -189,7 +188,7 @@ rule index:
     conda:
         "envs/sambamba.yml"
     singularity:
-        "container_files/image_files/container_per_env/sambamba.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/samtools_index_{sample}.log"
@@ -205,7 +204,7 @@ rule tracks:
     conda:
         "envs/dtools.yml"
     singularity:
-        "container_files/image_files/container_per_env/dtools.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     threads: 8
     shell:
         "bamCoverage -b {input[0]} -o {output} --binSize 10 --smoothLength 50 --normalizeUsing CPM -p {threads} "
@@ -218,7 +217,7 @@ rule merge_bw:
     conda:
         "envs/mergebw.yml"
     singularity:
-        "container_files/image_files/container_per_env/mergebw.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "mergebw.sif")
     resources:
         mem_mb = 8000
     shell:
@@ -250,7 +249,7 @@ rule fraglength:
     conda:
         "envs/align.yml"
     singularity:
-        "container_files/image_files/container_per_env/align.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "align.sif")
     shell:
         "src/fraglen-dist.sh {input} {output}"
 
@@ -286,7 +285,7 @@ rule preseq:
     conda:
         "envs/preseq.yml"
     singularity:
-        "container_files/image_files/container_per_env/preseq.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "preseq.sif")
     log:
         "data/logs/preseq_{sample}.log"
     shell:
@@ -302,7 +301,7 @@ rule preseq_lcextrap:
     conda:
         "envs/preseq.yml"
     singularity:
-        "container_files/image_files/container_per_env/preseq.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "preseq.sif")
     log:
         "data/logs/preseq_{sample}.log"
     shell:
@@ -316,7 +315,7 @@ rule plotFinger:
     conda:
         "envs/dtools.yml"
     singularity:
-        "container_files/image_files/container_per_env/dtools.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     log:
         "data/logs/fingerprint_{sample}.log"
     shell:
@@ -330,7 +329,7 @@ rule callpeaks:
     conda: 
         "envs/gopeaks.yml"
     singularity:
-        "container_files/image_files/container_per_env/gopeaks.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "gopeaks.sif")
     log:
         "data/callpeaks/{sample}_gopeaks.json"
     params:
@@ -360,7 +359,7 @@ rule frip:
     conda:
         "envs/dtools.yml"
     singularity:
-        "container_files/image_files/container_per_env/dtools.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     log:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
@@ -414,7 +413,7 @@ rule deseq2:
     conda:
         "envs/deseq2.yml"
     singularity:
-        "container_files/image_files/container_per_env/deseq2.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "deseq2.sif")
     script:
         "src/deseq2.R"
 
@@ -426,7 +425,7 @@ rule homer:
     conda:
         "envs/homer.yml"
     singularity:
-        "container_files/image_files/container_per_env/homer.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "homer.sif")
     shell:
         "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
 # this rule submits HOMER runs to SLURM if -s = 1. A run is each unique contrast
@@ -444,7 +443,7 @@ rule multiqc:
     conda:
         "envs/multiqc.yml"
     singularity:
-        "container_files/image_files/container_per_env/multiqc.sif"
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "multiqc.sif")
     log:
         "data/logs/multiqc.log"
     shell:
