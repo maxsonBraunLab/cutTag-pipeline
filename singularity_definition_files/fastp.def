@@ -1,0 +1,43 @@
+Bootstrap: docker
+From: mambaorg/micromamba:1.5.1-jammy
+# use micromamba with Ubuntu Jammy Jellyfish OS (Ubuntu 22.04) bc Jammy is the most recent stable OS release with long-term support ending 2027
+# use micromamba bc it's faster and takes up less space than a mambaforge base image
+# condaforge/mambaforge:23.3.1-1
+
+%labels
+	Author conthainer@sylabs.io
+	Version v0.0.1
+
+%help
+	"""
+	This container contains an environment needed to run a Snakemake-based CUT&Tag/RUN pipeline from the maxsonBraunLab Github (https://github.com/maxsonBraunLab/cutTag-pipeline).
+	"""
+
+%setup
+	# create file in singularity root file system to store env yml files after retrieval
+	mkdir ${SINGULARITY_ROOTFS}/envs
+
+	# get yml files for necessary envs
+	# need to use wget instead of directly copying a local file when building remotely
+	# despite what the singularity documentation says, wget doesn't work if put in the %post section. Maybe this happens when buiding remotely?
+	wget -P ${SINGULARITY_ROOTFS}/envs https://raw.githubusercontent.com/maxsonBraunLab/cutTag-pipeline/main/envs/fastp.yml
+
+%post
+	# create env from yml file (account for yml files with either yml or yaml extension)
+	yml_file="$(ls /envs/*.y*ml)"
+	yes | micromamba create -f ${yml_file}
+
+	# initialize micromamba shell
+	micromamba shell init --shell bash --root-prefix=$MAMBA_ROOT_PREFIX
+
+	# add source shell script command to $SINGULARITY_ENVIRONMENT so that it is run every time container is started
+	# note that for some reason this doesn't always auto-initiate the shell
+	echo ". ${MAMBA_ROOT_PREFIX}/etc/profile.d/micromamba.sh" >> $SINGULARITY_ENVIRONMENT
+		
+	env_name="$(grep 'name:' ${yml_file} | awk -F ':' '{print $2}' | awk '{print $1}')"
+	echo "micromamba activate ${env_name}" >> $SINGULARITY_ENVIRONMENT
+
+%test
+	ls -lah /envs
+	micromamba env
+	micromamba list
