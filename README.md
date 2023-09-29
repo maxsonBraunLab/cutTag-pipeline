@@ -131,7 +131,7 @@ For this example there was only one IgG per condition, so the sample name corres
  - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
  - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
 
- Below is an example of what the `src/deseq2_metadata.csv`file might look like for an experiment with various conditions, replicates, and marks/antibody targets. Note that the IgG samples are not included in differential expression analysis:
+ Below is an example of what the `src/deseq2_metadata.csv` file might look like for an experiment with various conditions, replicates, and marks/antibody targets. Note that the IgG samples are not included in differential expression analysis:
 
 ```
 sample,condition
