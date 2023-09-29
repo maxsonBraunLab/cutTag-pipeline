@@ -18,7 +18,7 @@
 # set folder paths
 # add absolute path to folder containing original fastq files (not the symlinks)
 indices_folder="/home/groups/MaxsonLab/indices"
-fastq_folder=""
+fastq_folder="/home/groups/MaxsonLab/nguythai/projects/pipeline_maintenance/cutTag-pipeline-singularity/.test/downsampled_fastqs"
 
 # set the number of jobs to run at a time (no spaces)
 num_jobs=100

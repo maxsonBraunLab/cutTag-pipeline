@@ -1,0 +1,6 @@
+sample	R1	R2	mark	condition	igg	gopeaks
+DOX_1_SETBP1-ab	data/raw/DOX_1_SETBP1-ab_R1.fastq.gz	data/raw/DOX_1_SETBP1-ab_R2.fastq.gz	SETBP1-ab	DOX	noDOX_1_IgG	-
+DOX_2_SETBP1-ab	data/raw/DOX_2_SETBP1-ab_R1.fastq.gz	data/raw/DOX_2_SETBP1-ab_R2.fastq.gz	SETBP1-ab	DOX	noDOX_1_IgG	-
+noDOX_1_IgG	data/raw/noDOX_1_IgG_R1.fastq.gz	data/raw/noDOX_1_IgG_R2.fastq.gz	IgG	noDOX	noDOX_1_IgG	-
+noDOX_1_SETBP1-ab	data/raw/noDOX_1_SETBP1-ab_R1.fastq.gz	data/raw/noDOX_1_SETBP1-ab_R2.fastq.gz	SETBP1-ab	noDOX	noDOX_1_IgG	-
+noDOX_2_SETBP1-ab	data/raw/noDOX_2_SETBP1-ab_R1.fastq.gz	data/raw/noDOX_2_SETBP1-ab_R2.fastq.gz	SETBP1-ab	noDOX	noDOX_1_IgG	-
