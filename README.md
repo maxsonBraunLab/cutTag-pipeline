@@ -23,8 +23,10 @@ On the Github repo for this pipeline, click the green "Code" button near the top
 # paste the copied URL after `git clone` command to get a copy of pipeline
 git clone <URL for repo>
 
+# navigate to the main pipeline directory (where the snakefile is)
+cd <main pipeline directory>
+
 #create a directory for your fastq files
-cd cutTag-pipeline
 mkdir -p data/raw
 
 # link fastqs to data/raw
@@ -129,19 +131,16 @@ For this example there was only one IgG per condition, so the sample name corres
  - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
  - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
 
- The file src/deseq2_metadata is populated with the following example data:
+ Below is an example of what the `src/deseq2_metadata.csv`file might look like for an experiment with various conditions, replicates, and marks/antibody targets. Note that the IgG samples are not included in differential expression analysis:
 
 ```
 sample,condition
-HoxE_1_IgG,HoxE
 HoxE_1_Rbp1,HoxE
 HoxE_2_Rbp1,HoxE
 HoxE_3_Rbp1,HoxE
-HoxM_1_IgG,HoxM
 HoxM_1_Rbp1,HoxM
 HoxM_2_Rbp1,HoxM
 HoxM_3_Rbp1,HoxM
-HoxW_1_IgG,HoxW
 HoxW_1_Rbp1,HoxW
 HoxW_2_Rbp1,HoxW
 HoxW_3_Rbp1,HoxW
