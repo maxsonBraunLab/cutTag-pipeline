@@ -26,6 +26,12 @@ properties:
   N_INTERSECTS:
     type: integer
     description: the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
+  TRIM_ADAPTERS:
+    type: boolean
+    description: whether to trim adapters from raw reads to improve alignment rate
+  SINGULARITY_IMAGE_FOLDER:
+    type: string
+    description: path to folder containing Singularity container image files for pipeline
 
 required:
   - USEIGG
@@ -36,3 +42,5 @@ required:
   - FASTQ_SCREEN
   - FASTA
   - N_INTERSECTS
+  - TRIM_ADAPTERS
+  - SINGULARITY_IMAGE_FOLDER
