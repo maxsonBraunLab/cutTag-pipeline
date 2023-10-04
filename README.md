@@ -162,6 +162,8 @@ Change the file permissions for the scripts in the `slurm` folder so that they a
 chmod +x ~/.config/snakemake/slurm/slurm*
 ```
 
+### Snakemake + SLURM + Singularity integration
+
 **NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity. To do this: 
 
 1. Copy contents of base slurm profile into another folder for slurm_singularity profile:
