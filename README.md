@@ -164,17 +164,20 @@ chmod +x ~/.config/snakemake/slurm/slurm*
 
 **NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity. To do this: 
 
+1. Copy contents of base slurm profile into another folder for slurm_singularity profile:
 ```
-# copy contents of base slurm profile into another folder for slurm_singularity profile:
 cp -r ~/.config/snakemake/slurm ~/.config/snakemake/slurm_singularity
+```
 
-# make profile scripts executable:
+2. Make profile scripts executable:
+```
 chmod +x ~/.config/snakemake/slurm_singularity/slurm*
+```
 
-# remove any conda-specific settings from ~/.config/snakemake/slurm_singularity/config.yaml
+3. Remove any conda-specific settings from `~/.config/snakemake/slurm_singularity/config.yaml`
 
-# (Optional) add the following lines to end of ~/.config/snakemake/slurm_singularity/config.yaml file:
-
+4. (Optional) Add the following lines to end of `~/.config/snakemake/slurm_singularity/config.yaml` file:
+```
 use-singularity: True
 keep-going: True
 rerun-incomplete: True
