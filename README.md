@@ -148,7 +148,11 @@ HoxW_3_Rbp1,HoxW
 
 ## 4. Set up SLURM integration (for batch jobs)
 
-Do this step if are running the pipeline as a batch job and don't yet have a [SLURM profile](https://github.com/Snakemake-Profiles/slurm) set up. The SLURM profile will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm).
+Please follow the instructions in the "Snakemake + SLURM integration" section below if you are running the pipeline as a batch job and don't yet have a [SLURM profile](https://github.com/Snakemake-Profiles/slurm) set up. The SLURM profile will configure default settings for SnakeMake to interact with SLURM. More information can be found [here](https://github.com/maxsonBraunLab/slurm).
+
+**NOTE:** If you already have a SLURM profile set up to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix) but would like to run Snakemake with SLURM and Singularity integration, please follow the instructions in the "Snakemake + SLURM + Singularity integration" section below.
+
+### Snakemake + SLURM integration
 
 Download the `slurm` folder from the maxsonBraunLab [repository](https://github.com/maxsonBraunLab/slurm) and copy the entire thing to `~/.config/snakemake`. 
 
