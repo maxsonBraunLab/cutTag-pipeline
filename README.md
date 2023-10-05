@@ -52,7 +52,7 @@ For example, a file with this original name **LIB200706TB_M6Q3_RBP1_S93_L001_R1_
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
 ```bash
-$ python src/make_sample_sheet.py data/raw
+python src/make_sample_sheet.py data/raw
 ```
 
 This will make a samplesheet for the experiment called samplesheet.tsv in the root of the directory as well as the file `src/deseq2_metadata.csv`, the contents of the samplesheet will be structured like the following example:
@@ -153,12 +153,14 @@ Do this step if are running the pipeline as a batch job and don't yet have a [SL
 Download the `slurm` folder from the maxsonBraunLab [repository](https://github.com/maxsonBraunLab/slurm) and copy the entire thing to `~/.config/snakemake`. 
 
 Your file configuration for SLURM should be as follows:
+
 ```
 ~/.config/snakemake/slurm/<files>
 ```
 
 Change the file permissions for the scripts in the `slurm` folder so that they are executable. To do this, run:
-```
+
+```bash
 chmod +x ~/.config/snakemake/slurm/slurm*
 ```
 
@@ -167,18 +169,21 @@ chmod +x ~/.config/snakemake/slurm/slurm*
 **NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity. To do this: 
 
 1. Copy contents of base slurm profile into another folder for slurm_singularity profile:
-```
+
+```bash
 cp -r ~/.config/snakemake/slurm ~/.config/snakemake/slurm_singularity
 ```
 
 2. Make profile scripts executable:
-```
+
+```bash
 chmod +x ~/.config/snakemake/slurm_singularity/slurm*
 ```
 
-3. Remove any conda-specific settings from `~/.config/snakemake/slurm_singularity/config.yaml`
+3. Remove any conda-specific settings (e.g. use-conda, conda-prefix, etc.) from `~/.config/snakemake/slurm_singularity/config.yaml`
 
 4. (Optional) Add the following lines to end of `~/.config/snakemake/slurm_singularity/config.yaml` file:
+
 ```
 use-singularity: True
 keep-going: True
