@@ -4,6 +4,7 @@
 ![ci/cd status](https://github.com/maxsonBraunLab/cutTag-pipeline/actions/workflows/test.yaml/badge.svg?branch=test)
 [![snakemake minimum](https://img.shields.io/badge/snakemake->=5.32-<COLOR>.svg)](https://shields.io/)
 ![Maintainer](https://img.shields.io/badge/maintainer-gartician-blue)
+![Maintainer](https://img.shields.io/badge/maintainer-bioThai-blue)
 
 Snakemake pipeline for Cut&amp;Tag analysis 
 
@@ -11,7 +12,7 @@ Snakemake pipeline for Cut&amp;Tag analysis
 
 If you do not have a Snakemake environment, please follow the instructions in the maxsonBraunLab [Snakemake setup repository](https://github.com/maxsonBraunLab/snakemake_setup) to create one.
 
-**NOTE:** Some of the setup instructions are tailored for working on Oregon Health and Science University's Linux-based Exacloud computing cluster. If you have access to another computing cluster, then some steps may need to be modified accordingly.
+**NOTE:** Some of the pipeline setup instructions are tailored for working on Oregon Health and Science University's Linux-based Exacloud computing cluster. If you have access to another computing cluster, then some steps may need to be modified accordingly.
 
 ## 1. Configure the project directory
 
