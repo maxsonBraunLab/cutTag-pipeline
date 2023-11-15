@@ -417,18 +417,29 @@ rule deseq2:
     script:
         "src/deseq2.R"
 
-rule homer:
-    input:
-        "data/deseq2/{mark}/{mark}-dds.rds"
-    output:
-        "data/homer/{mark}.done"
-    conda:
-        "envs/homer.yml"
-    singularity:
-        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "homer.sif")
-    shell:
-        "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
+
+if config["USE_SINGULARITY"]:
+    rule homer:
+        input:
+            "data/deseq2/{mark}/{mark}-dds.rds"
+        output:
+            "data/homer/{mark}.done"
+        singularity:
+            os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "homer.sif")
+        shell:
+            "bash src/homer.sh -m {wildcards.mark} -s 0 -p 8 -g {config[FASTA]}"
+else:
+    rule homer:
+        input:
+            "data/deseq2/{mark}/{mark}-dds.rds"
+        output:
+            "data/homer/{mark}.done"
+        conda:
+            "envs/homer.yml"
+        shell:
+            "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
 # this rule submits HOMER runs to SLURM if -s = 1. A run is each unique contrast
+# if running pipeline via containers, then don't allow homer script to spawn sbatch jobs because slurm can't be accessed inside container
 
 rule multiqc:
     input:

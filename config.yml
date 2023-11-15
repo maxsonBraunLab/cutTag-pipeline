@@ -1,4 +1,7 @@
 # Container options -----------------------------------------------------------
+# option to use Singularity for running the pipeline via containerized environments (True or False)
+USE_SINGULARITY: True
+
 # path to folder containing Singularity container image files (.sif files) for pipeline
 SINGULARITY_IMAGE_FOLDER: "/home/groups/MaxsonLab/software/singularity-containers/pipeline_containers/cuttag/image_files"
 
