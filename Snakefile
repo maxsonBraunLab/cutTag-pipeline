@@ -9,7 +9,7 @@ import plotly as plt
 import plotly.graph_objects as go
 
 ##### set minimum snakemake version #####
-min_version("5.1.2")
+min_version("5.32.0")
 
 include: "src/common.py"
 
@@ -41,8 +41,7 @@ marks_noigg = [m for m in marks if config["IGG"] not in m]
 localrules: frip_plot, fraglength_plot
 
 #singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
-singularity: "/home/groups/MaxsonLab/software/singularity-containers/4.12.0_sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591.sif"
-
+# singularity: "/home/groups/MaxsonLab/software/singularity-containers/4.12.0_sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591.sif"
 
 rule all:
     input:
@@ -88,6 +87,8 @@ if config["TRIM_ADAPTERS"]:
             r2 = "data/fastp/{sample}_R2.fastq.gz"
         conda: 
             "envs/fastp.yml"
+        singularity:
+            os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastp.sif")
         log:
             "data/logs/fastp/{sample}.fastp.json"
         threads: 8
@@ -103,6 +104,8 @@ rule fastqc:
         zip="data/fastqc/{read}_fastqc.zip"
     conda:
         "envs/fastqc.yml"
+    singularity:
+        "docker://staphb/fastqc:0.11.9"
     log:
         "data/logs/fastqc_{read}.log"
     threads: 4
@@ -117,6 +120,8 @@ rule fastq_screen:
         "data/fastq_screen/{read}_screen.txt"
     conda:
         "envs/fastq_screen.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastq_screen.sif")
     log:
         "data/logs/fastq_screen_{read}.log"
     threads: 8
@@ -135,6 +140,8 @@ rule bowtie2:
         err="data/logs/bowtie2_{sample}.err"
     conda:
         "envs/align.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "align.sif")
     threads: 8
     shell:
         "bowtie2 --local --very-sensitive-local "
@@ -150,6 +157,8 @@ rule sort:
         temp("data/aligned/{sample}.sort.bam")
     conda:
         "envs/sambamba.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/sambamba_sort_{sample}.log"
@@ -163,6 +172,8 @@ rule markdup:
         "data/markd/{sample}.sorted.markd.bam"
     conda:
         "envs/sambamba.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/sambamba_markdup_{sample}.log"
@@ -176,6 +187,8 @@ rule index:
         "data/markd/{sample}.sorted.markd.bam.bai"
     conda:
         "envs/sambamba.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
     threads: 4
     log:
         "data/logs/samtools_index_{sample}.log"
@@ -190,6 +203,8 @@ rule tracks:
         "data/tracks/{sample}.bw"
     conda:
         "envs/dtools.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     threads: 8
     shell:
         "bamCoverage -b {input[0]} -o {output} --binSize 10 --smoothLength 50 --normalizeUsing CPM -p {threads} "
@@ -201,6 +216,8 @@ rule merge_bw:
         "data/mergebw/{mark_condition}.bw"
     conda:
         "envs/mergebw.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "mergebw.sif")
     resources:
         mem_mb = 8000
     shell:
@@ -215,6 +232,8 @@ rule make_high_conf_peaks:
         "data/highConf/{mark_condition}.highConf.bed"
     conda:
         "envs/bedtools.yml"
+    singularity:
+        "docker://staphb/bedtools:2.30.0"
     shell:
         "cat {input} | sort -k1,1 -k2,2n | "
         "bedtools merge | "
@@ -229,6 +248,8 @@ rule fraglength:
         "data/markd/{sample}.sorted.markd.fraglen.tsv"
     conda:
         "envs/align.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "align.sif")
     shell:
         "src/fraglen-dist.sh {input} {output}"
 
@@ -237,6 +258,7 @@ rule fraglength_plot:
         expand("data/markd/{sample}.sorted.markd.fraglen.tsv", sample = samps)
     output:
         "data/markd/fraglen.html"
+    container: None
     run:
         pd.options.plotting.backend = "plotly"
         dfs = []
@@ -262,6 +284,8 @@ rule preseq:
         defect_mode = defect_mode
     conda:
         "envs/preseq.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "preseq.sif")
     log:
         "data/logs/preseq_{sample}.log"
     shell:
@@ -276,6 +300,8 @@ rule preseq_lcextrap:
         defect_mode = defect_mode
     conda:
         "envs/preseq.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "preseq.sif")
     log:
         "data/logs/preseq_{sample}.log"
     shell:
@@ -288,6 +314,8 @@ rule plotFinger:
         "data/dtools/fingerprint_{sample}.tsv"
     conda:
         "envs/dtools.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     log:
         "data/logs/fingerprint_{sample}.log"
     shell:
@@ -300,6 +328,8 @@ rule callpeaks:
         "data/callpeaks/{sample}_peaks.bed"
     conda: 
         "envs/gopeaks.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "gopeaks.sif")
     log:
         "data/callpeaks/{sample}_gopeaks.json"
     params:
@@ -316,6 +346,8 @@ rule consensus:
        "data/counts/{mark}_counts.tsv"
     conda:
        "envs/bedtools.yml"
+    singularity:
+        "docker://staphb/bedtools:2.30.0"
     shell:
        "bash src/consensus_peaks.sh {wildcards.mark} {config[N_INTERSECTS]} {output}"
 
@@ -326,6 +358,8 @@ rule frip:
         "data/plotEnrichment/frip_{sample}.png", "data/plotEnrichment/frip_{sample}.tsv"
     conda:
         "envs/dtools.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "dtools.sif")
     log:
         "data/logs/plotEnrichment_{sample}.log"
     shell:
@@ -336,6 +370,7 @@ rule frip_plot:
         expand("data/plotEnrichment/frip_{sample}.tsv", sample = sample_noigg)
     output:
         "data/plotEnrichment/frip.html"
+    container: None
     run:
         pd.options.plotting.backend = "plotly"
         dfs = []
@@ -377,19 +412,34 @@ rule deseq2:
         numclusters = 4
     conda:
         "envs/deseq2.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "deseq2.sif")
     script:
         "src/deseq2.R"
 
-rule homer:
-    input:
-        "data/deseq2/{mark}/{mark}-dds.rds"
-    output:
-        "data/homer/{mark}.done"
-    conda:
-        "envs/homer.yml"
-    shell:
-        "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
+
+if config["USE_SINGULARITY"]:
+    rule homer:
+        input:
+            "data/deseq2/{mark}/{mark}-dds.rds"
+        output:
+            "data/homer/{mark}.done"
+        singularity:
+            os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "homer.sif")
+        shell:
+            "bash src/homer.sh -m {wildcards.mark} -s 0 -p 8 -g {config[FASTA]}"
+else:
+    rule homer:
+        input:
+            "data/deseq2/{mark}/{mark}-dds.rds"
+        output:
+            "data/homer/{mark}.done"
+        conda:
+            "envs/homer.yml"
+        shell:
+            "bash src/homer.sh -m {wildcards.mark} -s 1 -p 8 -g {config[FASTA]}"
 # this rule submits HOMER runs to SLURM if -s = 1. A run is each unique contrast
+# if running pipeline via containers, then don't allow homer script to spawn sbatch jobs because slurm can't be accessed inside container
 
 rule multiqc:
     input:
@@ -403,6 +453,8 @@ rule multiqc:
         "data/multiqc/multiqc_report.html"
     conda:
         "envs/multiqc.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "multiqc.sif")
     log:
         "data/logs/multiqc.log"
     shell:

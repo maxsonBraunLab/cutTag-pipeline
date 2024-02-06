@@ -1,3 +1,10 @@
+# Container options -----------------------------------------------------------
+# option to use Singularity for running the pipeline via containerized environments (True or False)
+USE_SINGULARITY: True
+
+# path to folder containing Singularity container image files (.sif files) for pipeline
+SINGULARITY_IMAGE_FOLDER: "/home/groups/MaxsonLab/software/singularity-containers/pipeline_containers/cuttag/image_files"
+
 # Quality Control -------------------------------------------------------------
 FASTQ_SCREEN: src/fastq_screen.conf
 
@@ -6,11 +13,11 @@ FASTQ_SCREEN: src/fastq_screen.conf
 TRIM_ADAPTERS: True
 
 # Alignment -------------------------------------------------------------------
-GENOME:
+GENOME: /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index
 # /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index
 # /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10
 
-FASTA:
+FASTA: /home/groups/MaxsonLab/indices/homer_preparsed/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
 #-----If running Homer (pipeline default), use one of the following homer_preparsed FASTA symlinks:
 # /home/groups/MaxsonLab/indices/homer_preparsed/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
 # /home/groups/MaxsonLab/indices/homer_preparsed/mm10.fa
@@ -18,7 +25,7 @@ FASTA:
 # /home/groups/MaxsonLab/indices/GRch38/bowtie2/GCA_000001405.15_GRCh38_no_alt_analysis_set.fasta
 # /home/groups/MaxsonLab/indices/mm10/bowtie2/mm10.fa
 
-GENES: 
+GENES: genes/hg38_refseq_genes.bed
 # genes/mm10_refseq_genes.bed
 # genes/hg38_refseq_genes.bed
 
@@ -30,7 +37,7 @@ USEIGG: True
 #  how is IgG spelled in the filename, eg: "IgG"  for file "G1_IgG_Kasumi_S25_R2.fastq.gz"
 IGG: IgG
 
-CSIZES: 
+CSIZES: src/hg38.chrom.sizes
 # src/mm10.chrom.sizes
 # src/hg38.chrom.sizes
 

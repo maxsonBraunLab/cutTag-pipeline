@@ -1,24 +1,33 @@
 # cutTag-pipeline
 
-[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+<!-- [![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg) -->
 ![ci/cd status](https://github.com/maxsonBraunLab/cutTag-pipeline/actions/workflows/test.yaml/badge.svg?branch=test)
 [![snakemake minimum](https://img.shields.io/badge/snakemake->=5.32-<COLOR>.svg)](https://shields.io/)
 ![Maintainer](https://img.shields.io/badge/maintainer-gartician-blue)
+![Maintainer](https://img.shields.io/badge/maintainer-bioThai-blue)
 
 Snakemake pipeline for Cut&amp;Tag analysis 
 
 # Setup
 
+If you do not have a Snakemake environment, please follow the instructions in the maxsonBraunLab [Snakemake setup repository](https://github.com/maxsonBraunLab/snakemake_setup) to create one.
+
+**NOTE:** Some of the pipeline setup instructions are tailored for working on Oregon Health and Science University's Linux-based Exacloud computing cluster. If you have access to another computing cluster, then some steps may need to be modified accordingly.
+
 ## 1. Configure the project directory
+
+On the Github repo for this pipeline, click the green "Code" button near the top right corner and copy the Clone / HTTPS URL (ends with .git). Then run the following on the command line:
 
 ```bash
 # cd into a project directory
 
-# type the following to get a copy of the pipeline
-git clone https://github.com/maxsonBraunLab/cutTag-pipeline.git
+# paste the copied URL after `git clone` command to get a copy of pipeline
+git clone <URL for repo>
+
+# navigate to the main pipeline directory (where the snakefile is)
+cd <main pipeline directory>
 
 #create a directory for your fastq files
-cd cutTag-pipeline
 mkdir -p data/raw
 
 # link fastqs to data/raw
@@ -44,7 +53,7 @@ For example, a file with this original name **LIB200706TB_M6Q3_RBP1_S93_L001_R1_
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
 ```bash
-$ python src/make_sample_sheet.py data/raw
+python src/make_sample_sheet.py data/raw
 ```
 
 This will make a samplesheet for the experiment called samplesheet.tsv in the root of the directory as well as the file `src/deseq2_metadata.csv`, the contents of the samplesheet will be structured like the following example:
@@ -93,6 +102,8 @@ For this example there was only one IgG per condition, so the sample name corres
 
 1. Edit runtime configuration in the file `config.yml`:
 
+   - If using Singularity containers instead of Conda, specify the path to the folder containing the Singularity image files (.sif).
+   
    - Specify whether or not to trim adapters from raw reads to improve downstream alignment rate. You can decide based on adapter content in the sequencing core's FastQC reports.
 
    - Specify whether or not to use IGG for peak calling.
@@ -121,19 +132,16 @@ For this example there was only one IgG per condition, so the sample name corres
  - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
  - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
 
- The file src/deseq2_metadata is populated with the following example data:
+ Below is an example of what the `src/deseq2_metadata.csv` file might look like for an experiment with various conditions, replicates, and marks/antibody targets. Note that the IgG samples are not included in differential expression analysis:
 
 ```
 sample,condition
-HoxE_1_IgG,HoxE
 HoxE_1_Rbp1,HoxE
 HoxE_2_Rbp1,HoxE
 HoxE_3_Rbp1,HoxE
-HoxM_1_IgG,HoxM
 HoxM_1_Rbp1,HoxM
 HoxM_2_Rbp1,HoxM
 HoxM_3_Rbp1,HoxM
-HoxW_1_IgG,HoxW
 HoxW_1_Rbp1,HoxW
 HoxW_2_Rbp1,HoxW
 HoxW_3_Rbp1,HoxW
@@ -141,19 +149,56 @@ HoxW_3_Rbp1,HoxW
 
 ## 4. Set up SLURM integration (for batch jobs)
 
-Do this step if are running the pipeline as a batch job and don't yet have a [SLURM profile](https://github.com/Snakemake-Profiles/slurm) set up.
+Please follow the instructions in the "Snakemake + SLURM integration" section below if you are running the pipeline as a batch job and don't yet have a [SLURM profile](https://github.com/Snakemake-Profiles/slurm) set up. The SLURM profile will configure default settings for SnakeMake to interact with SLURM. More information can be found [here](https://github.com/maxsonBraunLab/slurm).
+
+**NOTE:** If you already have a SLURM profile set up to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix) but would like to run Snakemake with SLURM and Singularity integration, please follow the instructions in the "Snakemake + SLURM + Singularity integration" section below.
+
+### Snakemake + SLURM integration
 
 Download the `slurm` folder from the maxsonBraunLab [repository](https://github.com/maxsonBraunLab/slurm) and copy the entire thing to `~/.config/snakemake`. 
 
 Your file configuration for SLURM should be as follows:
+
 ```
 ~/.config/snakemake/slurm/<files>
 ```
 
 Change the file permissions for the scripts in the `slurm` folder so that they are executable. To do this, run:
-```
+
+```bash
 chmod +x ~/.config/snakemake/slurm/slurm*
 ```
+
+### Snakemake + SLURM + Singularity integration
+
+**NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity. To do this: 
+
+1. Copy contents of base slurm profile into another folder for slurm_singularity profile:
+
+```bash
+cp -r ~/.config/snakemake/slurm ~/.config/snakemake/slurm_singularity
+```
+
+2. Make profile scripts executable:
+
+```bash
+chmod +x ~/.config/snakemake/slurm_singularity/slurm*
+```
+
+3. Remove any conda-specific settings (e.g. use-conda, conda-prefix, etc.) from `~/.config/snakemake/slurm_singularity/config.yaml`
+
+4. (Optional) Add the following lines to end of `~/.config/snakemake/slurm_singularity/config.yaml` file:
+
+```
+use-singularity: True
+keep-going: True
+rerun-incomplete: True
+printshellcmds: True
+```
+
+## 5. (Optional) SnakeMake + Singularity Setup
+
+If you would like to run the pipeline using Singularity containers instead of Conda, please follow additional setup and execution instructions in the "Reproducible results with SnakeMake + Singularity" section below.
 
 
 # Execution
@@ -187,18 +232,52 @@ You can standardize further arguments for running the pipeline in batch mode usi
 
 # Reproducible results with SnakeMake + Singularity
 
-To ensure the reproducibility of your results, we recommend running a SnakeMake workflow using Singularity containers. These containers standardize the underlying operating system of the workflow (e.g. Ubuntu, centOS, etc.), while conda tracks the installation of bioinformatic software (e.g. bowtie2, samtools, deseq2). To utilize Singularity in your analysis, log in to an interactive node and load the module first like this:
+To ensure the reproducibility of your results and reduce environment setup issues, we recommend running a SnakeMake workflow using Singularity containers. These containers standardize the installation of bioinformatics software (e.g. bowtie2, samtools, deseq2). 
+
+Make sure to complete the general pipeline/data setup instructions above before running the pipeline. 
+
+## SnakeMake + Singularity Setup
+
+If you have access to the MaxsonLab storage space on Exacloud, then you can skip the first setup step below and use the default `SINGULARITY_IMAGE_FOLDER` path specified in the `config.yml` file to access the containers for this pipeline. 
+
+If you have previously run this pipeline with Singularity and already built the needed containers, then you can set the `SINGULARITY_IMAGE_FOLDER` path in the `config.yml` to the folder where your container images are stored.
+
+### 1. (Optional) Build Singularity containers
+
+Do this step if you do **not** have access to the MaxsonLab storage space on Exacloud and have not run this pipeline with Singularity before. You will need to build the necessary containers from the definition files provided in the `singularity_definition_files` folder. 
+
+To build containers without requiring root access on Exacloud, you will need to create a [Sylabs](https://cloud.sylabs.io/) account (you can use your Github account to log in). After logging in, navigate to `Dashboard > Access Tokens` and create a new access token. Make sure to copy and save the token into a secure place. 
+
+This token will allow you to access the Sylabs remote builder tool from the command line. Note that every user is limited to 500 minutes of build time per month.
+
+After generating a Sylabs access token, you will need to log into Sylabs from the Exacloud command line. To do this:
 
 ```bash
-# request an interactive node
-srun -p light --time=36:00:00 --pty bash
+# get onto an interactive/compute node
+srun -p light --time=3:00:00 --pty bash
 
-# re-activate your environment with snakemake
-conda activate <snakemake-env>
-
-# load the singularity program
+# load the singularity module (only available on a compute node)
 module load /etc/modulefiles/singularity/current
+
+# input your access token when prompted
+singularity remote login
 ```
+
+Now you're ready to start building containers. To do this, navigate to the main folder of the pipeline (where the Snakefile is) and run the `singularity_build_remote.sh` script as follows:
+
+```bash
+# create folder to store build logs
+mkdir -p jobs/singularity_build_remote
+
+# make sure to follow any additional instructions in the script file before executing
+
+# provide the path to a folder where you want to store your container images 
+# (don't include a slash "/" at the end of path)
+sbatch singularity_build_remote.sh <path_to_output_folder>
+```
+
+
+### 2. Set Singularity cache directory
 
 By default, Singularity will create and use a cache directory in your personal user root folder (i.e. in `/home/users/<username>`). This may create problems as there is limited space in a user's root folder on Exacloud. To avoid issues with space in your root folder, you can set the Singularity cache directory path to a folder in your lab group directory like this:
 
@@ -207,46 +286,54 @@ By default, Singularity will create and use a cache directory in your personal u
 mkdir /home/groups/MaxsonLab/<your_user_folder>/singularity_cache
 
 # make the path to the cache folder accessible to other processes
-export SINGULARITY_CACHEDIR=/home/groups/MaxsonLab/<your_user_folder>/singularity_cache
+export SINGULARITY_CACHEDIR="/home/groups/MaxsonLab/<your_user_folder>/singularity_cache"
 ```
 
-If you are an experienced user, you can add the `export SINGULARITY_CACHEDIR=...` line to your `.bashrc` file. Otherwise, run the `export SINGULARITY_CACHEDIR=...` command before doing the steps below.
+If you are an experienced user, you can add the `export SINGULARITY_CACHEDIR=...` line above to your `~/.bashrc` file. Otherwise, run the `export SINGULARITY_CACHEDIR=...` command before executing the pipeline.
 
-More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). If it is your first time running the pipeline, and especially when using Singularity, we must install all the conda environments using the following command:
+
+## SnakeMake + Singularity Execution
+
+More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). 
+
+A "dry-run" can be accomplished to see what and how files will be generated by using the command:
 
 ```bash
+snakemake -nrp
+```
+
+To invoke the pipeline, please use either of the two options below. 
+
+**NOTE:** Make sure to use double quotes for the `--bind` argument, and insert an integer for the `-j` flag. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices and the path to the raw sequencing files. When Snakemake is executed directly on an interactive terminal, the `-j` flag represents the max number of cores to use. When executed via a batch script, the `-j` flag represents the max number of jobs to run at a time. 
+
+**Option 1: Singularity + interactive run**
+
+```bash
+# get onto an interactive/compute node
+srun --time=12:00:00 --pty bash
+
+# load the singularity module
+module load /etc/modulefiles/singularity/current
+
+# set folder paths
+# fastq_folder should be absolute/full path to folder containing raw FASTQ files (not the symlinks)
 indices_folder="/home/groups/MaxsonLab/indices"
-conda_folder="${CONDA_PREFIX_1}/envs"
-fastq_folder="/home/groups/MaxsonLab/input-data2/path/to/FASTQ/folder/"
+fastq_folder="/set/full/path/here"
 
-snakemake -j 1 \
-	--verbose \
-	--use-conda \
-	--conda-prefix $conda_folder \
-	--use-singularity \
-	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder" \
-	--conda-create-envs-only
-
+# run pipeline
+snakemake -j <n_cores> \
+--use-singularity \
+--singularity-args "--bind $indices_folder,$fastq_folder"
 ```
-The above code snippet will take about an hour or more to set up, but is a one-time installation. After creating the conda environments, symlinks, `samplesheet.tsv`, and the `src/deseq2_metadata.csv`, we can invoke the pipeline in the same shell like this:
 
-```bash
-# Singularity + interactive run
-snakemake -j <n cores> \
-	--use-conda \
-	--conda-prefix $conda_folder \
-	--use-singularity \
-	--singularity-args "--bind $indices_folder,$conda_folder,$fastq_folder"
-
-# Singularity + slurm (batch) run
-sbatch run_pipeline_singularity.sh
-```
+**Option 2: Singularity + slurm (batch) run**
 
 For users running the Singularity version of the pipeline in batch mode, `run_pipeline_singularity.sh` is a wrapper script for the pipeline. You will need to add the appropriate FASTQ folder path to the script prior to running. Additional instructions are provided in the wrapper script.
 
-NOTE: make sure to use double quotes, and insert an integer for the -j flag. 
-
-The above command will install the pipeline's conda environments into the `conda-prefix` directory - this means that conda environments are actually not stored INSIDE the container. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices, conda prefix, and the path to the raw sequencing files. The `--profile slurm` in the wrapper script will configure default settings for SnakeMake to interact with SLURM - more information can be found [here](https://github.com/maxsonBraunLab/slurm). Feel free to create another [snakemake profile](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity) that has its own set of singularity arguments for added convenience.
+```bash
+# run pipeline
+sbatch run_pipeline_singularity.sh
+```
 
 # Method
 
