@@ -1,20 +1,20 @@
 name: deseq2
 channels:
-  - r
   - bioconda
   - conda-forge
+  - r
   - defaults
 dependencies:
-    - bioconductor-deseq2 
-    - bioconductor-vsn
-    - bioconductor-apeglm
-    - r-base
-    - r-pheatmap
-    - r-tidyverse
-    - r-rcolorbrewer
-    - r-dendextend
-    - bioconductor-genomicranges
-    - r-gplots
-    - r-poiclaclu
-    - bioconductor-plyranges
-    - r-ggrepel 
+  - bioconductor-deseq2 
+  - bioconductor-vsn
+  - bioconductor-apeglm
+  - r-base=4.2
+  - r-pheatmap
+  - r-tidyverse
+  - r-rcolorbrewer
+  - r-dendextend
+  - bioconductor-genomicranges
+  - r-gplots
+  - r-poiclaclu
+  - bioconductor-plyranges
+  - r-ggrepel 
