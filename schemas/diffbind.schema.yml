@@ -1,0 +1,41 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: diffbind metadata schema
+properties:
+    SampleID:
+        type: string
+        description: unique sample name / identifier in the format {condition}_{replicate}_{mark}
+        pattern: "(.+)_([0-9]+)_(.+)"
+    Factor:
+        type: string
+        description: string specifying histone mark/protein corresponding to each sample
+    Condition:
+        type: string
+        description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
+    Replicate:
+        type: integer
+        description: replicate number corresponding to each sample
+    bamReads:
+        type: string
+        description: path to sorted, duplicate-marked BAM file corresponding to each sample
+        pattern: "data\/markd\/(.+).sorted.markd.bam"
+    Peaks:
+        type: string
+        description: path to BED file containing consensus peaks for histone mark/protein corresponding to each sample
+        pattern: "data\/counts\/(.+)_consensus.bed"
+    PeakCaller:
+        type: string
+        description: string specifying the peak caller used, or how the file specified by Peaks will be parsed if it is not a BED file. Valid values for Diffbind include raw, bed, narrow, macs, swembl, bayes, peakset, or fp4.
+    PeakFormat:
+        type: string
+        description: file format for peaks file (e.g., bed)
+
+required:
+    - SampleID
+    - Factor
+    - Condition
+    - Replicate
+    - bamReads
+    - Peaks
+    - PeakCaller
+    - PeakFormat

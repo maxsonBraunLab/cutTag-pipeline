@@ -46,8 +46,22 @@ def main():
     dmet.drop_duplicates(inplace=True)
     dmet.to_csv('src/deseq2_metadata.csv', index=False)
 
+    # write diffbind metadata to file
+    diffbind_outfile = "src/diffbind_config.csv"
+
+    diffbind = df[['sample','mark','condition']]
+    diffbind=diffbind[- diffbind['sample'].str.contains(igg)]
+    
+    diffbind["replicate"] = diffbind["sample"].apply(lambda x: x.split("_")[1])
+    diffbind["bam"] = diffbind["sample"].apply(lambda x: "data/markd/" + x + ".sorted.markd.bam")
+    diffbind["peaks"] = diffbind["mark"].apply(lambda x: "data/counts/" + x + "_consensus.bed")
+
+    diffbind["peakcaller"] = ["raw"] * diffbind.shape[0]
+
+    diffbind["peakformat"] = ["bed"] * diffbind.shape[0]
+    diffbind.to_csv(diffbind_outfile, sep = ",", header = ["SampleID", "Factor", "Condition", "Replicate", "bamReads", "Peaks", "PeakCaller", "PeakFormat"], index = False)
+
+
+
 if __name__ == "__main__": 
     main()
-
-
-
