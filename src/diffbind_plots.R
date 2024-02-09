@@ -4,9 +4,7 @@
 
 # load libraries
 library(DiffBind)
-# library(rtracklayer)
 library(GenomicRanges)
-# library(ggplot2)
 library(dplyr)
 library(stringr)
 library(optparse)
@@ -112,39 +110,48 @@ diffbind_main <- function(){
 		message(date())
 		message("Generating plots for contrast: ", contrast)
 		
-		# MA plot per contrast
-		ma_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_MAplot.pdf"))
-		pdf(
-			file = ma_plot_outfile,
-			width = 10,
-			height = 10
-		)
-		# use FDR for significance cutoff (bUsePval = FALSE)
-		dba.plotMA(
-			dba_obj, 
-			contrast = i, 
-			th = pval_cutoff, 
-			bUsePval = FALSE, 
-			factor = paste0(mark, " ")
-		)
-		dev.off()
+		# if de_counts is null, need to put in separate if() statement to check for null
+		# combining the first if/else-if statements will fail if de_counts is null
+		if (is.null(de_counts) | length(de_counts) == 0) {
+			message("WARNING: ", contrast, " did not have any significant differential peaks.")
+			next
+		} else if (is.na(de_counts) | de_counts == 0) {
+			message("WARNING: ", contrast, " did not have any significant differential peaks.")
+			next
+		} else {
+			# MA plot per contrast
+			ma_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_MAplot.pdf"))
+			pdf(
+				file = ma_plot_outfile,
+				width = 10,
+				height = 10
+			)
+			# use FDR for significance cutoff (bUsePval = FALSE)
+			dba.plotMA(
+				dba_obj, 
+				contrast = i, 
+				th = pval_cutoff, 
+				bUsePval = FALSE, 
+				factor = paste0(mark, " ")
+			)
+			dev.off()
 
-		# volcano plot per contrast
-		volcano_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_volcano.pdf"))
-		pdf(
-			file = volcano_plot_outfile,
-			width = 10,
-			height = 10
-		)
-		dba.plotVolcano(
-			dba_obj, 
-			contrast = i, 
-			th = pval_cutoff, 
-			bUsePval = FALSE, 
-			factor = paste0(mark, " ")
-		)
-		dev.off()
-
+			# volcano plot per contrast
+			volcano_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_volcano.pdf"))
+			pdf(
+				file = volcano_plot_outfile,
+				width = 10,
+				height = 10
+			)
+			dba.plotVolcano(
+				dba_obj, 
+				contrast = i, 
+				th = pval_cutoff, 
+				bUsePval = FALSE, 
+				factor = paste0(mark, " ")
+			)
+			dev.off()
+		}
 	}
 }
 

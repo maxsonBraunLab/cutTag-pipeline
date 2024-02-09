@@ -5,10 +5,8 @@
 
 # load libraries
 library(DiffBind)
-# library(rtracklayer)
 library(GenomicRanges)
 library(plyranges)
-# library(ggplot2)
 library(dplyr)
 library(readr)
 library(stringr)
@@ -105,25 +103,13 @@ diffbind_main <- function(){
 		categories = DBA_CONDITION
 	)
 	# run differential analysis
+	# note that by default, diffbind removes consensus peaks that are in blacklist regions prior to differential analysis
 	message(date())
 	message("Running differential analysis...")
 	dba_obj <- dba.analyze(dba_obj, bParallel = TRUE)
 
 
 	#-------- export diffbind data --------
-	# to do: 
-	# - turn this into separate function(export_diffbind_data()), passing as arguments: dba_obj, pval_cutoff, diffbind_outdir, mark
-	# - add nearest gene to each consensus region before outputting final files
-
-	# message(date())
-	# message("Exporting Diffbind data...")
-	# export_diffbind_data(
-	# 	dba_object = dba_obj,
-	# 	pvalue_cutoff = pval_cutoff,
-	# 	mark_of_interest = mark,
-	# 	output_dir = diffbind_outdir
-	# )
-
 	message(date())
 	message("Exporting Diffbind DBA object to RDS file...")
 	rds_outfile <- file.path(diffbind_outdir, paste0(mark, "_DBAobj.rds"))
@@ -138,44 +124,7 @@ diffbind_main <- function(){
 	write.csv(x = normcounts_df, file = normcounts_outfile, row.names = FALSE)
 	message("Normalized counts saved to: ", normcounts_outfile)
 
-	# #------- generate plots -------
-	# message(date())
-	# message("Generating plots for all samples in mark/protein: ", mark)
-
-	# # sample correlation plot w/all mark samples
-	# corr_plot_outfile <- file.path(diffbind_outdir, paste0(mark, "_sample_correlation.pdf"))
-	# pdf(
-	# 	file = corr_plot_outfile,
-	# 	width = 12,
-	# 	height = 12
-	# )
-	# dba.plotHeatmap(dba_obj, correlations = TRUE)
-	# dev.off()
-
-	# #  PCA plot w/all mark samples, color by DBA_CONDITION
-	# pca_outfile <- file.path(diffbind_outdir, paste0(mark, "_pca.pdf"))
-	# pdf(
-	# 	file = pca_outfile,
-	# 	width = 12,
-	# 	height = 12
-	# )
-	# dba.plotPCA(
-	# 	dba_obj, 
-	# 	attributes = DBA_CONDITION, 
-	# 	label = DBA_ID
-	# )
-	# dev.off()
-
-	# # heatmap w/all mark samples
-	# heatmap_outfile <- file.path(diffbind_outdir, paste0(mark, "_heatmap.pdf"))
-	# pdf(file = heatmap_outfile,
-	# 	width = 12,
-	# 	height = 34
-	# )
-	# dba.plotHeatmap(dba_obj, correlations = FALSE)
-	# dev.off()
-
-
+	
 	# loop through all contrasts and export differential analysis results and plots
 	dba_meta <- dba.show(dba_obj, bContrasts = TRUE)
 
@@ -193,43 +142,6 @@ diffbind_main <- function(){
 			message("Creating output directory: ", diffbind_contrast_outdir)
 			dir.create(diffbind_contrast_outdir, recursive = TRUE, mode = "774")	
 		}
-
-		# #------- generate plots -------
-		# message(date())
-		# message("Generating plots for contrast: ", contrast)
-		
-		# # MA plot per contrast
-		# ma_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_MAplot.pdf"))
-		# pdf(
-		# 	file = ma_plot_outfile,
-		# 	width = 12,
-		# 	height = 12
-		# )
-		# # use FDR for significance cutoff (bUsePval = FALSE)
-		# dba.plotMA(
-		# 	dba_obj, 
-		# 	contrast = i, 
-		# 	th = pval_cutoff, 
-		# 	bUsePval = FALSE, 
-		# 	factor = paste0(mark, " ")
-		# )
-		# dev.off()
-
-		# # volcano plot per contrast
-		# volcano_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_volcano.pdf"))
-		# pdf(
-		# 	file = volcano_plot_outfile,
-		# 	width = 12,
-		# 	height = 12
-		# )
-		# dba.plotVolcano(
-		# 	dba_obj, 
-		# 	contrast = i, 
-		# 	th = pval_cutoff, 
-		# 	bUsePval = FALSE, 
-		# 	factor = paste0(mark, " ")
-		# )
-		# dev.off()
 
 		#------- generate output tables -------
 		message(date())
