@@ -58,8 +58,8 @@ diffbind_main <- function(){
 	corr_plot_outfile <- file.path(diffbind_outdir, paste0(mark, "_sample_correlation.pdf"))
 	pdf(
 		file = corr_plot_outfile,
-		width = 10,
-		height = 12
+		width = 8,
+		height = 10
 	)
 	dba.plotHeatmap(dba_obj, correlations = TRUE)
 	dev.off()
@@ -68,8 +68,8 @@ diffbind_main <- function(){
 	pca_outfile <- file.path(diffbind_outdir, paste0(mark, "_pca.pdf"))
 	pdf(
 		file = pca_outfile,
-		width = 10,
-		height = 10
+		width = 8,
+		height = 8
 	)
 	dba.plotPCA(
 		dba_obj, 
@@ -81,8 +81,8 @@ diffbind_main <- function(){
 	# heatmap w/all mark samples
 	heatmap_outfile <- file.path(diffbind_outdir, paste0(mark, "_heatmap.pdf"))
 	pdf(file = heatmap_outfile,
-		width = 10,
-		height = 32
+		width = 8,
+		height = 24
 	)
 	dba.plotHeatmap(dba_obj, correlations = FALSE)
 	dev.off()
@@ -123,8 +123,8 @@ diffbind_main <- function(){
 			ma_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_MAplot.pdf"))
 			pdf(
 				file = ma_plot_outfile,
-				width = 10,
-				height = 10
+				width = 8,
+				height = 8
 			)
 			# use FDR for significance cutoff (bUsePval = FALSE)
 			dba.plotMA(
@@ -140,8 +140,8 @@ diffbind_main <- function(){
 			volcano_plot_outfile <- file.path(diffbind_contrast_outdir, paste0(mark, "_", contrast, "_volcano.pdf"))
 			pdf(
 				file = volcano_plot_outfile,
-				width = 10,
-				height = 10
+				width = 8,
+				height = 8
 			)
 			dba.plotVolcano(
 				dba_obj, 
