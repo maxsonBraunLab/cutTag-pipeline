@@ -1,6 +1,5 @@
 data/
 .snakemake
-cluster.yaml
 jobs/
 samplesheet.tsv
 

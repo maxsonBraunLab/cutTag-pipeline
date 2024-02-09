@@ -44,3 +44,8 @@ CSIZES: src/hg38.chrom.sizes
 # Peak Processing
 N_INTERSECTS: 2 # the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
 
+
+# Diffbind settings ----------------------------------------------------------------
+
+# filter for Diffbind differential analyis results with pval less than <padj_cutoff>
+padj_cutoff: 0.05
