@@ -48,7 +48,7 @@ After creating the symlinks, rename all the symlinks in data/raw to the followin
 For example, a file with this original name **LIB200706TB_M6Q3_RBP1_S93_L001_R1_001.fastq.gz** will be renamed to
 **M6Q_3_RBP1_R1.fastq.gz**
 
-## 2. Make the sample sheet and deseq2 metadata.
+## 2. Make the sample sheet, DEseq2 metadata, and Diffbind metadata.
 
 Activate an environment containing snakemake, and then run the script `make_sample_sheet.py` script from the root of the directory.
 
@@ -56,7 +56,7 @@ Activate an environment containing snakemake, and then run the script `make_samp
 python src/make_sample_sheet.py data/raw
 ```
 
-This will make a samplesheet for the experiment called samplesheet.tsv in the root of the directory as well as the file `src/deseq2_metadata.csv`, the contents of the samplesheet will be structured like the following example:
+This will make a samplesheet for the experiment called `samplesheet.tsv` in the root of the directory. The files `src/deseq2_metadata.csv` and `src/diffbind_config.csv` will also be created. The contents of the samplesheet will be structured like the following example:
 
 ```
 sample	R1	R2	mark	condition	igg
@@ -118,19 +118,18 @@ For this example there was only one IgG per condition, so the sample name corres
 
 2. The pipeline detects samples in the subdirectory data/raw with the following assumptions:
 
-    - Paired end reads
+   - Paired end reads
 
-    - Read 1 and 2 are designated using "_R1", and "_R2"
+   - Read 1 and 2 are designated using "_R1", and "_R2"
 
-    - Samples are designated in the following convention: `{condition}_{replicate}_{mark}_{R1|R2}.fastq.gz`
-      This format affects the output files and ensures the bigwig files from the same marks are merged.  
+   - Samples are designated in the following convention: `{condition}_{replicate}_{mark}_{R1|R2}.fastq.gz`. This format affects the output files and ensures the bigwig files from the same marks are merged.  
 
 3. Make sure the `src/deseq2_metadata.csv` looks right. The file is created when you run `make_sample_sheet.py` and should have the following properties:
 
- - Should have two columns labeled "sample", and "condition"
- - The sample column corresponds to the individual biological replicates (includes all fields around the "_" delimiter). 
- - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
- - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
+   - Should have two columns labeled "sample", and "condition"
+   - The sample column corresponds to the individual biological replicates (includes all fields around the "_" delimiter). 
+   - The condition should be the condition for each sample, which uses the first field with the "_" delimiter.
+   - If you have multiple conditions and marks to analyze, you can introduce more columns into this file and adjust the deseq2.R file to account for extra covariates. 
 
  Below is an example of what the `src/deseq2_metadata.csv` file might look like for an experiment with various conditions, replicates, and marks/antibody targets. Note that the IgG samples are not included in differential expression analysis:
 
@@ -355,7 +354,11 @@ Below is an explanation of each output directory:
 aligned - sorted and aligned sample bam files
 callpeaks - the output of callpeaks.py with peak files and normalized bigwigs for each sample.
 counts - the raw counts for each mark over a consensus peak list
-deseq2 - the results of deseq2 fore each counts table (by mark)
+
+deseq2 - the results of DESeq2 for each counts table (by mark). Note that because each input counts table is generated for consensus peak regions, DESeq2 normalizes these tables by counts in consensus peaks rather than by entire library size.
+
+diffbind - the results of Diffbind for each mark. Note that here, counts are normalized by entire library size rather than just counts in peaks.
+
 dtools - fingerprint plot data for multiqc to use
 fastp - adapter-trimmed FASTQ files (if adapter-trimming option is enabled in `config.yml`)
 fastqc - fastqc results

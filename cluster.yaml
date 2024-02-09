@@ -9,4 +9,6 @@ __default__:
     out: "jobs/{rule}/{rule}_%j.out"
 callpeaks:
     mem: 64G
-
+diffbind:
+    cpus-per-task: 4
+    mem: 40G
