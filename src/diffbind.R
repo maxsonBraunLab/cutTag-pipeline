@@ -235,7 +235,12 @@ diffbind_main <- function(){
 		message(date())
 		message("Exporting differential analysis results for contrast: ", contrast)
 
-		if (de_counts == 0) {
+		# if de_counts is null, need to put in separate if() statement to check for null
+		# combining the first if/else-if statements will fail if de_counts is null
+		if (is.null(de_counts) | length(de_counts) == 0) {
+			message("WARNING: ", contrast, " did not have any significant differential peaks.")
+			next
+		} else if (is.na(de_counts) | de_counts == 0) {
 			message("WARNING: ", contrast, " did not have any significant differential peaks.")
 			next
 		} else {
