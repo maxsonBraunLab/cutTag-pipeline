@@ -32,7 +32,7 @@ snakemake -j $num_jobs \
 --verbose \
 --use-singularity \
 --singularity-args "--bind $indices_folder,$fastq_folder" \
---profile slurm \
+--profile slurm_singularity \
 --cluster-config cluster.yaml
 
 
