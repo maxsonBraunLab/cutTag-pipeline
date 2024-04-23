@@ -84,7 +84,10 @@ diffbind_main <- function(){
 	message("Creating DBA object and counting reads in regions...")
 	dba_obj <- dba(sampleSheet = metadata_df_subset)
 	# count reads in regions
-	dba_obj <- dba.count(dba_obj, peaks = consensus_peaks_granges)
+	dba_obj <- dba.count(
+		dba_obj, 
+		peaks = consensus_peaks_granges,
+		summits = FALSE)
 
 	# normalize by full library size
 	message(date())
