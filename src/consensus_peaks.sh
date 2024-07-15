@@ -24,18 +24,25 @@ N_INTERSECTS=$2
 OUTFILE=$3
 
 # array of replicates per mark
-declare -a mpks=(data/callpeaks/*${MARK}*_peaks.bed)
+declare -a mpks=(data/callpeaks/*${MARK}_peaks.bed)
 
 all_samples=$(echo ${mpks[@]} | tr ' ' '\n' | cut -d/ -f3 | cut -d_ -f1-3)
-all_conditions=$(echo ${mpks[@]} | tr ' ' '\n' | cut -d/ -f3 | cut -d_ -f1)
+all_conditions=$(echo ${mpks[@]} | tr ' ' '\n' | cut -d/ -f3 | cut -d_ -f1 | sort | uniq)
+
+echo -e "All samples:\n${all_samples}\n"
+echo -e "All conditions:\n${all_conditions}\n"
 
 for condition in $all_conditions; do
+
+	echo -e "|-- Condition: ${condition}\n"
 
     # file I/O
     tmp_output="data/counts/$MARK.$condition.tmp.bed"
 
     # list all replicates in one condition
-    all_replicates=$(find data/callpeaks/ -name "*$condition*$MARK*.bed" | sort | tr '\n' ' ')
+    all_replicates=$(find data/callpeaks/ -name "$condition*$MARK*.bed" | sort | tr '\n' ' ')
+
+	echo -e "All replicates:\n${all_replicates}\n"
 
     # find widest peak that appear in at least n replicates + export to tmp file.
     cat $all_replicates | cut -f1-3 | sort -k1,1 -k2,2n | bedtools merge | \
@@ -45,15 +52,18 @@ for condition in $all_conditions; do
 done
 
 # merge intervals for all tmp files and export as consensus peak.
-all_temp_files=$(find data/counts -name "*$MARK*.tmp.bed" | sort | tr '\n' ' ')
+all_temp_files=$(find data/counts -name "${MARK}.*.tmp.bed" | sort | tr '\n' ' ')
+
+echo -e "All temp files:\n${all_temp_files}\n"
+
 cat $all_temp_files | sort -k1,1 -k2,2n | bedtools merge > data/counts/${MARK}_consensus.bed
 rm $all_temp_files
 
 # count the number of reads per union peak
-bedtools multicov -bams data/markd/*${MARK}*.bam -bed data/counts/${MARK}_consensus.bed -D > ${OUTFILE}_tmp
+bedtools multicov -bams data/markd/*${MARK}.sorted.markd.bam -bed data/counts/${MARK}_consensus.bed -D > ${OUTFILE}_tmp
 
 # label the counts table
-ls data/markd/*${MARK}*.bam  | sed 's!.*/!!' | cut -d. -f1 | xargs |  tr ' ' '\t' | awk '{print "chrom\tstart\tend\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
+ls data/markd/*${MARK}.sorted.markd.bam  | sed 's!.*/!!' | cut -d. -f1 | xargs |  tr ' ' '\t' | awk '{print "chrom\tstart\tend\t" $0}' | cat - ${OUTFILE}_tmp > ${OUTFILE}
 
 # remove tmp 
 rm ${OUTFILE}_tmp
