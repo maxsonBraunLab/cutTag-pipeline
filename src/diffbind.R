@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # This script runs Diffbind for a given input mark/protein of interest to normalize counts in peaks and perform differential analysis
-# Adapted from diffbind.R script in MaxsonBraunLab dba_obj_seq pipeline
+# Adapted from diffbind.R script in MaxsonBraunLab atac_seq pipeline
 
 # load libraries
 library(DiffBind)
@@ -106,10 +106,16 @@ diffbind_main <- function(){
 		categories = DBA_CONDITION
 	)
 	# run differential analysis
-	# note that by default, diffbind removes consensus peaks that are in blacklist regions prior to differential analysis
+	# note that by default, diffbind removes consensus peaks that are in ENCODE blacklist regions prior to differential analysis
+	# here we set ENCODE blacklist/greylist removal to false
 	message(date())
 	message("Running differential analysis...")
-	dba_obj <- dba.analyze(dba_obj, bParallel = TRUE)
+	dba_obj <- dba.analyze(
+		dba_obj, 
+		bParallel = TRUE,
+		bBlacklist = FALSE,
+		bGreylist = FALSE
+	)
 
 
 	#-------- export diffbind data --------
