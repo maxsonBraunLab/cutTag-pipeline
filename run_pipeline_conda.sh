@@ -15,7 +15,7 @@
 # To run this wrapper, do: sbatch run_pipeline_conda.sh
 
 # set the number of jobs to run at a time (no spaces)
-num_jobs=100
+num_jobs=50
 
 # run snakemake pipeline
 snakemake -j $num_jobs \

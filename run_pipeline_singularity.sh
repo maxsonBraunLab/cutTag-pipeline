@@ -21,7 +21,7 @@ indices_folder="/home/groups/MaxsonLab/indices"
 fastq_folder="/home/groups/MaxsonLab/nguythai/projects/pipeline_maintenance/cutTag-pipeline-singularity/.test/downsampled_fastqs"
 
 # set the number of jobs to run at a time (no spaces)
-num_jobs=100
+num_jobs=50
 
 # module load singularity before running snakemake
 module load /etc/modulefiles/singularity/current
