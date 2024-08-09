@@ -92,15 +92,17 @@ if config["TRIM_ADAPTERS"]:
         output:
             r1 = "data/fastp/{sample}_R1.fastq.gz",
             r2 = "data/fastp/{sample}_R2.fastq.gz"
+        params:
+            adapter_fasta_file = config["ADAPTER_FASTA"]
         conda: 
             "envs/fastp.yml"
         singularity:
             os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastp.sif")
         log:
             "data/logs/fastp/{sample}.fastp.json"
-        threads: 8
+        threads: 4
         shell:
-            "fastp -i {input.r1} -I {input.r2} -o {output.r1} -O {output.r2} --detect_adapter_for_pe --thread {threads} -j {log} -h /dev/null"
+            "fastp -i {input.r1} -I {input.r2} -o {output.r1} -O {output.r2} --detect_adapter_for_pe --trim_poly_g --adapter_fasta {params.adapter_fasta_file} --thread {threads} -j {log} -h /dev/null"
 
 # fastqc for each read 
 rule fastqc:
@@ -131,7 +133,7 @@ rule fastq_screen:
         os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastq_screen.sif")
     log:
         "data/logs/fastq_screen_{read}.log"
-    threads: 8
+    threads: 4
     shell:
         "fastq_screen --aligner bowtie2 --threads {threads} --outdir data/fastq_screen "
         "--conf {config[FASTQ_SCREEN]} --force {input} > {log} 2>&1"
@@ -225,28 +227,8 @@ rule merge_bw:
         "envs/mergebw.yml"
     singularity:
         os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "mergebw.sif")
-    resources:
-        mem_mb = 8000
     shell:
         "bash src/mergebw.sh -c {config[CSIZES]} -o {output} {input}"
-
-# merge all peaks to get union peak with at least
-# two reps per condition per peak
-rule make_high_conf_peaks:
-    input:
-        get_peaks_by_mark_condition
-    output:
-        "data/highConf/{mark_condition}.highConf.bed"
-    conda:
-        "envs/bedtools.yml"
-    singularity:
-        "docker://staphb/bedtools:2.30.0"
-    shell:
-        "cat {input} | sort -k1,1 -k2,2n | "
-        "bedtools merge | "
-        "bedtools intersect -a - -b {input} -c | "
-        "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
-
 
 rule fraglength:
     input:
@@ -344,6 +326,23 @@ rule callpeaks:
         params = callpeaks_params
     shell:
         "gopeaks -b {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} {params.params} > {log} 2>&1"
+
+# merge all peaks to get union peak with at least
+# two reps per condition per peak
+rule make_high_conf_peaks:
+    input:
+        get_peaks_by_mark_condition
+    output:
+        "data/highConf/{mark_condition}.highConf.bed"
+    conda:
+        "envs/bedtools.yml"
+    singularity:
+        "docker://staphb/bedtools:2.30.0"
+    shell:
+        "cat {input} | sort -k1,1 -k2,2n | "
+        "bedtools merge | "
+        "bedtools intersect -a - -b {input} -c | "
+        "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
 
 # get consensus
 rule consensus:
@@ -491,8 +490,6 @@ rule multiqc:
         expand("data/fastqc/{read}_fastqc.zip", read=reads),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg),
-        # comment out the expand("data/deseq2/...) line if no replicates used in experiment
-        expand("data/deseq2/{mark}/{mark}-dds.rds",mark=marks_noigg),
         expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
     output:
         "data/multiqc/multiqc_report.html"
