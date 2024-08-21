@@ -41,6 +41,8 @@ marks = get_marks()
 sample_noigg = [k for k in samps if config["IGG"] not in k]
 marks_noigg = [m for m in marks if config["IGG"] not in m]
 
+blacklist_file = config["BLACKLIST"].strip()
+
 localrules: frip_plot, fraglength_plot
 
 #singularity: "library://gartician/miniconda-mamba/4.12.0:sha256.7302640e37d37af02dd48c812ddf9c540a7dfdbfc6420468923943651f795591"
@@ -62,7 +64,12 @@ rule all:
         "data/dtools/fingerprint_{sample}.tsv",
         "data/plotEnrichment/frip_{sample}.tsv",
         ], sample=sample_noigg),
+
+        expand("data/callpeaks/{sample}_peaks_noBlacklist.bed", sample=samps) if os.path.isfile(blacklist_file) else [],
+
         "data/multiqc/multiqc_report.html",
+        "data/multiqc/multiqc_data/multiqc_data.json",
+
         expand(["data/deseq2/{mark}/{mark}-rld-pca.pdf",
         "data/deseq2/{mark}/{mark}-vsd-pca.pdf",
         "data/deseq2/{mark}/{mark}-normcounts.csv",
@@ -80,7 +87,9 @@ rule all:
         "data/markd/fraglen.html",
         "data/plotEnrichment/frip.html",
         expand("data/mergebw/{mark_condition}.bw", mark_condition=mark_conditions),
-        expand("data/highConf/{mark_condition}.highConf.bed", mark_condition=mark_conditions)
+        expand("data/highConf/{mark_condition}.highConf.bed", mark_condition=mark_conditions),
+        "data/custom_report/custom_report.html"
+
 
 
 if config["TRIM_ADAPTERS"]:
@@ -327,27 +336,62 @@ rule callpeaks:
     shell:
         "gopeaks -b {input[0]} {params.igg} -o data/callpeaks/{wildcards.sample} {params.params} > {log} 2>&1"
 
-# merge all peaks to get union peak with at least
-# two reps per condition per peak
-rule make_high_conf_peaks:
-    input:
-        get_peaks_by_mark_condition
-    output:
-        "data/highConf/{mark_condition}.highConf.bed"
-    conda:
-        "envs/bedtools.yml"
-    singularity:
-        "docker://staphb/bedtools:2.30.0"
-    shell:
-        "cat {input} | sort -k1,1 -k2,2n | "
-        "bedtools merge | "
-        "bedtools intersect -a - -b {input} -c | "
-        "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
+
+if os.path.isfile(blacklist_file):
+    rule remove_blacklist:
+        input:
+            "data/callpeaks/{sample}_peaks.bed"
+        output:
+            "data/callpeaks/{sample}_peaks_noBlacklist.bed"
+        params:
+            blacklist = blacklist_file
+        conda:
+            "envs/bedtools.yml"
+        singularity:
+            "docker://staphb/bedtools:2.30.0"
+        threads: 1
+        shell:
+            "bedtools intersect -v -a {input} -b {params.blacklist} > {output}"
+
+    # merge all peaks to get union peak with at least
+    # two reps per condition per peak
+    rule make_high_conf_peaks:
+        input:
+            get_peaks_by_mark_condition_blacklist
+        output:
+            "data/highConf/{mark_condition}.highConf.bed"
+        conda:
+            "envs/bedtools.yml"
+        singularity:
+            "docker://staphb/bedtools:2.30.0"
+        shell:
+            "cat {input} | sort -k1,1 -k2,2n | "
+            "bedtools merge | "
+            "bedtools intersect -a - -b {input} -c | "
+            "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
+else:
+    # merge all peaks to get union peak with at least
+    # two reps per condition per peak
+    rule make_high_conf_peaks:
+        input:
+            get_peaks_by_mark_condition
+        output:
+            "data/highConf/{mark_condition}.highConf.bed"
+        conda:
+            "envs/bedtools.yml"
+        singularity:
+            "docker://staphb/bedtools:2.30.0"
+        shell:
+            "cat {input} | sort -k1,1 -k2,2n | "
+            "bedtools merge | "
+            "bedtools intersect -a - -b {input} -c | "
+            "awk -v OFS='\t' '$4>=2 {{print}}' > {output}"
+
 
 # get consensus
 rule consensus:
     input:
-        expand("data/callpeaks/{sample}_peaks.bed", sample=sample_noigg)
+        expand("data/callpeaks/{sample}_peaks_noBlacklist.bed", sample=sample_noigg) if os.path.isfile(blacklist_file) else expand("data/callpeaks/{sample}_peaks.bed", sample=sample_noigg)
     output:
         consensus_counts = "data/counts/{mark}_counts.tsv",
         consensus_bed = "data/counts/{mark}_consensus.bed"
@@ -492,7 +536,8 @@ rule multiqc:
         expand("data/plotEnrichment/frip_{sample}.tsv", sample=sample_noigg),
         expand("data/preseq/lcextrap_{sample}.txt", sample=samps)
     output:
-        "data/multiqc/multiqc_report.html"
+        "data/multiqc/multiqc_report.html",
+        "data/multiqc/multiqc_data/multiqc_data.json"
     conda:
         "envs/multiqc.yml"
     singularity:
@@ -506,3 +551,29 @@ rule multiqc:
 
 # export different locales for singularity workaround: https://click.palletsprojects.com/en/8.1.x/unicode-support/
 
+
+rule custom_report:
+    input:
+        multiqc_json = "data/multiqc/multiqc_data/multiqc_data.json",
+        high_conf_peaks = expand("data/highConf/{mark_condition}.highConf.bed", mark_condition=mark_conditions)
+    output:
+        "data/custom_report/custom_report.html"
+    params:
+        rmd = "src/custom_report.Rmd",
+        output_dir = "data/custom_report",
+        callpeaks_folder = "data/callpeaks",
+        high_conf_peaks_folder = "data/highConf",
+        blacklist = blacklist_file
+    conda:
+        "envs/knit_rmd.yml"
+    singularity:
+        os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "knit_rmd.sif")
+    shell:
+        """
+        Rscript -e 'rmarkdown::render(input=here::here("{params.rmd}"), output_dir=here::here("{params.output_dir}"), envir = new.env(), params=list(
+        multiqc_json=here::here("{input.multiqc_json}"),
+        callpeaks_folder=here::here("{params.callpeaks_folder}"),
+        high_conf_peaks_folder=here::here("{params.high_conf_peaks_folder}"),
+        blacklist_file=here::here("{params.blacklist}")
+        ))'
+        """

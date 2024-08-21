@@ -12,7 +12,7 @@ FASTQ_SCREEN: src/fastq_screen.conf
 # option to trim adapters from raw reads to improve alignment rate (True or False)
 TRIM_ADAPTERS: True
 
-# FASTQ file containing additional list of sequences to trim from reads
+# FASTA file containing additional list of sequences to trim from reads
 # ignored if TRIM_ADAPTERS is False
 ADAPTER_FASTA: src/adapter_seqs.fa
 
@@ -48,6 +48,14 @@ CSIZES: src/hg38.chrom.sizes
 
 # Peak Processing
 N_INTERSECTS: 2 # the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
+
+# (optional) path to tab-delimited file of blacklisted genomic regions to filter out
+# if you don't want to remove regions, set this to "" (include quotations)
+BLACKLIST: ""
+# blacklists/hg38_cutrun_blacklist_Nordin2023.txt
+# blacklists/mm10_cutrun_blacklist_Nordin2023.txt
+# blacklists/mm39_cutrun_blacklist_Nordin2023.txt
+# blacklists/T2T_cutrun_blacklist_Nordin2023.txt
 
 
 # Diffbind settings ----------------------------------------------------------------
