@@ -22,16 +22,23 @@ properties:
     description: path to a fastq screen config file
   FASTA:
     type: string
-    description: path to a FASTQ file corresponding to the GENOME
+    description: path to a FASTA file corresponding to the GENOME
   N_INTERSECTS:
     type: integer
     description: the number of times a peak must appear across biological replicates (within one condition) to be considered a consensus peak
   TRIM_ADAPTERS:
     type: boolean
     description: whether to trim adapters from raw reads to improve alignment rate
+  ADAPTER_FASTA:
+    type: string
+    description: path to a FASTA file containing list of sequences to trim from raw reads
   SINGULARITY_IMAGE_FOLDER:
     type: string
     description: path to folder containing Singularity container image files for pipeline
+  BLACKLIST:
+    type: string
+    description: optional path to tab-delimited file of blacklisted genomic regions to filter out
+    
 
 required:
   - USEIGG
@@ -43,4 +50,5 @@ required:
   - FASTA
   - N_INTERSECTS
   - TRIM_ADAPTERS
+  - ADAPTER_FASTA
   - SINGULARITY_IMAGE_FOLDER
