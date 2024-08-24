@@ -50,7 +50,6 @@ localrules: frip_plot, fraglength_plot
 
 rule all:
     input:
-        expand("data/fastp/{read}.fastq.gz", read=reads) if config["TRIM_ADAPTERS"] else [],
         expand("data/fastqc/{read}_fastqc.{ext}", read=reads, ext = ["html", "zip"]),
         expand("data/fastq_screen/{read}_screen.txt", read=reads),
         expand("data/counts/{mark}_counts.tsv", mark=marks_noigg),
@@ -99,8 +98,8 @@ if config["TRIM_ADAPTERS"]:
             r1 = "data/raw/{sample}_R1.fastq.gz",
             r2 = "data/raw/{sample}_R2.fastq.gz"
         output:
-            r1 = "data/fastp/{sample}_R1.fastq.gz",
-            r2 = "data/fastp/{sample}_R2.fastq.gz"
+            r1 = temp("data/fastp/{sample}_R1.fastq.gz"),
+            r2 = temp("data/fastp/{sample}_R2.fastq.gz")
         params:
             adapter_fasta_file = config["ADAPTER_FASTA"]
         conda: 
