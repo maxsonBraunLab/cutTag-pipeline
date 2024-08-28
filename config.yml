@@ -52,10 +52,15 @@ N_INTERSECTS: 2 # the number of times a peak must appear across biological repli
 # (optional) path to tab-delimited file of blacklisted genomic regions to filter out
 # if you don't want to remove regions, set this to "" (include quotations)
 BLACKLIST: ""
+# ----- CUT&RUN-specific blacklists:
 # blacklists/hg38_cutrun_blacklist_Nordin2023.txt
 # blacklists/mm10_cutrun_blacklist_Nordin2023.txt
 # blacklists/mm39_cutrun_blacklist_Nordin2023.txt
 # blacklists/T2T_cutrun_blacklist_Nordin2023.txt
+# ----- ENCODE blacklists from Amemiya, H.M., Kundaje, A. & Boyle, A.P 2019:
+# blacklists/ENCODE_hg19-blacklist.v2.bed
+# blacklists/ENCODE_hg38-blacklist.v2.bed
+# blacklists/ENCODE_mm10-blacklist.v2.bed
 
 
 # Diffbind settings ----------------------------------------------------------------
