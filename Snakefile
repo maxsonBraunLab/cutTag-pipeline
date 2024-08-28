@@ -394,12 +394,14 @@ rule consensus:
     output:
         consensus_counts = "data/counts/{mark}_counts.tsv",
         consensus_bed = "data/counts/{mark}_consensus.bed"
+    params:
+        blacklist_flag = "-b" if os.path.isfile(blacklist_file) else ""
     conda:
         "envs/bedtools.yml"
     singularity:
         "docker://staphb/bedtools:2.30.0"
     shell:
-        "bash src/consensus_peaks.sh {wildcards.mark} {config[N_INTERSECTS]} {output.consensus_counts}"
+        "bash src/consensus_peaks.sh -m {wildcards.mark} -n {config[N_INTERSECTS]} -o {output.consensus_counts} {params.blacklist_flag}"
 
 rule frip:
     input:

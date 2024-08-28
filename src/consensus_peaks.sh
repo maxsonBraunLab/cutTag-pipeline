@@ -8,20 +8,32 @@
 # require bedtools
 if ! command -v bedtools &> /dev/null
 then
-    echo "bedtools could not be found"
-    exit
+    echo "ERROR: Bedtools could not be found."
+    exit 1
 fi
 
 # check args
 if [[ $# -eq 0 ]]
 then
-    echo "no arguments supplied"
+    echo "ERROR: No command line arguments supplied."
     exit 1
 fi
 
-MARK=$1
-N_INTERSECTS=$2
-OUTFILE=$3
+# set default variable values
+USE_BLACKLIST_BED=false
+
+# read in command line args
+while getopts "m:n:o:b" op
+do
+	case "$op" in
+		b)  USE_BLACKLIST_BED=true;;
+		m)  MARK="$OPTARG";;
+		n)  N_INTERSECTS="$OPTARG";;
+		o)  OUTFILE="$OPTARG";;
+		\?) exit 1;;
+	esac
+done
+
 
 # array of replicates per mark
 declare -a mpks=(data/callpeaks/*${MARK}_peaks.bed)
@@ -40,7 +52,14 @@ for condition in $all_conditions; do
     tmp_output="data/counts/$MARK.$condition.tmp.bed"
 
     # list all replicates in one condition
-    all_replicates=$(find data/callpeaks/ -name "$condition*$MARK*.bed" | sort | tr '\n' ' ')
+	if [ "$USE_BLACKLIST_BED" = true ]
+	then
+		echo "Blacklist flag enabled."
+		all_replicates=$(find data/callpeaks/ -name "$condition*${MARK}_peaks_noBlacklist.bed" | sort | tr '\n' ' ')
+	else
+		echo "Blacklist flag not enabled."
+		all_replicates=$(find data/callpeaks/ -name "$condition*${MARK}_peaks.bed" | sort | tr '\n' ' ')
+	fi
 
 	echo -e "All replicates:\n${all_replicates}\n"
 
