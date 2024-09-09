@@ -37,6 +37,15 @@ def get_peaks_by_mark_condition(wildcards):
     samps=st.groupby(["mark_condition"])['sample'].apply(list)[wildcards.mark_condition]
     return [f"data/callpeaks/{s}_peaks.bed" for s in samps]
 
+def get_peaks_by_mark_condition_blacklist(wildcards):
+    """
+    return list of peaks by mark_condition
+    """
+    st['mark_condition']=st['mark'].astype(str)+"_"+st['condition']
+    samps=st.groupby(["mark_condition"])['sample'].apply(list)[wildcards.mark_condition]
+    return [f"data/callpeaks/{s}_peaks_noBlacklist.bed" for s in samps]
+
+
 def get_bowtie2_input(wildcards):
     """
     returns reads associated with a sample

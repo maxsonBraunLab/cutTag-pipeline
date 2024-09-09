@@ -1,0 +1,217 @@
+---
+title: "CUT&RUN/Tag Custom Report"
+date: "`r Sys.Date()`"
+output: html_document
+params:
+  multiqc_json:
+    value: x
+  callpeaks_folder:
+    value: x
+  high_conf_peaks_folder:
+    value: x
+  blacklist_file:
+    value: x
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+#if knitting through command line, make sure to have these packages installed in Conda environment also:
+library(DT) # for nice searchable, sortable datatables
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(jsonlite)
+library(R.utils)
+
+```
+
+# Overview
+
+This report contains a quick overview of experiment stats and complements the MultiQC report outputted by the CUT&RUN/Tag pipeline.
+
+__Blacklist used:__ `r ifelse(file_test("-f", params$blacklist_file), params$blacklist_file, "NA")`
+
+
+```{r fxn_definitions}
+# fxn definitions
+
+get_raw_peaks <- function(condition_replicate_mark, blacklist_removed = FALSE){
+
+	filename_pattern <- ifelse(
+		blacklist_removed,
+		paste0(condition_replicate_mark, "_peaks_noBlacklist.bed"),
+		paste0(condition_replicate_mark, "_peaks.bed")
+	)
+	raw_peaks_file <- list.files(
+		path = callpeaks_folder,
+		pattern = filename_pattern,
+		full.names = TRUE
+	)
+	num_peaks <- R.utils::countLines(file = raw_peaks_file)
+	return(num_peaks)
+}
+
+
+get_highconf_peaks <- function(mark_condition){
+	
+	# get high confidence peak counts for each sample
+	high_conf_peaks_file <- list.files(
+		path = high_conf_peaks_folder,
+		pattern = paste0(mark_condition, ".highConf.bed"),
+		full.names = TRUE)
+
+	num_high_conf_peaks <- R.utils::countLines(file = high_conf_peaks_file)
+	return(num_high_conf_peaks)
+}
+
+```
+
+```{r data_prep}
+multiqc_data <- jsonlite::read_json(path = params$multiqc_json, simplifyVector = TRUE)
+callpeaks_folder <- params$callpeaks_folder
+high_conf_peaks_folder <- params$high_conf_peaks_folder
+blacklist_file <- params$blacklist_file
+
+# get data from each tool used
+multiqc_rawdata <- multiqc_data$report_saved_raw_data
+
+# get the sample names including condition, replicate, mark
+condition_rep_marks <- stringr::str_split(
+	string = names(multiqc_rawdata$multiqc_fastp),
+	pattern = "_R1$|_R2$", 
+	simplify = TRUE
+)[,1]
+
+# get the sample names (excluding replicates)
+condition_rep_marks_strsplit <- stringr::str_split(
+	string = condition_rep_marks,
+	pattern = "_",
+	simplify = TRUE
+) 
+
+# reorder condition, rep, and mark in sample names so that mark is listed first and samples are easily sorted by mark and condition
+mark_condition_reps <- paste(
+	condition_rep_marks_strsplit[,3],
+	condition_rep_marks_strsplit[,1],
+	condition_rep_marks_strsplit[,2],
+	sep = "_"
+)
+
+mark_conditions <- 
+	paste(
+		condition_rep_marks_strsplit[,3], 
+		condition_rep_marks_strsplit[,1], 
+		sep = "_") |> 
+	unique()
+
+
+# create data frames with data retrieved from multiqc_rawdata nested lists
+multiqc_rawdata_df <- 
+	data.frame(
+		condition_rep_mark = condition_rep_marks, 
+		sample_w_rep = mark_condition_reps) |>
+	dplyr::rowwise() |>
+	dplyr::mutate(
+		fastp_raw_read_pairs_before_filt = multiqc_rawdata$multiqc_fastp[[paste0(condition_rep_mark, "_R1")]]$read1_before_filtering$total_reads,
+		fastp_raw_read_pairs_after_filt = multiqc_rawdata$multiqc_fastp[[paste0(condition_rep_mark, "_R1")]]$read1_after_filtering$total_reads,
+		
+		bowtie_mapped_read_pairs = sum(unlist(multiqc_rawdata$multiqc_bowtie2[[paste0("bowtie2_", condition_rep_mark, ".err")]][c("paired_aligned_one", "paired_aligned_multi")])),
+		bowtie_total_align_rate = multiqc_rawdata$multiqc_bowtie2[[paste0("bowtie2_", condition_rep_mark, ".err")]]$overall_alignment_rate,
+		sambamba_dup_rate_all_mapped_reads = multiqc_rawdata$multiqc_markdup[[paste0("sambamba_markdup_", condition_rep_mark)]]$duplicate_rate,
+		gopeaks_sample_peak_count = multiqc_rawdata$multiqc_gopeaks[[condition_rep_mark]]$peak_counts,
+		peak_count_blacklistRemoved = ifelse(
+			file_test("-f", blacklist_file) == TRUE,
+			get_raw_peaks(condition_rep_mark, blacklist_removed = TRUE),
+			"NA")
+	)
+
+
+multiqc_rawdata_df2 <- data.frame(sample = mark_conditions) |>
+	dplyr::rowwise() |>
+	dplyr::mutate(num_high_conf_peaks = get_highconf_peaks(sample))
+
+```
+
+
+# Table 1
+
+Column descriptions:
+
+* __Read pairs pre-filt:__ Number of read pairs in the raw FASTQ files before adapter-trimming and default read length/quality filtering by Fastp.
+* __Read pairs post-filt:__ Number of read pairs in the FASTQ files after adapter-trimming and default read length/quality filtering by Fastp.
+* __Mapped read pairs:__ Number of read pairs aligned to a genome by Bowtie2.
+* __Aligned (%):__ Percentage of read pairs that aligned 1 or more times to a genome, as determined by Bowtie2.
+* __Duplicates (%):__ Percentage of total mapped reads (R1+R2) marked as duplicates by Sambamba.
+* __Peaks (all):__ Number of peaks called by GoPeaks.
+* __Peaks (no blacklist):__ Number of peaks called by GoPeaks, but excluding those that overlap blacklist regions. If a blacklist file was NOT specified in CUT&RUN/Tag pipeline, then this column will be blank.
+
+
+```{r}
+multiqc_rawdata_dt <- multiqc_rawdata_df |>
+	dplyr::select(-c(condition_rep_mark)) |>
+	dplyr::arrange(sample_w_rep) |>
+	dplyr::rename(
+		`Sample` = sample_w_rep,
+		`Read pairs pre-filt` = fastp_raw_read_pairs_before_filt,
+		`Read pairs post-filt` = fastp_raw_read_pairs_after_filt,
+		`Mapped read pairs` = bowtie_mapped_read_pairs,
+		`Aligned (%)` = bowtie_total_align_rate,
+		`Duplicates (%)` = sambamba_dup_rate_all_mapped_reads,
+		`Peaks (all)` = gopeaks_sample_peak_count,
+		`Peaks (no blacklist)` = peak_count_blacklistRemoved
+	) |>
+	DT::datatable(
+		extensions = c('Buttons', 'Scroller', 'FixedColumns'),
+		options = list(
+			dom = 'Bfrtip',
+			buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+			deferRender = TRUE,
+			scrollX = TRUE,
+			scrollY = 400,
+			scroller = TRUE,
+			fixedColumns = list(leftColumns = 2)
+		)) |>
+	DT::formatRound(
+		columns = c("Read pairs pre-filt", "Read pairs post-filt", "Mapped read pairs", "Peaks (all)", "Peaks (no blacklist)"),
+		digits = 0) |>
+	DT::formatRound(
+		columns = c("Aligned (%)", "Duplicates (%)"),
+		digits = 2)
+
+multiqc_rawdata_dt
+
+```
+
+
+# Table 2
+
+This table shows the number of peaks that are found in at least 2 replicates for a given sample group. If there are fewer than 2 replicates for a sample, then the number of high-confidence peaks reported for that sample will be zero.
+
+```{r}
+multiqc_rawdata_dt2 <- multiqc_rawdata_df2 |>
+	dplyr::arrange(sample) |>
+	dplyr::rename(
+		`Group` = sample,
+		`High-confidence peaks` = num_high_conf_peaks
+	) |>
+	DT::datatable(
+		extensions = c('Buttons', 'Scroller', 'FixedColumns'),
+		options = list(
+			dom = 'Bfrtip',
+			buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+			deferRender = TRUE,
+			scrollX = TRUE,
+			scrollY = 400,
+			scroller = TRUE,
+			fixedColumns = list(leftColumns = 2)
+		)) |>
+	DT::formatRound(
+		columns = c("High-confidence peaks"),
+		digits = 0)
+
+multiqc_rawdata_dt2
+
+```
+
