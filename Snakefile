@@ -132,7 +132,7 @@ rule fastqc:
 # detect contaminants
 rule fastq_screen:
     input:
-        "data/raw/{read}.fastq.gz"
+        "data/fastp/{read}.fastq.gz" if config["TRIM_ADAPTERS"] else "data/raw/{read}.fastq.gz"
     output:
         "data/fastq_screen/{read}_screen.txt"
     conda:
