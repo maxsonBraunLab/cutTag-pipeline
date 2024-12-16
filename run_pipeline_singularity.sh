@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH --time 24:00:00
-#SBATCH --partition exacloud
+#SBATCH --partition batch
 #SBATCH --job-name run_pipeline 
 #SBATCH --output=jobs/run_pipeline_%j.log
 
@@ -18,13 +18,13 @@
 # set folder paths
 # add absolute path to folder containing original fastq files (not the symlinks)
 indices_folder="/home/groups/MaxsonLab/indices"
-fastq_folder="/home/groups/MaxsonLab/nguythai/projects/pipeline_maintenance/cutTag-pipeline-singularity/.test/downsampled_fastqs"
+fastq_folder=""
 
 # set the number of jobs to run at a time (no spaces)
 num_jobs=50
 
-# module load singularity before running snakemake
-module load /etc/modulefiles/singularity/current
+# module load singularity before running snakemake (no longer needed for ARC partitions)
+# module load /etc/modulefiles/singularity/current
 
 # run snakemake pipeline
 # Note: if a separate Snakemake slurm profile for Singularity exists (e.g. slurm_singularity), you can use it instead of the default slurm profile

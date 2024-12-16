@@ -92,7 +92,7 @@ for contrast in $contrasts; do
 					fi
 					job_out="jobs/homer/homer-${contrast}-${mark}_%j.out"
 					job_err="jobs/homer/homer-${contrast}-${mark}_%j.err"
-					sbatch --partition "exacloud" -e $job_err -o $job_out --job-name "HOMER" --time "02:00:00" --mem="8G" --cpus-per-task=$p --wait --wrap="findMotifsGenome.pl $file $genome $output_dir -size 200 -p $p > $log 2>&1" &
+					sbatch --partition "batch" -e $job_err -o $job_out --job-name "HOMER" --time "02:00:00" --mem="8G" --cpus-per-task=$p --wait --wrap="findMotifsGenome.pl $file $genome $output_dir -size 200 -p $p > $log 2>&1" &
 				fi
 			fi
 		fi

@@ -2,7 +2,7 @@
 
 #SBATCH --time 8:00:00
 #SBATCH --mem=8G
-#SBATCH --partition exacloud
+#SBATCH --partition batch
 #SBATCH --job-name singularity_build_remote
 #SBATCH --output=jobs/singularity_build_remote/singularity_build_remote_%j.log
 
@@ -20,8 +20,8 @@
 # 		- run `singularity remote login` and input your sylabs token
 
 
-# module load singularity before running build
-module load /etc/modulefiles/singularity/current
+# # module load singularity before running build (no longer needed for ARC partitions)
+# module load /etc/modulefiles/singularity/current
 
 # command line inputs
 # make sure folder path doesn't have "/" at end 

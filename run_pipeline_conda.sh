@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH --time 24:00:00
-#SBATCH --partition exacloud
+#SBATCH --partition batch
 #SBATCH --job-name run_pipeline 
 #SBATCH --output=jobs/run_pipeline_%j.log
 
