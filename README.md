@@ -12,7 +12,10 @@ Snakemake pipeline for Cut&amp;Tag analysis
 
 If you do not have a Snakemake environment, please follow the instructions in the maxsonBraunLab [Snakemake setup repository](https://github.com/maxsonBraunLab/snakemake_setup) to create one.
 
-**NOTE:** Some of the pipeline setup instructions are tailored for working on Oregon Health and Science University's Linux-based Exacloud computing cluster. If you have access to another computing cluster, then some steps may need to be modified accordingly.
+**NOTE:** Some of the pipeline setup instructions are tailored for working on Oregon Health and Science University's Linux-based high-performance computing cluster (ARC, formerly Exacloud). If you have access to another computing cluster, then some steps may need to be modified accordingly.
+
+**NOTE:** Exacloud users transitioning to ARC at the end of 2024 may need to set a new container cache directory (`APPTAINER_CACHEDIR`) in their `~/.bashrc` file as shown in the [Set Singularity/Apptainer cache directory](2-set-singularityapptainer-cache-directory) section below.
+
 
 ## 1. Configure the project directory
 
@@ -102,7 +105,7 @@ For this example there was only one IgG per condition, so the sample name corres
 
 1. Edit runtime configuration in the file `config.yml`:
 
-   - If using Singularity containers instead of Conda, specify the path to the folder containing the Singularity image files (.sif).
+   - If using Singularity/Apptainer containers instead of Conda, specify the path to the folder containing the Singularity image files (.sif).
    
    - Specify whether or not to trim adapters and filter out low-quality reads from raw reads to improve downstream alignment rate. You can decide based on adapter content in the sequencing core's FastQC reports.
 
@@ -154,7 +157,7 @@ HoxW_3_Rbp1,HoxW
 
 Please follow the instructions in the "Snakemake + SLURM integration" section below if you are running the pipeline as a batch job and don't yet have a [SLURM profile](https://github.com/Snakemake-Profiles/slurm) set up. The SLURM profile will configure default settings for SnakeMake to interact with SLURM. More information can be found [here](https://github.com/maxsonBraunLab/slurm).
 
-**NOTE:** If you already have a SLURM profile set up to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix) but would like to run Snakemake with SLURM and Singularity integration, please follow the instructions in the "Snakemake + SLURM + Singularity integration" section below.
+**NOTE:** If you already have a SLURM profile set up to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix) but would like to run Snakemake with SLURM and Singularity/Apptainer integration, please follow the instructions in the "Snakemake + SLURM + Singularity/Apptainer integration" section below.
 
 ### Snakemake + SLURM integration
 
@@ -172,9 +175,9 @@ Change the file permissions for the scripts in the `slurm` folder so that they a
 chmod +x ~/.config/snakemake/slurm/slurm*
 ```
 
-### Snakemake + SLURM + Singularity integration
+### Snakemake + SLURM + Singularity/Apptainer integration
 
-**NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity. To do this: 
+**NOTE:** The `~/.config/snakemake/slurm/config.yaml` file contains settings for SnakeMake to interact with SLURM and, optionally, Conda or Singularity/Apptainer. If you already have an exisiting SLURM profile configured to run Snakemake with Conda (i.e., includes settings like use-conda, conda-prefix), then you will need to create a separate profile for running Snakemake with Singularity/Apptainer. To do this: 
 
 1. Copy contents of base slurm profile into another folder for slurm_singularity profile:
 
@@ -199,9 +202,9 @@ rerun-incomplete: True
 printshellcmds: True
 ```
 
-## 5. (Optional) SnakeMake + Singularity Setup
+## 5. (Optional) SnakeMake + Singularity/Apptainer Setup
 
-If you would like to run the pipeline using Singularity containers instead of Conda, please follow additional setup and execution instructions in the "Reproducible results with SnakeMake + Singularity" section below.
+If you would like to run the pipeline using Singularity/Apptainer containers instead of Conda, please follow additional setup and execution instructions in the "Reproducible results with SnakeMake + Singularity/Apptainer" section below.
 
 
 # Execution
@@ -233,34 +236,31 @@ Additional setup instructions are provided in the wrapper script.
 You can standardize further arguments for running the pipeline in batch mode using the following [instructions](https://github.com/Snakemake-Profiles/slurm). The maxsonBraunLab repository [slurm](https://github.com/maxsonBraunLab/slurm) contains further instructions to set up a SnakeMake slurm profile.
 
 
-# Reproducible results with SnakeMake + Singularity
+# Reproducible results with SnakeMake + Singularity/Apptainer
 
-To ensure the reproducibility of your results and reduce environment setup issues, we recommend running a SnakeMake workflow using Singularity containers. These containers standardize the installation of bioinformatics software (e.g. bowtie2, samtools, deseq2). 
+To ensure the reproducibility of your results and reduce environment setup issues, we recommend running a SnakeMake workflow using Singularity/Apptainer containers. These containers standardize the installation of bioinformatics software (e.g. bowtie2, samtools, deseq2). 
 
 Make sure to complete the general pipeline/data setup instructions above before running the pipeline. 
 
-## SnakeMake + Singularity Setup
+## SnakeMake + Singularity/Apptainer Setup
 
-If you have access to the MaxsonLab storage space on Exacloud, then you can skip the first setup step below and use the default `SINGULARITY_IMAGE_FOLDER` path specified in the `config.yml` file to access the containers for this pipeline. 
+If you have access to the MaxsonLab storage space on ARC, then you can skip the first setup step below and use the default `SINGULARITY_IMAGE_FOLDER` path specified in the `config.yml` file to access the containers for this pipeline. 
 
-If you have previously run this pipeline with Singularity and already built the needed containers, then you can set the `SINGULARITY_IMAGE_FOLDER` path in the `config.yml` to the folder where your container images are stored.
+If you have previously run this pipeline with Singularity/Apptainer and already built the needed containers, then you can set the `SINGULARITY_IMAGE_FOLDER` path in the `config.yml` to the folder where your container images are stored.
 
-### 1. (Optional) Build Singularity containers
+### 1. (Optional) Build Singularity/Apptainer containers
 
-Do this step if you do **not** have access to the MaxsonLab storage space on Exacloud and have not run this pipeline with Singularity before. You will need to build the necessary containers from the definition files provided in the `singularity_definition_files` folder. 
+Do this step if you do **not** have access to the MaxsonLab storage space on ARC and have not run this pipeline with Singularity/Apptainer before. You will need to build the necessary containers from the definition files provided in the `singularity_definition_files` folder. 
 
-To build containers without requiring root access on Exacloud, you will need to create a [Sylabs](https://cloud.sylabs.io/) account (you can use your Github account to log in). After logging in, navigate to `Dashboard > Access Tokens` and create a new access token. Make sure to copy and save the token into a secure place. 
+To build containers without requiring root access on ARC, you will need to create a [Sylabs](https://cloud.sylabs.io/) account (you can use your Github account to log in). After logging in, navigate to `Dashboard > Access Tokens` and create a new access token. Make sure to copy and save the token into a secure place. 
 
 This token will allow you to access the Sylabs remote builder tool from the command line. Note that every user is limited to 500 minutes of build time per month.
 
-After generating a Sylabs access token, you will need to log into Sylabs from the Exacloud command line. To do this:
+After generating a Sylabs access token, you will need to log into Sylabs from the ARC command line. To do this:
 
 ```bash
 # get onto an interactive/compute node
-srun -p light --time=3:00:00 --pty bash
-
-# load the singularity module (only available on a compute node)
-module load /etc/modulefiles/singularity/current
+srun -p interactive --time=3:00:00 --pty bash
 
 # input your access token when prompted
 singularity remote login
@@ -280,24 +280,27 @@ sbatch singularity_build_remote.sh <path_to_output_folder>
 ```
 
 
-### 2. Set Singularity cache directory
+### 2. Set Singularity/Apptainer cache directory
 
-By default, Singularity will create and use a cache directory in your personal user root folder (i.e. in `/home/users/<username>`). This may create problems as there is limited space in a user's root folder on Exacloud. To avoid issues with space in your root folder, you can set the Singularity cache directory path to a folder in your lab group directory like this:
+By default, Singularity/Apptainer will create and use a cache directory in your personal user root folder (i.e. in `/home/users/<username>`). This may create problems as there is limited space in a user's root folder on ARC. To avoid issues with space in your root folder, you can set the Singularity/Apptainer cache directory path to a folder in your lab group directory like this:
 
 ```bash
 # make a cache folder inside your lab user folder 
-mkdir /home/groups/MaxsonLab/<your_user_folder>/singularity_cache
+mkdir /home/groups/MaxsonLab/<your_user_folder>/cache
 
 # make the path to the cache folder accessible to other processes
-export SINGULARITY_CACHEDIR="/home/groups/MaxsonLab/<your_user_folder>/singularity_cache"
+export SINGULARITY_CACHEDIR="/home/groups/MaxsonLab/<your_user_folder>/cache"
+export APPTAINER_CACHEDIR="/home/groups/MaxsonLab/<your_user_folder>/cache"
 ```
 
-If you are an experienced user, you can add the `export SINGULARITY_CACHEDIR=...` line above to your `~/.bashrc` file. Otherwise, run the `export SINGULARITY_CACHEDIR=...` command before executing the pipeline.
+If you are an experienced user, you can add the `export` lines above to your `~/.bashrc` file. Otherwise, run the `export` command before executing the pipeline.
 
 
-## SnakeMake + Singularity Execution
+## SnakeMake + Singularity/Apptainer Execution
 
-More Singularity documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). 
+Singularity/Apptainer documentation on Exacloud can be found [here](https://wiki.ohsu.edu/display/ACC/Exacloud%3A+Singularity). 
+
+Singularity/Apptainer documentation on ARC can be found [here](https://wiki.ohsu.edu/display/ACC/Apptainer). 
 
 A "dry-run" can be accomplished to see what and how files will be generated by using the command:
 
@@ -307,16 +310,13 @@ snakemake -nrp
 
 To invoke the pipeline, please use either of the two options below. 
 
-**NOTE:** Make sure to use double quotes for the `--bind` argument, and insert an integer for the `-j` flag. The `--bind` argument binds the host (Exacloud) paths to the container to access the genome indices and the path to the raw sequencing files. When Snakemake is executed directly on an interactive terminal, the `-j` flag represents the max number of cores to use. When executed via a batch script, the `-j` flag represents the max number of jobs to run at a time. 
+**NOTE:** Make sure to use double quotes for the `--bind` argument, and insert an integer for the `-j` flag. The `--bind` argument binds the host (ARC) paths to the container to access the genome indices and the path to the raw sequencing files. When Snakemake is executed directly on an interactive terminal, the `-j` flag represents the max number of cores to use. When executed via a batch script, the `-j` flag represents the max number of jobs to run at a time. 
 
-**Option 1: Singularity + interactive run**
+**Option 1: Singularity/Apptainer + interactive run**
 
 ```bash
 # get onto an interactive/compute node
 srun --time=12:00:00 --pty bash
-
-# load the singularity module
-module load /etc/modulefiles/singularity/current
 
 # set folder paths
 # fastq_folder should be absolute/full path to folder containing raw FASTQ files (not the symlinks)
@@ -329,9 +329,9 @@ snakemake -j <n_cores> \
 --singularity-args "--bind $indices_folder,$fastq_folder"
 ```
 
-**Option 2: Singularity + slurm (batch) run**
+**Option 2: Singularity/Apptainer + slurm (batch) run**
 
-For users running the Singularity version of the pipeline in batch mode, `run_pipeline_singularity.sh` is a wrapper script for the pipeline. You will need to add the appropriate FASTQ folder path to the script prior to running. Additional instructions are provided in the wrapper script.
+For users running the Singularity/Apptainer version of the pipeline in batch mode, `run_pipeline_singularity.sh` is a wrapper script for the pipeline. You will need to add the appropriate FASTQ folder path to the script prior to running. Additional instructions are provided in the wrapper script.
 
 ```bash
 # run pipeline
