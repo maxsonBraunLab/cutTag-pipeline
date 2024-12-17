@@ -14,7 +14,7 @@ If you do not have a Snakemake environment, please follow the instructions in th
 
 **NOTE:** Some of the pipeline setup instructions are tailored for working on Oregon Health and Science University's Linux-based high-performance computing cluster (ARC, formerly Exacloud). If you have access to another computing cluster, then some steps may need to be modified accordingly.
 
-**NOTE:** Exacloud users transitioning to ARC at the end of 2024 may need to set a new container cache directory (`APPTAINER_CACHEDIR`) in their `~/.bashrc` file as shown in the [Set Singularity/Apptainer cache directory](2-set-singularityapptainer-cache-directory) section below.
+**NOTE:** Exacloud users transitioning to ARC at the end of 2024 may need to set a new container cache directory (`APPTAINER_CACHEDIR`) in their `~/.bashrc` file as shown in the [Set Singularity/Apptainer cache directory](#2-set-singularityapptainer-cache-directory) section below.
 
 
 ## 1. Configure the project directory
