@@ -125,7 +125,7 @@ rule fastqc:
         "docker://staphb/fastqc:0.11.9"
     log:
         "data/logs/fastqc_{read}.log"
-    threads: 4
+    threads: 1
     shell:
         "fastqc -t {threads} --outdir data/fastqc {input} > {log} 2>&1"
 
@@ -141,7 +141,7 @@ rule fastq_screen:
         os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "fastq_screen.sif")
     log:
         "data/logs/fastq_screen_{read}.log"
-    threads: 4
+    threads: 2
     shell:
         "fastq_screen --aligner bowtie2 --threads {threads} --outdir data/fastq_screen "
         "--conf {config[FASTQ_SCREEN]} --force {input} > {log} 2>&1"
@@ -206,7 +206,7 @@ rule index:
         "envs/sambamba.yml"
     singularity:
         os.path.join(config["SINGULARITY_IMAGE_FOLDER"], "sambamba.sif")
-    threads: 4
+    threads: 2
     log:
         "data/logs/samtools_index_{sample}.log"
     shell:
