@@ -18,8 +18,11 @@ bowtie2:
 index: 
     cpus-per-task: 2
 callpeaks:
-    cpus-per-task: 2
+    cpus-per-task: 1
     mem: 55G
+frip:
+    cpus-per-task: 1
+    mem: 4G
 consensus:
     cpus-per-task: 1
     mem: 4G
