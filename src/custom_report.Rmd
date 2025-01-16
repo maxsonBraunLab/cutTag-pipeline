@@ -69,10 +69,27 @@ get_highconf_peaks <- function(mark_condition){
 ```
 
 ```{r data_prep}
-multiqc_data <- jsonlite::read_json(path = params$multiqc_json, simplifyVector = TRUE)
+# retrieve input params
 callpeaks_folder <- params$callpeaks_folder
 high_conf_peaks_folder <- params$high_conf_peaks_folder
 blacklist_file <- params$blacklist_file
+
+
+# preprocess json file to replace any NaN or Infinity since these are not considered valid json literals ("null" is valid)
+fixed_json <- readLines(params$multiqc_json) |>
+	gsub(pattern = "NaN|Infinity|\\-Infinity", replacement = "null")
+
+# write fixed json to a new temp file
+tmp_json_path <- tempfile(
+	pattern = "tmp_multiqc_", 
+	tmpdir = tempdir(), 
+	fileext = ".json"
+)
+writeLines(fixed_json, tmp_json_path)
+
+# read the preprocessed json file
+multiqc_data <- jsonlite::read_json(tmp_json_path, simplifyVector = TRUE)
+
 
 # get data from each tool used
 multiqc_rawdata <- multiqc_data$report_saved_raw_data
@@ -174,7 +191,12 @@ multiqc_rawdata_dt <- multiqc_rawdata_df |>
 			fixedColumns = list(leftColumns = 2)
 		)) |>
 	DT::formatRound(
-		columns = c("Read pairs pre-filt", "Read pairs post-filt", "Mapped read pairs", "Peaks (all)", "Peaks (no blacklist)"),
+		columns = c(
+			"Read pairs pre-filt", 
+			"Read pairs post-filt", 
+			"Mapped read pairs", 
+			"Peaks (all)", 
+			"Peaks (no blacklist)"),
 		digits = 0) |>
 	DT::formatRound(
 		columns = c("Aligned (%)", "Duplicates (%)"),
