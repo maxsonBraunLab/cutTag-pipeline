@@ -5,10 +5,10 @@ channels:
   - r
   - defaults
 dependencies:
-  - bioconductor-deseq2 
+  - bioconductor-deseq2>=1.41.1
   - bioconductor-vsn
-  - bioconductor-apeglm
-  - r-base=4.2
+  - bioconductor-apeglm>=1.23.1
+  - r-base>=4.2
   - r-pheatmap
   - r-tidyverse
   - r-rcolorbrewer
