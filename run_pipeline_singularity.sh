@@ -3,7 +3,7 @@
 #SBATCH --time 24:00:00
 #SBATCH --partition batch
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
+#SBATCH --mem=4G
 #SBATCH --job-name run_pipeline 
 #SBATCH --output=jobs/run_pipeline_%j.log
 
