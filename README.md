@@ -252,31 +252,13 @@ If you have previously run this pipeline with Singularity/Apptainer and already 
 
 Do this step if you do **not** have access to the MaxsonLab storage space on ARC and have not run this pipeline with Singularity/Apptainer before. You will need to build the necessary containers from the definition files provided in the `singularity_definition_files` folder. 
 
-To build containers without requiring root access on ARC, you will need to create a [Sylabs](https://cloud.sylabs.io/) account (you can use your Github account to log in). After logging in, navigate to `Dashboard > Access Tokens` and create a new access token. Make sure to copy and save the token into a secure place. 
-
-This token will allow you to access the Sylabs remote builder tool from the command line. Note that every user is limited to 500 minutes of build time per month.
-
-After generating a Sylabs access token, you will need to log into Sylabs from the ARC command line. To do this:
+To build containers on ARC, navigate to the main folder of the pipeline (where the Snakefile is) and run the `singularity_build.sh` script as follows:
 
 ```bash
-# get onto an interactive/compute node
-srun -p interactive --time=3:00:00 --pty bash
-
-# input your access token when prompted
-singularity remote login
-```
-
-Now you're ready to start building containers. To do this, navigate to the main folder of the pipeline (where the Snakefile is) and run the `singularity_build_remote.sh` script as follows:
-
-```bash
-# create folder to store build logs
-mkdir -p jobs/singularity_build_remote
-
 # make sure to follow any additional instructions in the script file before executing
 
 # provide the path to a folder where you want to store your container images 
-# (don't include a slash "/" at the end of path)
-sbatch singularity_build_remote.sh <path_to_output_folder>
+sbatch singularity_build.sh <path_to_output_folder>
 ```
 
 
