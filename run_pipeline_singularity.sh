@@ -2,6 +2,8 @@
 
 #SBATCH --time 24:00:00
 #SBATCH --partition batch
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
 #SBATCH --job-name run_pipeline 
 #SBATCH --output=jobs/run_pipeline_%j.log
 
@@ -10,7 +12,6 @@
 # Make sure to do the following before running this script:
 # - conda activate snakemake environment
 # - check that slurm profile for snakemake is set up (use a slurm_singularity profile instead if regular slurm profile has Conda-specific configurations)
-# - check that "jobs" folder exists in the main pipeline directory (if not, mkdir jobs)
 # - add correct paths to indices and fastq folders below
 
 # To run this wrapper, do: sbatch run_pipeline_singularity.sh
@@ -22,9 +23,6 @@ fastq_folder=""
 
 # set the number of jobs to run at a time (no spaces)
 num_jobs=50
-
-# module load singularity before running snakemake (no longer needed for ARC partitions)
-# module load /etc/modulefiles/singularity/current
 
 # run snakemake pipeline
 # Note: if a separate Snakemake slurm profile for Singularity exists (e.g. slurm_singularity), you can use it instead of the default slurm profile
