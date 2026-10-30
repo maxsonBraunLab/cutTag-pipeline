@@ -41,8 +41,8 @@ get_raw_peaks <- function(condition_replicate_mark, blacklist_removed = FALSE){
 
 	filename_pattern <- ifelse(
 		blacklist_removed,
-		paste0(condition_replicate_mark, "_peaks_noBlacklist.bed"),
-		paste0(condition_replicate_mark, "_peaks.bed")
+		paste0("^", condition_replicate_mark, "_peaks_noBlacklist.bed"),
+		paste0("^", condition_replicate_mark, "_peaks.bed")
 	)
 	raw_peaks_file <- list.files(
 		path = callpeaks_folder,
